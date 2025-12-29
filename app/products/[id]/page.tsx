@@ -1,12 +1,13 @@
 'use client';
 
-import { useParams } from 'next/navigation';
+import { useParams, useRouter } from 'next/navigation';
 import { useState, useEffect, useRef } from 'react';
 import Image from 'next/image';
 import Link from 'next/link';
 import { gsap } from 'gsap';
 import Navbar from '../../components/Navbar';
 import Footer from '../../components/Footer';
+import { useCart } from '../../providers/CartProvider';
 
 const products = [
     {
@@ -93,8 +94,11 @@ const products = [
 
 export default function ProductDetailPage() {
     const { id } = useParams();
+    const router = useRouter();
     const product = products.find(p => p.id === Number(id)) || products[0];
     const [activeTab, setActiveTab] = useState('description');
+    const [isLiked, setIsLiked] = useState(false);
+    const { addToCart, cartCount } = useCart();
 
     const containerRef = useRef<HTMLDivElement>(null);
     const imageRef = useRef<HTMLDivElement>(null);
@@ -180,19 +184,19 @@ export default function ProductDetailPage() {
         <div className="bg-black min-h-screen text-white font-['Helvetica_Neue',Arial,sans-serif]" ref={containerRef}>
             <Navbar />
 
-            <main className="max-w-7xl mx-auto px-6 pt-32 pb-20">
+            <main className="max-w-7xl mx-auto px-4 sm:px-6 pt-24 md:pt-32 pb-12 md:pb-20">
                 {/* Breadcrumbs */}
-                <nav className="mb-12 flex items-center gap-2 text-xs uppercase tracking-[0.2em] text-white/40">
+                <nav className="mb-8 md:mb-12 flex items-center gap-2 text-[10px] sm:text-xs uppercase tracking-[0.2em] text-white/40">
                     <Link href="/" className="hover:text-white transition-colors">Home</Link>
                     <span>/</span>
                     <Link href="/" className="hover:text-white transition-colors">Products</Link>
                     <span>/</span>
-                    <span className="text-white/80">{product.title}</span>
+                    <span className="text-white/80 line-clamp-1">{product.title}</span>
                 </nav>
 
-                <div className="grid grid-cols-1 lg:grid-cols-2 gap-16 lg:gap-24 items-start">
+                <div className="grid grid-cols-1 lg:grid-cols-2 gap-10 md:gap-16 lg:gap-24 items-start">
                     {/* Product Image Section */}
-                    <div ref={imageRef} className="relative aspect-[4/5] bg-neutral-900 group">
+                    <div ref={imageRef} className="relative aspect-square sm:aspect-[4/5] bg-neutral-900 group">
                         <Image
                             src={product.image}
                             alt={product.title}
@@ -205,31 +209,80 @@ export default function ProductDetailPage() {
 
                     {/* Product Info Section */}
                     <div ref={contentRef} className="flex flex-col">
-                        <span className="text-xs font-light uppercase tracking-[0.4em] text-white/40 mb-4">{product.category}</span>
-                        <h1 className="text-4xl md:text-5xl lg:text-6xl font-thin leading-tight mb-6 tracking-tight bg-clip-text text-transparent bg-gradient-to-b from-white to-white/60">
+                        <span className="text-[10px] sm:text-xs font-light uppercase tracking-[0.4em] text-white/40 mb-3 sm:mb-4">{product.category}</span>
+                        <h1 className="text-3xl sm:text-4xl md:text-5xl lg:text-6xl font-thin leading-tight mb-4 sm:mb-6 tracking-tight bg-clip-text text-transparent bg-gradient-to-b from-white to-white/60">
                             {product.title}
                         </h1>
 
-                        <div className="flex items-center gap-4 mb-8">
-                            <span className="text-3xl font-light">₹{product.price.toLocaleString('en-IN')}</span>
-                            <span className="text-xl text-white/30 line-through">₹{product.originalPrice.toLocaleString('en-IN')}</span>
-                            <span className="bg-white/10 px-2 py-1 text-[10px] tracking-widest uppercase border border-white/10">33% OFF</span>
+                        <div className="flex items-center gap-4 mb-6 sm:mb-8">
+                            <span className="text-2xl sm:text-3xl font-light">₹{product.price.toLocaleString('en-IN')}</span>
+                            <span className="text-lg sm:text-xl text-white/30 line-through">₹{product.originalPrice.toLocaleString('en-IN')}</span>
+                            <span className="bg-white/10 px-2 py-1 text-[9px] sm:text-[10px] tracking-widest uppercase border border-white/10">33% OFF</span>
                         </div>
 
-                        <p className="text-white/60 font-thin leading-relaxed tracking-wide mb-10 text-lg">
+                        <p className="text-white/60 font-thin leading-relaxed tracking-wide mb-8 sm:mb-10 text-base sm:text-lg">
                             {product.description}
                         </p>
 
                         {/* Action Buttons */}
-                        <div className="flex flex-col sm:flex-row gap-4 mb-16 px-1">
-                            <Link href="/cart" className="flex-1">
-                                <button className="w-full bg-white text-black py-5 text-xs font-bold uppercase tracking-[0.2em] hover:bg-neutral-200 transition-all duration-300">
-                                    Add to Cart
+                        <div className="flex flex-col gap-3 sm:gap-4 mb-12 sm:mb-16">
+                            {/* Like and Add to Cart Row */}
+                            <div className="flex gap-3 sm:gap-4">
+                                {/* Like Button */}
+                                <button
+                                    onClick={() => setIsLiked(!isLiked)}
+                                    className="border border-white/20 text-white py-4 sm:py-5 px-6 sm:px-8 hover:bg-white/5 transition-all duration-300 group"
+                                    aria-label="Like product"
+                                >
+                                    <svg
+                                        width="20"
+                                        height="20"
+                                        viewBox="0 0 24 24"
+                                        fill={isLiked ? "currentColor" : "none"}
+                                        stroke="currentColor"
+                                        strokeWidth="1.5"
+                                        className="transition-all duration-300"
+                                    >
+                                        <path
+                                            d="M20.84 4.61a5.5 5.5 0 0 0-7.78 0L12 5.67l-1.06-1.06a5.5 5.5 0 0 0-7.78 7.78l1.06 1.06L12 21.23l7.78-7.78 1.06-1.06a5.5 5.5 0 0 0 0-7.78z"
+                                            strokeLinecap="round"
+                                            strokeLinejoin="round"
+                                        />
+                                    </svg>
                                 </button>
-                            </Link>
+
+                                {/* Add to Cart Button with Icon and Badge */}
+                                <button
+                                    onClick={() => {
+                                        addToCart(product);
+                                        router.push('/cart');
+                                    }}
+                                    className="flex-1 bg-white text-black py-4 sm:py-5 px-6 text-[11px] sm:text-xs font-bold uppercase tracking-[0.2em] hover:bg-neutral-200 transition-all duration-300 flex items-center justify-center gap-3 relative"
+                                >
+                                    {/* Cart Icon with Badge */}
+                                    <div className="relative">
+                                        <svg
+                                            fill="none"
+                                            stroke="currentColor"
+                                            viewBox="0 0 24 24"
+                                            className="w-5 h-5"
+                                        >
+                                            <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={1.5} d="M3 3h2l.4 2M7 13h10l4-8H5.4M7 13L5.4 5M7 13l-2.293 2.293c-.63.63-.184 1.707.707 1.707H17m0 0a2 2 0 100 4 2 2 0 000-4zm-8 2a2 2 0 11-4 0 2 2 0 014 0z" />
+                                        </svg>
+                                        {cartCount > 0 && (
+                                            <span className="product-cart-badge">
+                                                {cartCount}
+                                            </span>
+                                        )}
+                                    </div>
+                                    <span>Add to Cart</span>
+                                </button>
+                            </div>
+
+                            {/* Buy Now Button */}
                             <button
                                 ref={buyBtnRef}
-                                className="buy-now-btn group flex-1 border border-white/20 text-white py-5 text-xs font-bold uppercase tracking-[0.2em] relative overflow-hidden transition-all duration-300"
+                                className="buy-now-btn group w-full border border-white/20 text-white py-4 sm:py-5 text-[11px] sm:text-xs font-bold uppercase tracking-[0.2em] relative overflow-hidden transition-all duration-300"
                             >
                                 {/* Background Liquify Layer - Fully GSAP Managed */}
                                 <div className="liquid-bg absolute inset-[-10px] bg-white translate-y-full" />
@@ -242,13 +295,13 @@ export default function ProductDetailPage() {
                         </div>
 
                         {/* Tabs Section */}
-                        <div className="border-t border-white/10 pt-10">
-                            <div className="flex gap-8 mb-8 border-b border-white/5 pb-4">
+                        <div className="border-t border-white/10 pt-8 sm:pt-10">
+                            <div className="flex gap-6 sm:gap-8 mb-6 sm:mb-8 border-b border-white/5 pb-4 overflow-x-auto no-scrollbar">
                                 {['description', 'specifications', 'shipping'].map((tab) => (
                                     <button
                                         key={tab}
                                         onClick={() => setActiveTab(tab)}
-                                        className={`text-[10px] uppercase tracking-[0.3em] transition-all relative pb-4 ${activeTab === tab ? 'text-white' : 'text-white/30 hover:text-white/60'
+                                        className={`text-[9px] sm:text-[10px] uppercase tracking-[0.3em] transition-all relative pb-4 whitespace-nowrap ${activeTab === tab ? 'text-white' : 'text-white/30 hover:text-white/60'
                                             }`}
                                     >
                                         {tab}
@@ -288,6 +341,7 @@ export default function ProductDetailPage() {
                 </div>
             </main>
 
+
             {/* SVG Filter for Liquify Effect */}
             <svg style={{ position: 'absolute', width: 0, height: 0 }} aria-hidden="true" focusable="false">
                 <defs>
@@ -323,6 +377,24 @@ export default function ProductDetailPage() {
                 }
                 .buy-now-btn span {
                     z-index: 2; /* Ensure text is always above the liquid background */
+                }
+                .product-cart-badge {
+                    position: absolute;
+                    top: -6px;
+                    right: -6px;
+                    background: #ef4444;
+                    color: white;
+                    font-size: 10px;
+                    font-weight: 700;
+                    min-width: 18px;
+                    height: 18px;
+                    border-radius: 50%;
+                    display: flex;
+                    align-items: center;
+                    justify-content: center;
+                    padding: 0 4px;
+                    box-shadow: 0 2px 8px rgba(239, 68, 68, 0.5);
+                    z-index: 10;
                 }
                 @keyframes expand {
                     from { transform: scaleX(0); }

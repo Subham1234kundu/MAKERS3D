@@ -1,0 +1,30 @@
+# 🔥 MAKERS3D Environment Configuration
+# Copy this entire content to your .env.local file
+
+# ========================================
+# MongoDB Atlas Connection
+# ========================================
+MONGODB_URI=mongodb+srv://subhamkundu:Ironman2000@lms.4a4h7.mongodb.net/makers3d_db?retryWrites=true&w=majority
+
+# ========================================
+# NextAuth Configuration
+# ========================================
+NEXTAUTH_URL=http://localhost:3000
+NEXTAUTH_SECRET=pX9mK2vN8qL5wR7tY4uH6jG3fD1sA0zX9cV8bN7mQ5wE2rT4yU6iO8pA1sD3fG5h
+
+# ========================================
+# Google OAuth (OPTIONAL - for Google login)
+# ========================================
+# Follow AUTH_SETUP_GUIDE.md to get these credentials
+# GOOGLE_CLIENT_ID=your_google_client_id_here
+# GOOGLE_CLIENT_SECRET=your_google_client_secret_here
+
+# ========================================
+# Instructions:
+# ========================================
+# 1. Create a file named .env.local in your project root
+# 2. Copy ALL content from this file
+# 3. Paste into .env.local
+# 4. Save the file
+# 5. Restart your dev server (npm run dev)
+# 6. Test at http://localhost:3000/login

@@ -2,6 +2,8 @@ import type { Metadata } from "next";
 import { Geist, Geist_Mono } from "next/font/google";
 import Script from "next/script";
 import { ThemeProvider } from "./providers/ThemeProvider";
+import { CartProvider } from "./providers/CartProvider";
+import SessionProvider from "./providers/SessionProvider";
 import CustomCursor from "./components/CustomCursor";
 import ChatButton from "./components/ChatButton";
 import LoadingScreen from "./components/LoadingScreen";
@@ -54,10 +56,14 @@ export default function RootLayout({
       >
         <LoadingScreen />
         <CustomCursor />
-        <ThemeProvider>
-          {children}
-          <ChatButton />
-        </ThemeProvider>
+        <SessionProvider>
+          <ThemeProvider>
+            <CartProvider>
+              {children}
+              <ChatButton />
+            </CartProvider>
+          </ThemeProvider>
+        </SessionProvider>
       </body>
     </html>
   );

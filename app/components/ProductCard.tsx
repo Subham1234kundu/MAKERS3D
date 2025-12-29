@@ -3,6 +3,7 @@
 import Image from 'next/image';
 import Link from 'next/link';
 import { useState } from 'react';
+import { useCart } from '../providers/CartProvider';
 
 interface ProductCardProps {
     id: number | string;
@@ -10,11 +11,19 @@ interface ProductCardProps {
     title: string;
     price: number;
     originalPrice: number;
+    category?: string; // Added category
 }
 
-export default function ProductCard({ id, image, title, price, originalPrice }: ProductCardProps) {
+export default function ProductCard({ id, image, title, price, originalPrice, category = 'ALL' }: ProductCardProps) {
     const [isHovered, setIsHovered] = useState(false);
     const [isPlusHovered, setIsPlusHovered] = useState(false);
+    const { addToCart } = useCart();
+
+    const handleAddToCart = (e: React.MouseEvent) => {
+        e.preventDefault();
+        e.stopPropagation();
+        addToCart({ id, image, title, price, originalPrice, category });
+    };
 
     return (
         <Link href={`/products/${id}`}>
@@ -24,30 +33,31 @@ export default function ProductCard({ id, image, title, price, originalPrice }: 
                 onMouseLeave={() => setIsHovered(false)}
             >
                 {/* Image Container */}
-                <div className="relative aspect-[3/4] mb-4 overflow-hidden transition-all duration-300 bg-black">
+                <div className="relative aspect-[3/4] mb-3 sm:mb-4 overflow-hidden transition-all duration-300 bg-black">
                     {/* Image */}
                     <Image
                         src={image}
                         alt={title}
                         fill
                         className="object-cover object-center"
-                        sizes="(max-width: 640px) 100vw, (max-width: 1024px) 50vw, 25vw"
+                        sizes="(max-width: 640px) 50vw, (max-width: 1024px) 33vw, 25vw"
                     />
 
                     {/* Border - Black by default, Gray on hover */}
-                    <div className={`absolute inset-0 border transition-colors duration-300 ${isHovered ? 'border-gray-500' : 'border-black'
+                    <div className={`absolute inset-0 border transition-colors duration-300 ${isHovered ? 'border-gray-500' : 'border-white/5'
                         }`}></div>
 
-                    {/* Plus Icon - Slides from left to right on hover */}
+                    {/* Plus Icon - Slides from left to right on hover, always visible on mobile */}
                     <div
-                        className={`absolute bottom-4 right-4 w-10 h-10 bg-white flex items-center justify-center transition-all duration-300 cursor-pointer ${isHovered ? 'opacity-100 translate-x-0' : 'opacity-0 -translate-x-4'
+                        className={`absolute bottom-3 right-3 sm:bottom-4 sm:right-4 w-8 h-8 sm:w-10 sm:h-10 bg-white flex items-center justify-center transition-all duration-300 cursor-pointer lg:opacity-0 lg:-translate-x-4 group-hover:opacity-100 group-hover:translate-x-0 ${isPlusHovered ? 'bg-gray-100' : ''
                             }`}
                         onMouseEnter={() => setIsPlusHovered(true)}
                         onMouseLeave={() => setIsPlusHovered(false)}
+                        onClick={handleAddToCart}
                     >
                         <svg
-                            width="20"
-                            height="20"
+                            width="18"
+                            height="18"
                             viewBox="0 0 20 20"
                             fill="none"
                             xmlns="http://www.w3.org/2000/svg"
@@ -62,6 +72,7 @@ export default function ProductCard({ id, image, title, price, originalPrice }: 
                         </svg>
                     </div>
                 </div>
+
 
                 {/* Text Content - Centered with padding */}
                 <div className="px-2">

@@ -186,25 +186,25 @@ export default function HomePage() {
       <Navbar />
 
       {/* Hero Section */}
-      <div ref={heroRef} className="relative min-h-[calc(100vh-76px)] bg-black flex items-center justify-center overflow-hidden px-8 py-8">
-        <div className="relative z-10 text-center max-w-[1000px]">
+      <div ref={heroRef} className="relative min-h-[calc(100vh-76px)] bg-black flex items-center justify-center overflow-hidden px-4 sm:px-8 py-12 md:py-8">
+        <div className="relative z-10 text-center max-w-[1000px] w-full">
           {/* Main Heading - Old School Classic Thin */}
-          <h1 ref={titleRef} className="text-5xl md:text-7xl lg:text-8xl font-thin leading-none mb-8 tracking-tighter font-['Helvetica_Neue',Arial,sans-serif] bg-clip-text text-transparent bg-gradient-to-b from-white to-white/60">
+          <h1 ref={titleRef} className="text-4xl sm:text-5xl md:text-7xl lg:text-8xl font-thin leading-[1.1] mb-6 md:mb-8 tracking-tighter font-['Helvetica_Neue',Arial,sans-serif] bg-clip-text text-transparent bg-gradient-to-b from-white to-white/60">
             Crafting the Future
             <br />
             <span className="italic font-light tracking-normal text-white/90">One Layer at a Time</span>
           </h1>
 
           {/* Subheading */}
-          <p ref={subtitleRef} className="text-base md:text-lg lg:text-xl leading-snug text-white/50 max-w-[700px] mx-auto mb-12 font-thin tracking-wide">
+          <p ref={subtitleRef} className="text-sm md:text-lg lg:text-xl leading-relaxed text-white/50 max-w-[700px] mx-auto mb-10 md:mb-12 font-thin tracking-wide px-4">
             Precision-engineered pieces and bespoke creations. We transform your vision into reality with unparalleled craftsmanship and cutting-edge technology.
           </p>
 
           {/* CTA Buttons */}
-          <div ref={ctaRef} className="flex gap-4 justify-center flex-wrap">
+          <div ref={ctaRef} className="flex flex-col sm:flex-row gap-4 justify-center items-center px-4">
             <Link
               href="/order"
-              className="btn-shimmer relative inline-flex items-center gap-3 px-8 py-4 text-sm font-normal tracking-[0.08em] uppercase rounded-sm transition-all duration-300 overflow-hidden bg-gray-500/15 text-white border border-gray-400/30 hover:bg-gray-500/25 hover:border-gray-400/50 hover:-translate-y-0.5 hover:shadow-[0_10px_30px_rgba(107,114,128,0.2)]"
+              className="btn-shimmer relative w-full sm:w-auto inline-flex items-center justify-center gap-3 px-8 py-4 text-[10px] sm:text-sm font-normal tracking-[0.08em] uppercase rounded-sm transition-all duration-300 overflow-hidden bg-gray-500/15 text-white border border-gray-400/30 hover:bg-gray-500/25 hover:border-gray-400/50 hover:-translate-y-0.5"
             >
               <span>PLACE CUSTOM ORDER</span>
               <svg width="20" height="20" viewBox="0 0 20 20" fill="none" xmlns="http://www.w3.org/2000/svg">
@@ -213,7 +213,7 @@ export default function HomePage() {
             </Link>
             <Link
               href="/products"
-              className="btn-shimmer relative inline-flex items-center gap-3 px-8 py-4 text-sm font-normal tracking-[0.08em] uppercase rounded-sm transition-all duration-300 overflow-hidden bg-white text-black border border-white hover:bg-gray-200 hover:border-gray-200 hover:-translate-y-0.5 hover:shadow-[0_10px_30px_rgba(156,163,175,0.3)]"
+              className="btn-shimmer relative w-full sm:w-auto inline-flex items-center justify-center gap-3 px-8 py-4 text-[10px] sm:text-sm font-normal tracking-[0.08em] uppercase rounded-sm transition-all duration-300 overflow-hidden bg-white text-black border border-white hover:bg-gray-200 hover:border-gray-200 hover:-translate-y-0.5"
             >
               <span>EXPLORE PRODUCTS</span>
               <svg width="20" height="20" viewBox="0 0 20 20" fill="none" xmlns="http://www.w3.org/2000/svg">
@@ -228,36 +228,29 @@ export default function HomePage() {
           className="absolute top-0 left-0 w-full h-full opacity-40"
           style={{
             backgroundImage: `linear-gradient(rgba(255, 255, 255, 0.015) 1px, transparent 1px), linear-gradient(90deg, rgba(255, 255, 255, 0.015) 1px, transparent 1px)`,
-            backgroundSize: '60px 60px'
+            backgroundSize: '40px 40px sm:60px 60px'
           }}
         ></div>
-        <div className="absolute -top-[300px] -right-[300px] w-[600px] h-[600px] rounded-full blur-[120px] opacity-[0.08] bg-gradient-to-br from-gray-500 to-gray-600 animate-glow"></div>
-        <div className="absolute -bottom-[250px] -left-[250px] w-[500px] h-[500px] rounded-full blur-[120px] opacity-[0.08] bg-gradient-to-br from-gray-700 to-gray-800 animate-glow-delayed"></div>
+        <div className="absolute -top-[150px] sm:-top-[300px] -right-[150px] sm:-right-[300px] w-[300px] sm:w-[600px] h-[300px] sm:h-[600px] rounded-full blur-[80px] sm:blur-[120px] opacity-[0.08] bg-gradient-to-br from-gray-500 to-gray-600 animate-glow"></div>
+        <div className="absolute -bottom-[125px] sm:-bottom-[250px] -left-[125px] sm:-left-[250px] w-[250px] sm:w-[500px] h-[250px] sm:h-[500px] rounded-full blur-[80px] sm:blur-[120px] opacity-[0.08] bg-gradient-to-br from-gray-700 to-gray-800 animate-glow-delayed"></div>
       </div>
 
 
       {/* Products Section */}
-      <section className="bg-black px-8 py-32">
+      <section className="bg-black px-4 sm:px-8 py-16 md:py-32">
         <div className="max-w-7xl mx-auto">
           {/* Category Filter */}
-          <div className="flex flex-wrap items-center justify-center gap-8 mb-16">
+          <div className="flex overflow-x-auto no-scrollbar sm:flex-wrap items-center justify-start sm:justify-center gap-6 sm:gap-8 mb-12 md:mb-16 pb-4 sm:pb-0">
             {categories.map((category) => (
               <button
                 key={category}
                 onClick={() => handleCategoryClick(category)}
-                className="relative pb-2 text-sm font-thin tracking-wider transition-colors duration-300"
+                className="relative pb-2 text-[11px] sm:text-sm font-thin tracking-wider transition-colors duration-300 whitespace-nowrap"
                 style={{
                   color: activeCategory === category ? '#ffffff' : 'rgba(255, 255, 255, 0.5)'
                 }}
-                onMouseEnter={(e) => e.currentTarget.style.color = '#ffffff'}
-                onMouseLeave={(e) => {
-                  if (activeCategory !== category) {
-                    e.currentTarget.style.color = 'rgba(255, 255, 255, 0.5)';
-                  }
-                }}
               >
                 {category}
-                {/* Animated Underline - Only shows when active */}
                 <div
                   ref={(el) => { underlineRefs.current[category] = el; }}
                   className="absolute bottom-0 left-0 w-full h-[1px] bg-white origin-left"
@@ -270,7 +263,7 @@ export default function HomePage() {
           </div>
 
           {/* Product Grid */}
-          <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-8">
+          <div className="grid grid-cols-2 lg:grid-cols-4 gap-4 sm:gap-8 children-appear">
             {products.map((product) => (
               <ProductCard
                 key={product.id}
@@ -288,9 +281,16 @@ export default function HomePage() {
       {/* Footer */}
       <Footer />
 
-      {/* Responsive Styles for Mobile */}
+      {/* Responsive Styles */}
       <style jsx>{`
-        @media (max-width: 768px) {
+        .no-scrollbar::-webkit-scrollbar {
+          display: none;
+        }
+        .no-scrollbar {
+          -ms-overflow-style: none;
+          scrollbar-width: none;
+        }
+        @media (max-width: 640px) {
           .btn-shimmer {
             width: 100%;
             justify-content: center;
