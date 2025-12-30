@@ -4,12 +4,12 @@ import Link from 'next/link';
 
 export default function Footer() {
     return (
-        <footer className="bg-black border-t border-white/10">
+        <footer className="bg-black border-t border-white/10" suppressHydrationWarning>
             {/* Top Section - Features */}
-            <div className="max-w-7xl mx-auto px-8 py-16">
-                <div className="grid grid-cols-1 md:grid-cols-4 gap-8 text-center">
+            <div className="max-w-7xl mx-auto px-8 py-16" suppressHydrationWarning>
+                <div className="grid grid-cols-1 md:grid-cols-4 gap-8 text-center" suppressHydrationWarning>
                     {/* Free Delivery */}
-                    <div className="flex flex-col items-center gap-3">
+                    <div className="flex flex-col items-center gap-3" suppressHydrationWarning>
                         <svg width="40" height="40" viewBox="0 0 24 24" fill="none" xmlns="http://www.w3.org/2000/svg">
                             <path d="M9 17C9 17.5304 8.78929 18.0391 8.41421 18.4142C8.03914 18.7893 7.53043 19 7 19C6.46957 19 5.96086 18.7893 5.58579 18.4142C5.21071 18.0391 5 17.5304 5 17M9 17C9 16.4696 8.78929 15.9609 8.41421 15.5858C8.03914 15.2107 7.53043 15 7 15C6.46957 15 5.96086 15.2107 5.58579 15.5858C5.21071 15.9609 5 16.4696 5 17M9 17H15M5 17H3V6C3 5.73478 3.10536 5.48043 3.29289 5.29289C3.48043 5.10536 3.73478 5 4 5H16V8M16 17C16 17.5304 16.2107 18.0391 16.5858 18.4142C16.9609 18.7893 17.4696 19 18 19C18.5304 19 19.0391 18.7893 19.4142 18.4142C19.7893 18.0391 20 17.5304 20 17M16 17C16 16.4696 16.2107 15.9609 16.5858 15.5858C16.9609 15.2107 17.4696 15 18 15C18.5304 15 19.0391 15.2107 19.4142 15.5858C19.7893 15.9609 20 16.4696 20 17M20 17H21V12L18 8H16V12" stroke="white" strokeWidth="1.5" strokeLinecap="round" strokeLinejoin="round" />
                         </svg>
@@ -17,7 +17,7 @@ export default function Footer() {
                     </div>
 
                     {/* Easy Exchange */}
-                    <div className="flex flex-col items-center gap-3">
+                    <div className="flex flex-col items-center gap-3" suppressHydrationWarning>
                         <svg width="40" height="40" viewBox="0 0 24 24" fill="none" xmlns="http://www.w3.org/2000/svg">
                             <path d="M4 12H20M20 12L16 8M20 12L16 16M4 12L8 8M4 12L8 16" stroke="white" strokeWidth="1.5" strokeLinecap="round" strokeLinejoin="round" />
                         </svg>
@@ -25,7 +25,7 @@ export default function Footer() {
                     </div>
 
                     {/* Customer Support */}
-                    <div className="flex flex-col items-center gap-3">
+                    <div className="flex flex-col items-center gap-3" suppressHydrationWarning>
                         <svg width="40" height="40" viewBox="0 0 24 24" fill="none" xmlns="http://www.w3.org/2000/svg">
                             <path d="M21 15C21 15.5304 20.7893 16.0391 20.4142 16.4142C20.0391 16.7893 19.5304 17 19 17H7L3 21V5C3 4.46957 3.21071 3.96086 3.58579 3.58579C3.96086 3.21071 4.46957 3 5 3H19C19.5304 3 20.0391 3.21071 20.4142 3.58579C20.7893 3.96086 21 4.46957 21 5V15Z" stroke="white" strokeWidth="1.5" strokeLinecap="round" strokeLinejoin="round" />
                         </svg>
@@ -33,7 +33,7 @@ export default function Footer() {
                     </div>
 
                     {/* Happy Customers */}
-                    <div className="flex flex-col items-center gap-3">
+                    <div className="flex flex-col items-center gap-3" suppressHydrationWarning>
                         <svg width="40" height="40" viewBox="0 0 24 24" fill="none" xmlns="http://www.w3.org/2000/svg">
                             <path d="M17 21V19C17 17.9391 16.5786 16.9217 15.8284 16.1716C15.0783 15.4214 14.0609 15 13 15H5C3.93913 15 2.92172 15.4214 2.17157 16.1716C1.42143 16.9217 1 17.9391 1 19V21M23 21V19C22.9993 18.1137 22.7044 17.2528 22.1614 16.5523C21.6184 15.8519 20.8581 15.3516 20 15.13M16 3.13C16.8604 3.3503 17.623 3.8507 18.1676 4.55231C18.7122 5.25392 19.0078 6.11683 19.0078 7.005C19.0078 7.89317 18.7122 8.75608 18.1676 9.45769C17.623 10.1593 16.8604 10.6597 16 10.88M13 7C13 9.20914 11.2091 11 9 11C6.79086 11 5 9.20914 5 7C5 4.79086 6.79086 3 9 3C11.2091 3 13 4.79086 13 7Z" stroke="white" strokeWidth="1.5" strokeLinecap="round" strokeLinejoin="round" />
                         </svg>
@@ -43,28 +43,28 @@ export default function Footer() {
             </div>
 
             {/* Divider */}
-            <div className="border-t border-white/10"></div>
+            <div className="border-t border-white/10" suppressHydrationWarning></div>
 
             {/* Middle Section - Brand Name */}
-            <div className="max-w-7xl mx-auto px-8 py-12 text-center overflow-hidden">
+            <div className="max-w-7xl mx-auto px-4 sm:px-8 py-12 text-center overflow-hidden" suppressHydrationWarning>
                 <h2
-                    className="text-white font-semibold tracking-wider text-6xl sm:text-8xl md:text-9xl lg:text-[10rem] xl:text-[12rem] cursor-none"
+                    className="text-white font-semibold tracking-wider text-[12vw] sm:text-[14vw] md:text-[12rem] leading-none cursor-none select-none whitespace-nowrap"
                     data-cursor-size="large"
                 >
                     MAKERS3D
                 </h2>
-                <p className="text-white/40 font-thin text-xs md:text-sm tracking-[0.6em] uppercase mt-4">
+                <p className="text-white/40 font-thin text-[10px] sm:text-xs md:text-sm tracking-[0.3em] md:tracking-[0.6em] uppercase mt-4">
                     Crafting the Future, One Layer at a Time
                 </p>
             </div>
 
             {/* Divider */}
-            <div className="border-t border-white/10"></div>
+            <div className="border-t border-white/10" suppressHydrationWarning></div>
 
             {/* Bottom Section - Links and Social */}
-            <div className="max-w-7xl mx-auto px-8 py-16">
+            <div className="max-w-7xl mx-auto px-8 py-16" suppressHydrationWarning>
                 {/* Social Media Icons - Centered at Top */}
-                <div className="flex justify-center gap-6 mb-12">
+                <div className="flex justify-center gap-6 mb-12" suppressHydrationWarning>
                     <a href="https://instagram.com" target="_blank" rel="noopener noreferrer" className="text-white/60 hover:text-white transition-all duration-300 hover:scale-110">
                         <svg width="28" height="28" viewBox="0 0 24 24" fill="currentColor" xmlns="http://www.w3.org/2000/svg">
                             <path d="M12 2.163c3.204 0 3.584.012 4.85.07 3.252.148 4.771 1.691 4.919 4.919.058 1.265.069 1.645.069 4.849 0 3.205-.012 3.584-.069 4.849-.149 3.225-1.664 4.771-4.919 4.919-1.266.058-1.644.07-4.85.07-3.204 0-3.584-.012-4.849-.07-3.26-.149-4.771-1.699-4.919-4.92-.058-1.265-.07-1.644-.07-4.849 0-3.204.013-3.583.07-4.849.149-3.227 1.664-4.771 4.919-4.919 1.266-.057 1.645-.069 4.849-.069zm0-2.163c-3.259 0-3.667.014-4.947.072-4.358.2-6.78 2.618-6.98 6.98-.059 1.281-.073 1.689-.073 4.948 0 3.259.014 3.668.072 4.948.2 4.358 2.618 6.78 6.98 6.98 1.281.058 1.689.072 4.948.072 3.259 0 3.668-.014 4.948-.072 4.354-.2 6.782-2.618 6.979-6.98.059-1.28.073-1.689.073-4.948 0-3.259-.014-3.667-.072-4.947-.196-4.354-2.617-6.78-6.979-6.98-1.281-.059-1.69-.073-4.949-.073zm0 5.838c-3.403 0-6.162 2.759-6.162 6.162s2.759 6.163 6.162 6.163 6.162-2.759 6.162-6.163c0-3.403-2.759-6.162-6.162-6.162zm0 10.162c-2.209 0-4-1.79-4-4 0-2.209 1.791-4 4-4s4 1.791 4 4c0 2.21-1.791 4-4 4zm6.406-11.845c-.796 0-1.441.645-1.441 1.44s.645 1.44 1.441 1.44c.795 0 1.439-.645 1.439-1.44s-.644-1.44-1.439-1.44z" />
@@ -93,11 +93,11 @@ export default function Footer() {
                 </div>
 
                 {/* Links - Two Balanced Columns */}
-                <div className="grid grid-cols-1 md:grid-cols-2 gap-12 max-w-4xl mx-auto">
+                <div className="grid grid-cols-1 md:grid-cols-2 gap-12 max-w-4xl mx-auto" suppressHydrationWarning>
                     {/* Left Column - Customer Service */}
-                    <div className="text-center md:text-left">
+                    <div className="text-center md:text-left" suppressHydrationWarning>
                         <h3 className="text-white/40 font-thin text-xs uppercase tracking-[0.2em] mb-6">Customer Service</h3>
-                        <div className="flex flex-col gap-4">
+                        <div className="flex flex-col gap-4" suppressHydrationWarning>
                             <Link href="/track-order" className="text-white/70 font-thin text-sm tracking-wide hover:text-white transition-colors hover:translate-x-1 inline-block">
                                 Track My Order
                             </Link>
@@ -114,9 +114,9 @@ export default function Footer() {
                     </div>
 
                     {/* Right Column - Company */}
-                    <div className="text-center md:text-right">
+                    <div className="text-center md:text-right" suppressHydrationWarning>
                         <h3 className="text-white/40 font-thin text-xs uppercase tracking-[0.2em] mb-6">Company</h3>
-                        <div className="flex flex-col gap-4 items-center md:items-end">
+                        <div className="flex flex-col gap-4 items-center md:items-end" suppressHydrationWarning>
                             <Link href="/about" className="text-white/70 font-thin text-sm tracking-wide hover:text-white transition-colors hover:translate-x-1 inline-block">
                                 About Us
                             </Link>
@@ -132,8 +132,8 @@ export default function Footer() {
             </div>
 
             {/* Copyright */}
-            <div className="border-t border-white/10">
-                <div className="max-w-7xl mx-auto px-8 py-6 text-center">
+            <div className="border-t border-white/10" suppressHydrationWarning>
+                <div className="max-w-7xl mx-auto px-8 py-6 text-center" suppressHydrationWarning>
                     <p className="text-white/40 font-thin text-xs tracking-wide">
                         © 2024 MAKERS3D. All rights reserved.
                     </p>

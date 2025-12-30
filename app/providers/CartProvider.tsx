@@ -2,12 +2,15 @@
 
 import React, { createContext, useContext, useState, useEffect } from 'react';
 import Link from 'next/link';
+import { useSession } from 'next-auth/react';
 
 interface CartItem {
     id: number | string;
-    title: string;
+    title?: string;
+    name?: string;
     price: number;
-    image: string;
+    image?: string;
+    images?: string[];
     category: string;
     quantity: number;
 }
@@ -27,28 +30,50 @@ interface CartContextType {
 const CartContext = createContext<CartContextType | undefined>(undefined);
 
 export function CartProvider({ children }: { children: React.ReactNode }) {
+    const { data: session } = useSession();
     const [cartItems, setCartItems] = useState<CartItem[]>([]);
     const [showToast, setShowToast] = useState(false);
     const [lastAddedItem, setLastAddedItem] = useState<CartItem | null>(null);
 
-    // Load cart from localStorage
+    // Fetch cart on load/session change
     useEffect(() => {
-        const savedCart = localStorage.getItem('cart');
-        if (savedCart) {
-            try {
-                setCartItems(JSON.parse(savedCart));
-            } catch (e) {
-                console.error('Failed to parse cart', e);
+        const fetchCart = async () => {
+            if (session?.user?.email) {
+                try {
+                    const res = await fetch('/api/cart');
+                    if (res.ok) {
+                        const data = await res.json();
+                        setCartItems(data.items);
+                    }
+                } catch (error) {
+                    console.error('Failed to fetch cart', error);
+                }
+            } else {
+                // Load from localStorage for guest
+                const savedCart = localStorage.getItem('cart');
+                if (savedCart) {
+                    try {
+                        setCartItems(JSON.parse(savedCart));
+                    } catch (e) {
+                        console.error('Failed to parse cart', e);
+                    }
+                }
             }
-        }
-    }, []);
+        };
 
-    // Save cart to localStorage
+        fetchCart();
+    }, [session]);
+
+    // Save cart to localStorage only if NOT authenticated
     useEffect(() => {
-        localStorage.setItem('cart', JSON.stringify(cartItems));
-    }, [cartItems]);
+        if (!session?.user?.email) {
+            localStorage.setItem('cart', JSON.stringify(cartItems));
+        }
+    }, [cartItems, session]);
 
-    const addToCart = (product: any) => {
+    const addToCart = async (product: any) => {
+        // Optimistic UI update
+        const prevCart = [...cartItems];
         setCartItems(prev => {
             const existing = prev.find(item => item.id === product.id);
             if (existing) {
@@ -62,19 +87,62 @@ export function CartProvider({ children }: { children: React.ReactNode }) {
         setLastAddedItem({ ...product, quantity: 1 });
         setShowToast(true);
         setTimeout(() => setShowToast(false), 3000);
+
+        if (session?.user?.email) {
+            try {
+                await fetch('/api/cart', {
+                    method: 'POST',
+                    headers: { 'Content-Type': 'application/json' },
+                    body: JSON.stringify({ product })
+                });
+                // Optionally refetch to ensure sync, but optimistic is smoother
+            } catch (error) {
+                console.error('Failed to add to cart DB', error);
+                setCartItems(prevCart); // Revert on error
+            }
+        }
     };
 
-    const removeFromCart = (id: number | string) => {
+    const removeFromCart = async (id: number | string) => {
+        const prevCart = [...cartItems];
         setCartItems(prev => prev.filter(item => item.id !== id));
+
+        if (session?.user?.email) {
+            try {
+                await fetch(`/api/cart?itemId=${id}`, {
+                    method: 'DELETE'
+                });
+            } catch (error) {
+                console.error('Failed to remove from cart DB', error);
+                setCartItems(prevCart);
+            }
+        }
     };
 
-    const updateQuantity = (id: number | string, delta: number) => {
+    const updateQuantity = async (id: number | string, delta: number) => {
+        const prevCart = [...cartItems];
+        let newQuantity = 0;
+
         setCartItems(prev => prev.map(item => {
             if (item.id === id) {
-                return { ...item, quantity: Math.max(1, item.quantity + delta) };
+                newQuantity = Math.max(1, item.quantity + delta);
+                return { ...item, quantity: newQuantity };
             }
             return item;
         }));
+
+        if (session?.user?.email) {
+            try {
+                await fetch('/api/cart', {
+                    method: 'PUT',
+                    headers: { 'Content-Type': 'application/json' },
+                    body: JSON.stringify({ itemId: id, quantity: newQuantity })
+                });
+            } catch (error) {
+                console.error('Failed to update quantity DB', error);
+                setCartItems(prevCart);
+            }
+        }
     };
 
     const clearCart = () => setCartItems([]);
@@ -100,11 +168,11 @@ export function CartProvider({ children }: { children: React.ReactNode }) {
                 <div className="fixed bottom-6 right-6 sm:bottom-8 sm:right-8 z-[2000] animate-toast-in px-4 sm:px-0 w-full sm:w-auto">
                     <div className="bg-white text-black p-4 pr-12 shadow-[0_20px_50px_rgba(0,0,0,0.3)] flex items-center gap-4 min-w-full sm:min-w-[320px] border-l-4 border-black relative">
                         <div className="relative w-12 h-12 bg-gray-100 flex-shrink-0">
-                            <img src={lastAddedItem.image} alt="" className="object-cover w-full h-full" />
+                            <img src={lastAddedItem.images?.[0] || lastAddedItem.image} alt="" className="object-cover w-full h-full" />
                         </div>
                         <div className="flex-1 min-w-0">
                             <p className="text-[9px] uppercase tracking-[0.2em] text-black/40 font-bold mb-0.5">Added to Collection</p>
-                            <p className="text-sm font-light truncate mb-1">{lastAddedItem.title}</p>
+                            <p className="text-sm font-light truncate mb-1">{lastAddedItem.name || lastAddedItem.title}</p>
                             <Link href="/cart" className="text-[10px] font-bold uppercase tracking-widest border-b border-black/20 hover:border-black transition-colors" onClick={() => setShowToast(false)}>
                                 View Collection
                             </Link>

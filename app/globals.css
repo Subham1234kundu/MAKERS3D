@@ -136,3 +136,78 @@ body {
   scrollbar-width: thin;
   scrollbar-color: #2a2a2a #000000;
 }
+
+/* Navbar Icon Styles */
+.nav-icon {
+  background: none;
+  border: none;
+  cursor: pointer;
+  padding: 0.4rem;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  position: relative;
+  color: #b3b3b3;
+  transition: all 0.3s ease;
+}
+
+.nav-icon:hover svg {
+  color: #fff;
+  transform: translateY(-1px);
+}
+
+/* Mobile nav icon color override */
+.mobile-nav .nav-icon {
+  color: #000;
+}
+
+.mobile-nav .nav-icon svg {
+  color: #000 !important;
+}
+
+.cart-icon-wrapper {
+  position: relative;
+  width: 22px;
+  height: 22px;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+}
+
+.cart-badge {
+  position: absolute;
+  top: -12px;
+  left: 50%;
+  transform: translateX(-50%);
+  background: #ff0000 !important;
+  color: white !important;
+  font-size: 9px;
+  font-weight: 900;
+  min-width: 16px;
+  height: 16px;
+  border-radius: 50%;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  box-shadow: 0 0 15px rgba(255, 0, 0, 0.7);
+  z-index: 100;
+  border: 1.5px solid #000;
+  line-height: 1;
+}
+
+.user-avatar {
+  width: 26px;
+  height: 26px;
+  border-radius: 50%;
+  border: 1px solid rgba(255, 255, 255, 0.2);
+}
+
+/* No Scrollbar Utility */
+.no-scrollbar::-webkit-scrollbar {
+  display: none;
+}
+
+.no-scrollbar {
+  -ms-overflow-style: none;
+  scrollbar-width: none;
+}

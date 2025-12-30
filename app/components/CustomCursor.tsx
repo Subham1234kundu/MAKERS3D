@@ -7,10 +7,15 @@ export default function CustomCursor() {
   const cursorRef = useRef<HTMLDivElement>(null);
   const [isHoveringText, setIsHoveringText] = useState(false);
   const [isLargeCursor, setIsLargeCursor] = useState(false);
-
   const [hasMoved, setHasMoved] = useState(false);
+  const [mounted, setMounted] = useState(false);
 
   useEffect(() => {
+    setMounted(true);
+  }, []);
+
+  useEffect(() => {
+    if (!mounted) return;
     const cursor = cursorRef.current;
     if (!cursor) return;
 
@@ -42,7 +47,9 @@ export default function CustomCursor() {
       window.removeEventListener('mousemove', moveCursor);
       window.removeEventListener('mouseover', handleMouseOver);
     };
-  }, []);
+  }, [mounted]);
+
+  if (!mounted) return null;
 
   return (
     <>

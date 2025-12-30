@@ -14,12 +14,38 @@ export default function CartPage() {
   const { cartItems: items, updateQuantity, removeFromCart, cartTotal: subtotal } = useCart();
   const summaryRef = useRef<HTMLDivElement>(null);
   const checkoutBtnRef = useRef<HTMLButtonElement>(null);
-  const filterRef = useRef<SVGFETurbulenceElement>(null);
+  // const filterRef = useRef<SVGFETurbulenceElement>(null); // Removed unused ref
   const containerRef = useRef<HTMLDivElement>(null);
   const itemsRef = useRef<HTMLDivElement>(null);
 
-  const shipping = subtotal > 0 ? 0 : 0; // Free delivery as per footer
-  const total = subtotal + shipping;
+  const [couponCode, setCouponCode] = useState('');
+  const [activeCoupon, setActiveCoupon] = useState<string | null>(null);
+  const [couponMessage, setCouponMessage] = useState<{ type: 'success' | 'error', text: string } | null>(null);
+  const [isApplying, setIsApplying] = useState(false);
+
+  // Derived calculations ensures discount updates if cart subtotal changes
+  const discount = activeCoupon === 'MAKERS10' ? Math.round(subtotal * 0.10) : 0;
+  const shipping = 0; // Free delivery
+  const total = subtotal + shipping - discount;
+
+  const handleApplyCoupon = async () => {
+    if (!couponCode.trim()) return;
+
+    setIsApplying(true);
+    setCouponMessage(null);
+
+    // Simulate API delay for "estimating" feel
+    await new Promise(resolve => setTimeout(resolve, 800));
+
+    if (couponCode.toUpperCase() === 'MAKERS10') {
+      setActiveCoupon('MAKERS10');
+      setCouponMessage({ type: 'success', text: 'Coupon applied successfully!' });
+    } else {
+      setActiveCoupon(null);
+      setCouponMessage({ type: 'error', text: 'Invalid coupon code' });
+    }
+    setIsApplying(false);
+  };
 
   useEffect(() => {
     const ctx = gsap.context(() => {
@@ -39,26 +65,14 @@ export default function CartPage() {
         { opacity: 1, x: 0, filter: 'blur(0px)', duration: 0.8, ease: 'power3.out', delay: 0.5 }
       );
 
-      // Liquify Animation for Checkout Button
-      if (checkoutBtnRef.current && filterRef.current) {
-        const tl = gsap.timeline({ paused: true });
-        tl.to(filterRef.current, {
-          attr: { baseFrequency: '0.05 0.05' },
-          duration: 0.5,
-          ease: "none",
-          repeat: -1,
-          yoyo: true
-        });
-
+      // Checkout Button scale effect
+      if (checkoutBtnRef.current) {
         checkoutBtnRef.current.addEventListener('mouseenter', () => {
           gsap.to(checkoutBtnRef.current, { scale: 1.02, duration: 0.3 });
-          tl.play();
         });
 
         checkoutBtnRef.current.addEventListener('mouseleave', () => {
           gsap.to(checkoutBtnRef.current, { scale: 1, duration: 0.3 });
-          tl.pause();
-          gsap.to(filterRef.current, { attr: { baseFrequency: '0.00001 0.00001' }, duration: 0.3 });
         });
       }
     }, containerRef);
@@ -98,8 +112,8 @@ export default function CartPage() {
                 >
                   <Link href={`/products/${item.id}`} className="relative w-full sm:w-40 aspect-[4/5] sm:aspect-[3/4] bg-neutral-900 overflow-hidden block">
                     <Image
-                      src={item.image}
-                      alt={item.title}
+                      src={item.images?.[0] || item.image || '/images/placeholder.jpg'}
+                      alt={item.name || item.title}
                       fill
                       className="object-cover transition-transform duration-500 group-hover:scale-110"
                     />
@@ -111,7 +125,7 @@ export default function CartPage() {
                       <div>
                         <span className="text-[9px] sm:text-[10px] uppercase tracking-[0.3em] text-white/40 mb-2 block">{item.category}</span>
                         <h2 className="text-lg sm:text-xl font-thin tracking-wide mb-1 hover:text-white/80 transition-colors">
-                          <Link href={`/products/${item.id}`}>{item.title}</Link>
+                          <Link href={`/products/${item.id}`}>{item.name || item.title}</Link>
                         </h2>
                         <p className="text-white/60 font-light text-sm">₹{item.price.toLocaleString('en-IN')}</p>
                       </div>
@@ -162,8 +176,40 @@ export default function CartPage() {
                   </div>
                   <div className="flex justify-between text-[13px]">
                     <span className="text-white/60 font-thin">Shipping</span>
-                    <span className="text-white/40 font-thin uppercase tracking-widest text-[9px] sm:text-[10px]">Calculated at Next Step</span>
+                    <span className="text-green-400 font-light text-sm">Free</span>
                   </div>
+
+                  {/* Coupon Section */}
+                  <div className="pt-2">
+                    <div className="flex gap-2">
+                      <input
+                        type="text"
+                        placeholder="COUPON CODE"
+                        value={couponCode}
+                        onChange={(e) => setCouponCode(e.target.value)}
+                        className="w-full bg-white/5 border border-white/10 px-4 py-3 text-[11px] text-white tracking-widest placeholder:text-white/20 focus:outline-none focus:border-white/30 transition-colors uppercase"
+                      />
+                      <button
+                        onClick={handleApplyCoupon}
+                        className="bg-white/10 border border-white/10 px-4 py-3 text-[10px] text-white tracking-widest hover:bg-white hover:text-black transition-all uppercase disabled:opacity-50 min-w-[80px]"
+                        disabled={!couponCode || isApplying}
+                      >
+                        {isApplying ? '...' : 'Apply'}
+                      </button>
+                    </div>
+                    {couponMessage && (
+                      <p className={`text-[9px] mt-2 tracking-wide ${couponMessage.type === 'success' ? 'text-green-400' : 'text-red-400'}`}>
+                        {couponMessage.text}
+                      </p>
+                    )}
+                  </div>
+
+                  {discount > 0 && (
+                    <div className="flex justify-between text-sm text-green-400">
+                      <span className="font-thin tracking-wide">Discount</span>
+                      <span className="font-light">-₹{discount.toLocaleString('en-IN')}</span>
+                    </div>
+                  )}
                   <div className="h-[1px] bg-white/5 w-full my-4" />
                   <div className="flex justify-between items-end">
                     <span className="text-[10px] sm:text-xs uppercase tracking-[0.3em] font-normal">Estimated Total</span>
@@ -174,10 +220,9 @@ export default function CartPage() {
                 <div className="space-y-4">
                   <button
                     ref={checkoutBtnRef}
-                    className="checkout-btn w-full border border-white/20 text-white py-4 sm:py-5 text-[11px] sm:text-xs font-bold uppercase tracking-[0.3em] relative overflow-hidden transition-all duration-300"
+                    className="w-full border border-white/20 text-white py-4 sm:py-5 text-[11px] sm:text-xs font-bold uppercase tracking-[0.3em] relative overflow-hidden transition-all duration-300 hover:bg-white hover:text-black hover:border-white hover:shadow-[0_0_20px_rgba(255,255,255,0.3)]"
                   >
-                    <span className="relative z-10 transition-colors duration-300">Secure Checkout</span>
-                    <div className="liquid-bg absolute inset-[-10px] bg-white translate-y-full transition-transform duration-500 ease-out z-0" />
+                    Secure Checkout
                   </button>
                   <p className="text-[9px] sm:text-[10px] text-center text-white/30 tracking-widest leading-relaxed">
                     SECURE PAYMENT POWERED BY RAZORPAY
@@ -197,44 +242,12 @@ export default function CartPage() {
         )}
       </main>
 
-      {/* SVG Filter for Liquify Effect */}
-      <svg style={{ position: 'absolute', width: 0, height: 0 }} aria-hidden="true" focusable="false">
-        <defs>
-          <filter id="liquify-checkout" x="-20%" y="-20%" width="140%" height="140%">
-            <feTurbulence
-              ref={filterRef}
-              type="fractalNoise"
-              baseFrequency="0.00001 0.00001"
-              numOctaves="2"
-              result="warp"
-            />
-            <feDisplacementMap in="SourceGraphic" in2="warp" scale="25" xChannelSelector="R" yChannelSelector="G" />
-          </filter>
-        </defs>
-      </svg>
+
 
       <Footer />
 
       <style jsx>{`
-        .checkout-btn {
-          isolation: isolate;
-          overflow: hidden;
-        }
-        .checkout-btn:hover {
-          color: black;
-        }
-        .liquid-bg {
-          filter: url(#liquify-checkout);
-          pointer-events: none;
-          z-index: 1;
-          background-color: white !important;
-        }
-        .checkout-btn:hover .liquid-bg {
-          transform: translateY(0);
-        }
-        .checkout-btn span {
-          z-index: 2;
-        }
+
         @keyframes fadeIn {
           from { opacity: 0; transform: translateY(20px); }
           to { opacity: 1; transform: translateY(0); }

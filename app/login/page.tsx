@@ -15,6 +15,7 @@ const ParticleCubeLogo = dynamic(() => import('../components/ParticleCubeLogo'),
 export default function LoginPage() {
     const [email, setEmail] = useState('');
     const [password, setPassword] = useState('');
+    const [showPassword, setShowPassword] = useState(false);
     const [isLoading, setIsLoading] = useState(false);
     const [error, setError] = useState('');
     const router = useRouter();
@@ -49,7 +50,12 @@ export default function LoginPage() {
                 setError('INVALID CREDENTIALS');
                 gsap.to(formRef.current, { x: 10, duration: 0.1, yoyo: true, repeat: 5, ease: 'power2.inOut' });
             } else {
-                router.push('/');
+                // Admin Redirect Check
+                if (email === 'subhamkundu999@gmail.com' || email === 'admin@makers3d.com') {
+                    router.push('/dashboard');
+                } else {
+                    router.push('/');
+                }
             }
         } catch (err) {
             setError('SOMETHING WENT WRONG');
@@ -115,18 +121,37 @@ export default function LoginPage() {
                             />
                         </div>
 
-                        <div className="relative group">
-                            <label className="text-[9px] tracking-[0.3em] text-white/40 uppercase mb-2 block transition-colors group-focus-within:text-white/70">
-                                PASSWORD
-                            </label>
+                        <label className="text-[9px] tracking-[0.3em] text-white/40 uppercase mb-2 block transition-colors group-focus-within:text-white/70">
+                            PASSWORD
+                        </label>
+                        <div className="relative">
                             <input
-                                type="password"
+                                type={showPassword ? "text" : "password"}
                                 value={password}
                                 onChange={(e) => setPassword(e.target.value)}
-                                className="w-full bg-transparent border-b border-white/10 py-3 text-sm text-white font-light tracking-wide outline-none transition-all focus:border-white/40 placeholder:text-white/5"
+                                className="w-full bg-transparent border-b border-white/10 py-3 text-sm text-white font-light tracking-wide outline-none transition-all focus:border-white/40 placeholder:text-white/5 pr-10"
                                 placeholder="••••••••"
                                 required
                             />
+                            <button
+                                type="button"
+                                onClick={() => setShowPassword(!showPassword)}
+                                className="absolute right-2 top-1/2 -translate-y-1/2 text-white/40 hover:text-white transition-colors"
+                            >
+                                {showPassword ? (
+                                    <svg xmlns="http://www.w3.org/2000/svg" width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round">
+                                        <path d="M9.88 9.88a3 3 0 1 0 4.24 4.24" />
+                                        <path d="M10.73 5.08A10.43 10.43 0 0 1 12 5c7 0 10 7 10 7a13.16 13.16 0 0 1-1.67 2.68" />
+                                        <path d="M6.61 6.61A13.526 13.526 0 0 0 2 12s3 7 10 7a9.74 9.74 0 0 0 5.39-1.61" />
+                                        <line x1="2" x2="22" y1="2" y2="22" />
+                                    </svg>
+                                ) : (
+                                    <svg xmlns="http://www.w3.org/2000/svg" width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round">
+                                        <path d="M2 12s3-7 10-7 10 7 10 7-3 7-10 7-10-7-10-7Z" />
+                                        <circle cx="12" cy="12" r="3" />
+                                    </svg>
+                                )}
+                            </button>
                         </div>
                     </div>
 

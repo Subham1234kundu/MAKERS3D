@@ -5,7 +5,7 @@ import bcrypt from 'bcryptjs';
 export async function POST(request: NextRequest) {
     try {
         const body = await request.json();
-        const { name, email, password } = body;
+        const { name, email, phone, password } = body;
 
         // Validation
         if (!name || !email || !password) {
@@ -43,6 +43,7 @@ export async function POST(request: NextRequest) {
         const result = await usersCollection.insertOne({
             name,
             email,
+            phone: phone || '',
             password: hashedPassword,
             provider: 'credentials',
             createdAt: new Date(),

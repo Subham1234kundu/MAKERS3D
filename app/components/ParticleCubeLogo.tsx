@@ -13,7 +13,9 @@ function ParticleCube({ isHovered }: ParticleCubeProps) {
 
     const particles = useMemo(() => {
         const temp = [];
-        const particleCount = 300;
+        // Reduce particles on mobile for better performance
+        const isMobile = typeof window !== 'undefined' && window.innerWidth < 768;
+        const particleCount = isMobile ? 150 : 300;
 
         for (let i = 0; i < particleCount; i++) {
             const t = Math.random();

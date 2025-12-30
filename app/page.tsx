@@ -3,6 +3,7 @@
 import Navbar from './components/Navbar';
 import ProductCard from './components/ProductCard';
 import Footer from './components/Footer';
+import Newsletter from './components/Newsletter';
 import Link from 'next/link';
 import { useState, useRef, useEffect } from 'react';
 import { gsap } from 'gsap';
@@ -81,20 +82,22 @@ export default function HomePage() {
         );
 
         // 3. Footer Smooth Blur
-        ScrollTrigger.create({
-          trigger: 'body',
-          start: 'bottom bottom',
-          end: 'bottom-=300 bottom',
-          scrub: true,
-          onUpdate: (self) => {
-            const footer = document.querySelector('footer');
-            if (footer) {
-              const b = self.progress * 10;
-              footer.style.filter = b > 0.5 ? `blur(${b}px)` : 'none';
-              footer.style.opacity = (1 - (self.progress * 0.15)).toString();
+        const footerElement = document.querySelector('footer');
+        if (footerElement) {
+          ScrollTrigger.create({
+            trigger: document.body,
+            start: 'bottom bottom',
+            end: 'bottom-=300 bottom',
+            scrub: true,
+            onUpdate: (self) => {
+              if (footerElement) {
+                const b = self.progress * 10;
+                footerElement.style.filter = b > 0.5 ? `blur(${b}px)` : 'none';
+                footerElement.style.opacity = (1 - (self.progress * 0.15)).toString();
+              }
             }
-          }
-        });
+          });
+        }
       }, heroRef);
     };
 
@@ -122,74 +125,39 @@ export default function HomePage() {
     }
   };
 
-  const products = [
-    {
-      id: 1,
-      image: '/images/product-1.jpg',
-      title: 'Geometric Cube Lamp',
-      price: 2000,
-      originalPrice: 3000
-    },
-    {
-      id: 2,
-      image: '/images/product-2.jpg',
-      title: 'LED Crystal Cube',
-      price: 2000,
-      originalPrice: 3000
-    },
-    {
-      id: 3,
-      image: '/images/product-3.jpg',
-      title: 'Hexagonal Wall Art',
-      price: 2000,
-      originalPrice: 3000
-    },
-    {
-      id: 4,
-      image: '/images/product-4.jpg',
-      title: 'Custom Map Frame',
-      price: 2000,
-      originalPrice: 3000
-    },
-    {
-      id: 5,
-      image: '/images/product-5.jpg',
-      title: 'Shiva Meditation Statue',
-      price: 2000,
-      originalPrice: 3000
-    },
-    {
-      id: 6,
-      image: '/images/product-6.jpg',
-      title: 'Shiva Silhouette Lamp',
-      price: 2000,
-      originalPrice: 3000
-    },
-    {
-      id: 7,
-      image: '/images/product-7.jpg',
-      title: 'Pyramid Geometric Lamp',
-      price: 2000,
-      originalPrice: 3000
-    },
-    {
-      id: 8,
-      image: '/images/product-8.jpg',
-      title: 'Moon Surface Lamp',
-      price: 2000,
-      originalPrice: 3000
-    }
-  ];
+  const [products, setProducts] = useState<any[]>([]);
+  const [isLoadingProducts, setIsLoadingProducts] = useState(true);
+
+  useEffect(() => {
+    const fetchProducts = async () => {
+      try {
+        const res = await fetch('/api/products');
+        if (res.ok) {
+          const data = await res.json();
+          setProducts(data);
+        }
+      } catch (error) {
+        console.error('Fetch products error:', error);
+      } finally {
+        setIsLoadingProducts(false);
+      }
+    };
+    fetchProducts();
+  }, []);
+
+  const filteredProducts = activeCategory === 'ALL'
+    ? products
+    : products.filter(p => p.category?.toUpperCase() === activeCategory);
 
   return (
     <>
       <Navbar />
 
       {/* Hero Section */}
-      <div ref={heroRef} className="relative min-h-[calc(100vh-76px)] bg-black flex items-center justify-center overflow-hidden px-4 sm:px-8 py-12 md:py-8">
-        <div className="relative z-10 text-center max-w-[1000px] w-full">
+      <div ref={heroRef} className="relative min-h-[calc(100vh-70px)] bg-black flex items-center justify-center overflow-hidden px-4 sm:px-8 md:py-12 md:py-8 pb-2" suppressHydrationWarning>
+        <div className="relative z-10 text-center max-w-[1000px] w-full" suppressHydrationWarning>
           {/* Main Heading - Old School Classic Thin */}
-          <h1 ref={titleRef} className="text-4xl sm:text-5xl md:text-7xl lg:text-8xl font-thin leading-[1.1] mb-6 md:mb-8 tracking-tighter font-['Helvetica_Neue',Arial,sans-serif] bg-clip-text text-transparent bg-gradient-to-b from-white to-white/60">
+          <h1 ref={titleRef} className="text-4xl sm:text-5xl md:text-7xl lg:text-8xl font-thin leading-[1.1] mb-6 md:mb-8 tracking-tighter font-['Helvetica_Neue',Arial,sans-serif] bg-clip-text text-transparent bg-gradient-to-b from-white to-white/60 md:mt-20">
             Crafting the Future
             <br />
             <span className="italic font-light tracking-normal text-white/90">One Layer at a Time</span>
@@ -201,9 +169,9 @@ export default function HomePage() {
           </p>
 
           {/* CTA Buttons */}
-          <div ref={ctaRef} className="flex flex-col sm:flex-row gap-4 justify-center items-center px-4">
+          <div ref={ctaRef} className="flex flex-col sm:flex-row gap-4 justify-center items-center px-4" suppressHydrationWarning>
             <Link
-              href="/order"
+              href="/customorder"
               className="btn-shimmer relative w-full sm:w-auto inline-flex items-center justify-center gap-3 px-8 py-4 text-[10px] sm:text-sm font-normal tracking-[0.08em] uppercase rounded-sm transition-all duration-300 overflow-hidden bg-gray-500/15 text-white border border-gray-400/30 hover:bg-gray-500/25 hover:border-gray-400/50 hover:-translate-y-0.5"
             >
               <span>PLACE CUSTOM ORDER</span>
@@ -230,17 +198,18 @@ export default function HomePage() {
             backgroundImage: `linear-gradient(rgba(255, 255, 255, 0.015) 1px, transparent 1px), linear-gradient(90deg, rgba(255, 255, 255, 0.015) 1px, transparent 1px)`,
             backgroundSize: '40px 40px sm:60px 60px'
           }}
+          suppressHydrationWarning
         ></div>
-        <div className="absolute -top-[150px] sm:-top-[300px] -right-[150px] sm:-right-[300px] w-[300px] sm:w-[600px] h-[300px] sm:h-[600px] rounded-full blur-[80px] sm:blur-[120px] opacity-[0.08] bg-gradient-to-br from-gray-500 to-gray-600 animate-glow"></div>
-        <div className="absolute -bottom-[125px] sm:-bottom-[250px] -left-[125px] sm:-left-[250px] w-[250px] sm:w-[500px] h-[250px] sm:h-[500px] rounded-full blur-[80px] sm:blur-[120px] opacity-[0.08] bg-gradient-to-br from-gray-700 to-gray-800 animate-glow-delayed"></div>
+        <div className="absolute -top-[150px] sm:-top-[300px] -right-[150px] sm:-right-[300px] w-[300px] sm:w-[600px] h-[300px] sm:h-[600px] rounded-full blur-[80px] sm:blur-[120px] opacity-[0.08] bg-gradient-to-br from-gray-500 to-gray-600 animate-glow" suppressHydrationWarning></div>
+        <div className="absolute -bottom-[125px] sm:-bottom-[250px] -left-[125px] sm:-left-[250px] w-[250px] sm:w-[500px] h-[250px] sm:h-[500px] rounded-full blur-[80px] sm:blur-[120px] opacity-[0.08] bg-gradient-to-br from-gray-700 to-gray-800 animate-glow-delayed" suppressHydrationWarning></div>
       </div>
 
 
       {/* Products Section */}
-      <section className="bg-black px-4 sm:px-8 py-16 md:py-32">
-        <div className="max-w-7xl mx-auto">
+      <section className="bg-black px-4 sm:px-8 py-16 md:py-32" suppressHydrationWarning>
+        <div className="max-w-7xl mx-auto" suppressHydrationWarning>
           {/* Category Filter */}
-          <div className="flex overflow-x-auto no-scrollbar sm:flex-wrap items-center justify-start sm:justify-center gap-6 sm:gap-8 mb-12 md:mb-16 pb-4 sm:pb-0">
+          <div className="flex overflow-x-auto no-scrollbar sm:flex-wrap items-center justify-start sm:justify-center gap-6 sm:gap-8 mb-12 md:mb-16 pb-4 sm:pb-0" suppressHydrationWarning>
             {categories.map((category) => (
               <button
                 key={category}
@@ -249,6 +218,7 @@ export default function HomePage() {
                 style={{
                   color: activeCategory === category ? '#ffffff' : 'rgba(255, 255, 255, 0.5)'
                 }}
+                suppressHydrationWarning
               >
                 {category}
                 <div
@@ -257,46 +227,43 @@ export default function HomePage() {
                   style={{
                     transform: activeCategory === category ? 'scaleX(1)' : 'scaleX(0)',
                   }}
+                  suppressHydrationWarning
                 />
               </button>
             ))}
           </div>
 
           {/* Product Grid */}
-          <div className="grid grid-cols-2 lg:grid-cols-4 gap-4 sm:gap-8 children-appear">
-            {products.map((product) => (
-              <ProductCard
-                key={product.id}
-                id={product.id}
-                image={product.image}
-                title={product.title}
-                price={product.price}
-                originalPrice={product.originalPrice}
-              />
-            ))}
+          <div className="grid grid-cols-2 lg:grid-cols-4 gap-4 sm:gap-8 children-appear" suppressHydrationWarning>
+            {isLoadingProducts ? (
+              [1, 2, 3, 4].map((i) => (
+                <div key={i} className="aspect-square bg-white/5 animate-pulse rounded-sm" suppressHydrationWarning />
+              ))
+            ) : filteredProducts.length > 0 ? (
+              filteredProducts.map((product) => (
+                <ProductCard
+                  key={product.id || product._id}
+                  id={product.id || product._id}
+                  image={product.images?.[0] || product.image}
+                  title={product.name || product.title}
+                  price={product.price}
+                  originalPrice={product.originalPrice}
+                />
+              ))
+            ) : (
+              <div className="col-span-full text-center py-20 text-white/20 font-thin tracking-widest uppercase">
+                No products found
+              </div>
+            )}
           </div>
         </div>
       </section>
 
+      {/* Newsletter Section */}
+      <Newsletter />
+
       {/* Footer */}
       <Footer />
-
-      {/* Responsive Styles */}
-      <style jsx>{`
-        .no-scrollbar::-webkit-scrollbar {
-          display: none;
-        }
-        .no-scrollbar {
-          -ms-overflow-style: none;
-          scrollbar-width: none;
-        }
-        @media (max-width: 640px) {
-          .btn-shimmer {
-            width: 100%;
-            justify-content: center;
-          }
-        }
-      `}</style>
     </>
   );
 }
