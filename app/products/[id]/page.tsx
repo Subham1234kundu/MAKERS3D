@@ -285,7 +285,7 @@ export default function ProductDetailPage() {
                                         addToCart(product);
                                         router.push('/cart');
                                     }}
-                                    className="flex-1 bg-black text-white py-4 sm:py-5 px-6 text-[11px] sm:text-xs font-bold uppercase tracking-[0.2em] border border-white/20 hover:bg-neutral-900 transition-all duration-300 flex items-center justify-center gap-3 relative"
+                                    className="flex-1 bg-white text-black py-4 sm:py-5 px-6 text-[11px] sm:text-xs font-bold uppercase tracking-[0.2em] border border-white hover:bg-gray-100 transition-all duration-300 flex items-center justify-center gap-3 relative"
                                 >
                                     <div className="relative">
                                         <svg fill="none" stroke="currentColor" viewBox="0 0 24 24" className="w-5 h-5">
@@ -299,7 +299,11 @@ export default function ProductDetailPage() {
 
                             <button
                                 ref={buyBtnRef}
-                                className="buy-now-btn group w-full border border-white/20 text-white py-4 sm:py-5 text-[11px] sm:text-xs font-bold uppercase tracking-[0.2em] relative overflow-hidden transition-all duration-300"
+                                onClick={() => {
+                                    addToCart(product);
+                                    router.push('/checkout');
+                                }}
+                                className="buy-now-btn group w-full border border-white/20 text-white py-4 sm:py-5 text-[11px] sm:text-xs font-bold uppercase tracking-[0.2em] relative overflow-hidden transition-all duration-300 active:scale-95"
                             >
                                 <div className="liquid-bg absolute inset-[-10px] bg-white translate-y-full" />
                                 <span className="relative z-10 transition-colors duration-300 group-hover:text-black">Buy Now</span>

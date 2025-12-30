@@ -7,7 +7,7 @@ export default function Footer() {
         <footer className="bg-black border-t border-white/10" suppressHydrationWarning>
             {/* Top Section - Features */}
             <div className="max-w-7xl mx-auto px-8 py-16" suppressHydrationWarning>
-                <div className="grid grid-cols-1 md:grid-cols-4 gap-8 text-center" suppressHydrationWarning>
+                <div className="grid grid-cols-2 lg:grid-cols-4 gap-x-4 gap-y-12 text-center" suppressHydrationWarning>
                     {/* Free Delivery */}
                     <div className="flex flex-col items-center gap-3" suppressHydrationWarning>
                         <svg width="40" height="40" viewBox="0 0 24 24" fill="none" xmlns="http://www.w3.org/2000/svg">

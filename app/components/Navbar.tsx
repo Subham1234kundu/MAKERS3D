@@ -35,11 +35,19 @@ const NavIcons = ({
   searchInputRef
 }: NavIconsProps) => (
   <div className={`nav-icons flex items-center ${isMobileNav ? 'justify-around w-full px-6' : 'gap-4 sm:gap-6'}`} suppressHydrationWarning>
-    <div className={`search-container flex items-center relative h-10 px-3 rounded-full transition-all duration-500 ${isMobileNav ? 'bg-black/5' : 'bg-white/5 border border-white/10'}`} suppressHydrationWarning>
+    <div className={`search-container flex items-center relative h-10 px-3 rounded-full transition-all duration-500 cursor-pointer ${isMobileNav ? 'bg-black/5' : 'bg-white/5 border border-white/10'}`} suppressHydrationWarning
+      onClick={() => {
+        if (!isSearchExpanded) setIsSearchExpanded(true);
+        searchInputRef.current?.focus();
+      }}
+    >
       <button
-        className="nav-icon !p-0 z-10"
+        className="nav-icon z-10"
         aria-label="Search"
-        onClick={() => setIsSearchExpanded(!isSearchExpanded)}
+        onClick={(e) => {
+          e.stopPropagation();
+          setIsSearchExpanded(!isSearchExpanded);
+        }}
       >
         <svg fill="none" stroke="currentColor" viewBox="0 0 24 24" className="w-[18px] h-[18px]">
           <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={1.5} d="M21 21l-6-6m2-5a7 7 0 11-14 0 7 7 0 0114 0z" />
@@ -150,9 +158,8 @@ export default function Navbar() {
   return (
     <>
       <nav
-        className={`fixed top-0 left-0 w-full z-[9999] bg-black py-2 transition-all duration-500 ease-in-out ${
-          isScrolled ? '-translate-y-full opacity-0 invisible pointer-events-none' : ''
-        }`}
+        className={`fixed top-0 left-0 w-full z-[9999] bg-black py-2 transition-all duration-500 ease-in-out ${isScrolled ? '-translate-y-full opacity-0 invisible pointer-events-none' : ''
+          }`}
         suppressHydrationWarning
       >
         <div className="max-w-[1400px] mx-auto px-8 flex justify-between items-center" suppressHydrationWarning>
@@ -163,7 +170,7 @@ export default function Navbar() {
               onMouseLeave={handleLogoMouseLeave}
               suppressHydrationWarning
             >
-              <div className="w-[60px] h-[60px] lg:w-[60px] lg:h-[60px] max-lg:w-[45px] max-lg:h-[45px]" suppressHydrationWarning>
+              <div className="w-[70px] h-[70px] lg:w-[70px] lg:h-[70px] max-lg:w-[55px] max-lg:h-[55px]" suppressHydrationWarning>
                 <ParticleCubeLogo />
               </div>
               <div ref={logoTextRef} className="flex flex-col whitespace-nowrap max-lg:mt-1" suppressHydrationWarning>
@@ -193,17 +200,17 @@ export default function Navbar() {
         {mounted && isMobile && (
           <div className="mobile-nav fixed bottom-6 left-1/2 -translate-x-1/2 z-[10000] w-[85%] max-w-[380px]" suppressHydrationWarning>
             <div className="bg-white/25 backdrop-blur-[25px] border border-white/20 rounded-3xl p-2.5 flex" suppressHydrationWarning>
-            <NavIcons
-              isMobileNav={true}
-              session={session}
-              router={router}
-              cartCount={cartCount}
-              isSearchExpanded={isSearchExpanded}
-              setIsSearchExpanded={setIsSearchExpanded}
-              searchInputRef={searchInputRef}
-            />
+              <NavIcons
+                isMobileNav={true}
+                session={session}
+                router={router}
+                cartCount={cartCount}
+                isSearchExpanded={isSearchExpanded}
+                setIsSearchExpanded={setIsSearchExpanded}
+                searchInputRef={searchInputRef}
+              />
+            </div>
           </div>
-        </div>
         )}
       </div>
     </>

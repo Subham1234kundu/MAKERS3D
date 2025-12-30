@@ -3,7 +3,7 @@
 import Navbar from './components/Navbar';
 import ProductCard from './components/ProductCard';
 import Footer from './components/Footer';
-import Newsletter from './components/Newsletter';
+import ExperienceSection from './components/ExperienceSection';
 import Link from 'next/link';
 import { useState, useRef, useEffect } from 'react';
 import { gsap } from 'gsap';
@@ -81,23 +81,24 @@ export default function HomePage() {
           }
         );
 
-        // 3. Footer Smooth Blur
-        const footerElement = document.querySelector('footer');
-        if (footerElement) {
-          ScrollTrigger.create({
-            trigger: document.body,
-            start: 'bottom bottom',
-            end: 'bottom-=300 bottom',
-            scrub: true,
-            onUpdate: (self) => {
-              if (footerElement) {
-                const b = self.progress * 10;
-                footerElement.style.filter = b > 0.5 ? `blur(${b}px)` : 'none';
-                footerElement.style.opacity = (1 - (self.progress * 0.15)).toString();
-              }
-            }
-          });
-        }
+        // 4. Floating Orbs Animation
+        gsap.to('.hero-orb-1', {
+          x: '15%',
+          y: '10%',
+          duration: 8,
+          repeat: -1,
+          yoyo: true,
+          ease: 'sine.inOut'
+        });
+        gsap.to('.hero-orb-2', {
+          x: '-10%',
+          y: '-15%',
+          duration: 10,
+          repeat: -1,
+          yoyo: true,
+          ease: 'sine.inOut',
+          delay: 1
+        });
       }, heroRef);
     };
 
@@ -163,60 +164,125 @@ export default function HomePage() {
             <span className="italic font-light tracking-normal text-white/90">One Layer at a Time</span>
           </h1>
 
-          {/* Subheading */}
-          <p ref={subtitleRef} className="text-sm md:text-lg lg:text-xl leading-relaxed text-white/50 max-w-[700px] mx-auto mb-10 md:mb-12 font-thin tracking-wide px-4">
-            Precision-engineered pieces and bespoke creations. We transform your vision into reality with unparalleled craftsmanship and cutting-edge technology.
+          {/* Subheading - More readable on mobile */}
+          <p ref={subtitleRef} className="text-[13px] sm:text-lg lg:text-xl leading-relaxed text-white/50 max-w-[700px] mx-auto mb-10 md:mb-12 font-thin tracking-widest px-6 opacity-80 uppercase">
+            Precision-engineered pieces. Unparalleled craftsmanship.
           </p>
 
-          {/* CTA Buttons */}
-          <div ref={ctaRef} className="flex flex-col sm:flex-row gap-4 justify-center items-center px-4" suppressHydrationWarning>
+          {/* CTA Buttons - Better mobile layout */}
+          <div ref={ctaRef} className="flex flex-col sm:flex-row gap-4 justify-center items-center px-6" suppressHydrationWarning>
             <Link
               href="/customorder"
-              className="btn-shimmer relative w-full sm:w-auto inline-flex items-center justify-center gap-3 px-8 py-4 text-[10px] sm:text-sm font-normal tracking-[0.08em] uppercase rounded-sm transition-all duration-300 overflow-hidden bg-gray-500/15 text-white border border-gray-400/30 hover:bg-gray-500/25 hover:border-gray-400/50 hover:-translate-y-0.5"
+              className="btn-shimmer relative w-full sm:w-auto inline-flex items-center justify-center gap-3 px-8 py-4 text-[11px] sm:text-sm font-light tracking-[0.2em] uppercase rounded-full transition-all duration-300 overflow-hidden bg-white/10 text-white border border-white/20 hover:bg-white/20"
             >
-              <span>PLACE CUSTOM ORDER</span>
-              <svg width="20" height="20" viewBox="0 0 20 20" fill="none" xmlns="http://www.w3.org/2000/svg">
-                <path d="M7.5 15L12.5 10L7.5 5" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round" />
+              <span>CUSTOM ORDER</span>
+              <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="1.5">
+                <path d="M5 12h14m-7-7l7 7-7 7" strokeLinecap="round" strokeLinejoin="round" />
               </svg>
             </Link>
             <Link
               href="/products"
-              className="btn-shimmer relative w-full sm:w-auto inline-flex items-center justify-center gap-3 px-8 py-4 text-[10px] sm:text-sm font-normal tracking-[0.08em] uppercase rounded-sm transition-all duration-300 overflow-hidden bg-white text-black border border-white hover:bg-gray-200 hover:border-gray-200 hover:-translate-y-0.5"
+              className="btn-shimmer relative w-full sm:w-auto inline-flex items-center justify-center gap-3 px-8 py-4 text-[11px] sm:text-sm font-medium tracking-[0.2em] uppercase rounded-full transition-all duration-300 overflow-hidden bg-white text-black border border-white hover:bg-gray-100"
             >
-              <span>EXPLORE PRODUCTS</span>
-              <svg width="20" height="20" viewBox="0 0 20 20" fill="none" xmlns="http://www.w3.org/2000/svg">
-                <path d="M7.5 15L12.5 10L7.5 5" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round" />
-              </svg>
+              <span>SHOP NOW</span>
             </Link>
           </div>
         </div>
 
         {/* Animated background elements */}
         <div
-          className="absolute top-0 left-0 w-full h-full opacity-40"
+          className="absolute top-0 left-0 w-full h-full opacity-30"
           style={{
-            backgroundImage: `linear-gradient(rgba(255, 255, 255, 0.015) 1px, transparent 1px), linear-gradient(90deg, rgba(255, 255, 255, 0.015) 1px, transparent 1px)`,
-            backgroundSize: '40px 40px sm:60px 60px'
+            backgroundImage: `linear-gradient(rgba(255, 255, 255, 0.01) 1px, transparent 1px), linear-gradient(90deg, rgba(255, 255, 255, 0.01) 1px, transparent 1px)`,
+            backgroundSize: '30px 30px'
           }}
           suppressHydrationWarning
         ></div>
-        <div className="absolute -top-[150px] sm:-top-[300px] -right-[150px] sm:-right-[300px] w-[300px] sm:w-[600px] h-[300px] sm:h-[600px] rounded-full blur-[80px] sm:blur-[120px] opacity-[0.08] bg-gradient-to-br from-gray-500 to-gray-600 animate-glow" suppressHydrationWarning></div>
-        <div className="absolute -bottom-[125px] sm:-bottom-[250px] -left-[125px] sm:-left-[250px] w-[250px] sm:w-[500px] h-[250px] sm:h-[500px] rounded-full blur-[80px] sm:blur-[120px] opacity-[0.08] bg-gradient-to-br from-gray-700 to-gray-800 animate-glow-delayed" suppressHydrationWarning></div>
+        {/* Dynamic Floating Orbs */}
+        <div className="hero-orb-1 absolute -top-20 -right-20 w-[400px] h-[400px] rounded-full bg-gradient-to-br from-white/10 to-transparent blur-[100px] pointer-events-none select-none" suppressHydrationWarning></div>
+        <div className="hero-orb-2 absolute -bottom-20 -left-20 w-[500px] h-[500px] rounded-full bg-gradient-to-tr from-white/[0.07] to-transparent blur-[120px] pointer-events-none select-none" suppressHydrationWarning></div>
       </div>
 
+      {/* Mobile Only: Productive Tools section */}
+      <div className="md:hidden bg-black pb-8 px-4" suppressHydrationWarning>
+        <div className="flex flex-col gap-8">
+
+
+          {/* Quick Categories - Pinterest Style (Visual & Productive) */}
+          {/* <div className="flex flex-col gap-4">
+            <div className="flex justify-between items-center px-1">
+              <h2 className="text-[10px] font-bold tracking-[0.3em] text-white/40 uppercase">Featured Categories</h2>
+              <Link href="/products" className="text-[10px] font-bold tracking-[0.1em] text-white/60 uppercase border-b border-white/20 pb-0.5">View All</Link>
+            </div>
+
+            <div className="flex overflow-x-auto no-scrollbar gap-5 pb-2 -mx-4 px-4">
+              {categories.map((cat) => (
+                <button
+                  key={cat}
+                  onClick={() => handleCategoryClick(cat)}
+                  className="flex-shrink-0 flex flex-col items-center gap-3 transition-all active:scale-90"
+                >
+                  <div className={`w-[68px] h-[68px] rounded-full flex items-center justify-center transition-all duration-500 overflow-hidden relative group ${activeCategory === cat
+                      ? 'bg-white border-[3px] border-white/20 shadow-[0_0_20px_rgba(255,255,255,0.2)]'
+                      : 'bg-white/5 border border-white/10'
+                    }`}>
+                    <span className={`text-[10px] font-black tracking-tighter z-10 ${activeCategory === cat ? 'text-black' : 'text-white/80'}`}>
+                      {cat === 'ALL' ? 'SHOP' : cat.substring(0, 4)}
+                    </span>
+                    <div className="absolute inset-0 bg-gradient-to-tr from-white/10 to-transparent opacity-0 group-hover:opacity-100 transition-opacity"></div>
+                  </div>
+                  <span className={`text-[9px] font-bold tracking-[0.12em] uppercase transition-colors ${activeCategory === cat ? 'text-white' : 'text-white/30'
+                    }`}>
+                    {cat.split(' ')[0]}
+                  </span>
+                </button>
+              ))}
+            </div>
+          </div> */}
+
+          {/* New Arrivals - Horizontal Scroll (Productive for Mobile) */}
+          <div className="flex flex-col gap-5 mt-4">
+            <div className="flex justify-between items-center px-1">
+              <h2 className="text-[10px] font-bold tracking-[0.3em] text-white/40 uppercase">New Arrivals</h2>
+              <div className="flex gap-2">
+                <div className="w-1.5 h-1.5 rounded-full bg-white/40"></div>
+                <div className="w-1.5 h-1.5 rounded-full bg-white/10"></div>
+              </div>
+            </div>
+
+            <div className="flex overflow-x-auto no-scrollbar gap-4 -mx-4 px-4 pb-4">
+              {isLoadingProducts ? (
+                [1, 2, 3].map(i => (
+                  <div key={i} className="min-w-[280px] aspect-[4/5] bg-white/5 rounded-3xl animate-pulse" />
+                ))
+              ) : products.slice(0, 4).map((product) => (
+                <div key={`new-${product.id || product._id}`} className="min-w-[280px]">
+                  <ProductCard
+                    id={product.id || product._id}
+                    image={product.images?.[0] || product.image}
+                    title={product.name || product.title}
+                    price={product.price}
+                    originalPrice={product.originalPrice}
+                  />
+                </div>
+              ))}
+            </div>
+          </div>
+        </div>
+      </div>
 
       {/* Products Section */}
-      <section className="bg-black px-4 sm:px-8 py-16 md:py-32" suppressHydrationWarning>
+      <section className="bg-black px-4 sm:px-8 py-12 md:py-32" suppressHydrationWarning>
         <div className="max-w-7xl mx-auto" suppressHydrationWarning>
-          {/* Category Filter */}
-          <div className="flex overflow-x-auto no-scrollbar sm:flex-wrap items-center justify-start sm:justify-center gap-6 sm:gap-8 mb-12 md:mb-16 pb-4 sm:pb-0" suppressHydrationWarning>
+          {/* Desktop Only Category Filter */}
+          <div className="hidden md:flex flex-wrap items-center justify-center gap-8 mb-16" suppressHydrationWarning>
             {categories.map((category) => (
               <button
                 key={category}
                 onClick={() => handleCategoryClick(category)}
-                className="relative pb-2 text-[11px] sm:text-sm font-thin tracking-wider transition-colors duration-300 whitespace-nowrap"
+                className="relative pb-2 text-sm font-thin tracking-widest transition-colors duration-300 whitespace-nowrap"
                 style={{
-                  color: activeCategory === category ? '#ffffff' : 'rgba(255, 255, 255, 0.5)'
+                  color: activeCategory === category ? '#ffffff' : 'rgba(255, 255, 255, 0.4)'
                 }}
                 suppressHydrationWarning
               >
@@ -233,11 +299,20 @@ export default function HomePage() {
             ))}
           </div>
 
+          {/* Section Header for Mobile Products */}
+          <div className="md:hidden flex flex-col gap-2 mb-8 px-1">
+            <h3 className="text-2xl font-thin tracking-tighter text-white">
+              {activeCategory === 'ALL' ? 'Collection' : activeCategory}
+              <span className="text-white/40 ml-2 font-light">[{filteredProducts.length}]</span>
+            </h3>
+            <div className="w-12 h-[1px] bg-white/20"></div>
+          </div>
+
           {/* Product Grid */}
-          <div className="grid grid-cols-2 lg:grid-cols-4 gap-4 sm:gap-8 children-appear" suppressHydrationWarning>
+          <div className="grid grid-cols-2 lg:grid-cols-4 gap-x-3 gap-y-8 sm:gap-8 children-appear" suppressHydrationWarning>
             {isLoadingProducts ? (
-              [1, 2, 3, 4].map((i) => (
-                <div key={i} className="aspect-square bg-white/5 animate-pulse rounded-sm" suppressHydrationWarning />
+              [1, 2, 3, 4, 5, 6].map((i) => (
+                <div key={i} className="aspect-[3/4] bg-white/5 animate-pulse rounded-2xl" suppressHydrationWarning />
               ))
             ) : filteredProducts.length > 0 ? (
               filteredProducts.map((product) => (
@@ -251,16 +326,16 @@ export default function HomePage() {
                 />
               ))
             ) : (
-              <div className="col-span-full text-center py-20 text-white/20 font-thin tracking-widest uppercase">
-                No products found
+              <div className="col-span-full text-center py-20 text-white/10 font-thin tracking-[0.3em] uppercase text-[10px]">
+                No masterpieces in this drawer
               </div>
             )}
           </div>
         </div>
       </section>
 
-      {/* Newsletter Section */}
-      <Newsletter />
+      {/* Experience Section */}
+      <ExperienceSection />
 
       {/* Footer */}
       <Footer />

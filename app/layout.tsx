@@ -22,6 +22,14 @@ const geistMono = Geist_Mono({
 export const metadata: Metadata = {
   title: "MAKERS3D | Premium 3D Creations",
   description: "Crafting the Future, One Layer at a Time.",
+  icons: {
+    icon: [
+      { url: '/images/logo.png', sizes: '32x32' },
+      { url: '/images/logo.png', sizes: '192x192' },
+      { url: '/images/logo.png', sizes: '512x512' },
+    ],
+    apple: '/images/logo.png',
+  },
 };
 
 export default function RootLayout({
