@@ -73,12 +73,22 @@ body {
 
 @keyframes shimmer {
   0% {
-    left: -100%;
+    transform: translateX(-100%) skewX(-20deg);
+    opacity: 0;
+  }
+
+  50% {
+    opacity: 1;
   }
 
   100% {
-    left: 100%;
+    transform: translateX(100%) skewX(-20deg);
+    opacity: 0;
   }
+}
+
+.animate-shimmer {
+  animation: shimmer 3s infinite ease-out;
 }
 
 .animate-fadeInUp {
@@ -169,13 +179,23 @@ body {
 
 /* Mobile nav icon color override */
 .mobile-nav .nav-icon {
-  color: #000;
+  color: rgba(0, 0, 0, 0.4);
+  /* Muted for non-active */
   padding: 1rem;
   /* Maximum hit area for mobile bottom nav */
 }
 
 .mobile-nav .nav-icon svg {
-  color: #000 !important;
+  color: inherit !important;
+  transition: all 0.3s ease;
+}
+
+.mobile-nav .nav-icon.active {
+  color: #fff !important;
+}
+
+.mobile-nav .nav-icon.active svg {
+  color: #fff !important;
 }
 
 /* Global Button/Interactive Feedback */

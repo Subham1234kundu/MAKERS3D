@@ -144,13 +144,22 @@ export default function HomePage() {
       <Navbar />
 
       {/* Hero Section */}
-      <div ref={heroRef} className="relative min-h-[calc(100vh-70px)] bg-black flex items-center justify-center overflow-hidden px-4 sm:px-8 md:py-12 md:py-8 pb-2" suppressHydrationWarning>
+      <div ref={heroRef} className="relative min-h-[70vh] sm:min-h-[calc(100vh-70px)] bg-black flex items-center justify-center overflow-hidden px-4 sm:px-8 pt-20 pb-12 sm:py-12 border-b border-white/[0.05] sm:border-none" suppressHydrationWarning>
         <div className="relative z-10 text-center max-w-[1000px] w-full" suppressHydrationWarning>
-          {/* Main Heading - Old School Classic Thin */}
-          <h1 ref={titleRef} className="text-4xl sm:text-5xl md:text-7xl lg:text-8xl font-thin leading-[1.1] mb-6 md:mb-8 tracking-tighter font-['Helvetica_Neue',Arial,sans-serif] bg-clip-text text-transparent bg-gradient-to-b from-white to-white/60 md:mt-20">
-            Crafting the Future
-            <br />
-            <span className="italic font-light tracking-normal text-white/90">One Layer at a Time</span>
+          {/* Main Heading - Highly Aesthetic Editorial Typography */}
+          <h1 ref={titleRef}
+            className="text-4xl sm:text-6xl md:text-8xl lg:text-[10rem] font-thin leading-[0.9] mb-10 md:mb-14 tracking-[-0.04em] font-sans selection:bg-white selection:text-black mt-0 -mt-10 md:mt-16 lg:mt-32 cursor-none"
+            data-cursor-size="large">
+            <span className="block opacity-90">CRAFTING THE</span>
+            <span className="block font-black italic text-white relative -mt-2 md:-mt-6">
+              FUTURE
+              <span className="absolute -inset-1 bg-gradient-to-r from-transparent via-white/10 to-transparent skew-x-[-20deg] animate-shimmer pointer-events-none"></span>
+            </span>
+            <div className="flex items-center justify-center gap-4 mt-4 md:mt-8">
+              <div className="h-[1px] w-8 sm:w-16 bg-white/20 hidden sm:block"></div>
+              <span className="text-base sm:text-xl md:text-2xl italic font-light tracking-normal text-white/50 lowercase">one layer at a time</span>
+              <div className="h-[1px] w-8 sm:w-16 bg-white/20 hidden sm:block"></div>
+            </div>
           </h1>
 
           {/* Subheading - More readable on mobile */}
@@ -158,22 +167,26 @@ export default function HomePage() {
             Precision-engineered pieces. Unparalleled craftsmanship.
           </p>
 
-          {/* CTA Buttons - Better mobile layout */}
-          <div ref={ctaRef} className="flex flex-col sm:flex-row gap-4 justify-center items-center px-6" suppressHydrationWarning>
+          {/* CTA Buttons - Slick & Aesthetic Mobile Design */}
+          <div ref={ctaRef} className="flex flex-col sm:flex-row gap-4 sm:gap-6 justify-center items-center px-6 mt-12 md:mt-16" suppressHydrationWarning>
             <Link
               href="/customorder"
-              className="btn-shimmer relative w-full sm:w-auto inline-flex items-center justify-center gap-3 px-8 py-4 text-[11px] sm:text-sm font-light tracking-[0.2em] uppercase rounded-full transition-all duration-300 overflow-hidden bg-white/10 text-white border border-white/20 hover:bg-white/20"
+              className="group relative w-full sm:w-auto inline-flex items-center justify-center gap-3 px-10 py-4 text-[10px] sm:text-xs font-bold tracking-[0.4em] uppercase rounded-full transition-all duration-500 overflow-hidden bg-white/5 text-white border border-white/20 hover:bg-white/10 hover:border-white/40 hover:scale-[1.02] active:scale-95"
             >
-              <span>CUSTOM ORDER</span>
-              <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="1.5">
-                <path d="M5 12h14m-7-7l7 7-7 7" strokeLinecap="round" strokeLinejoin="round" />
-              </svg>
+              <span className="relative z-10">CUSTOM ORDER</span>
+              <div className="w-2 h-2 rounded-full bg-white/40 animate-pulse"></div>
+              {/* Glass background shimmer */}
+              <div className="absolute inset-0 bg-gradient-to-r from-transparent via-white/[0.05] to-transparent -translate-x-full group-hover:translate-x-full transition-transform duration-1000"></div>
             </Link>
+
             <Link
               href="/products"
-              className="btn-shimmer relative w-full sm:w-auto inline-flex items-center justify-center gap-3 px-8 py-4 text-[11px] sm:text-sm font-medium tracking-[0.2em] uppercase rounded-full transition-all duration-300 overflow-hidden bg-white text-black border border-white hover:bg-gray-100"
+              className="group relative w-full sm:w-auto inline-flex items-center justify-center gap-3 px-10 py-4 text-[10px] sm:text-xs font-black tracking-[0.4em] uppercase rounded-full transition-all duration-500 overflow-hidden bg-white text-black hover:bg-gray-100 hover:scale-[1.02] active:scale-95 shadow-[0_20px_40px_rgba(255,255,255,0.15)]"
             >
-              <span>SHOP NOW</span>
+              <span className="relative z-10">SHOP NOW</span>
+              <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" className="group-hover:translate-x-1 transition-transform">
+                <path d="M5 12h14m-7-7l7 7-7 7" strokeLinecap="round" strokeLinejoin="round" />
+              </svg>
             </Link>
           </div>
         </div>
@@ -182,8 +195,8 @@ export default function HomePage() {
         <div
           className="absolute top-0 left-0 w-full h-full opacity-30"
           style={{
-            backgroundImage: `linear-gradient(rgba(255, 255, 255, 0.01) 1px, transparent 1px), linear-gradient(90deg, rgba(255, 255, 255, 0.01) 1px, transparent 1px)`,
-            backgroundSize: '30px 30px'
+            backgroundImage: `linear-gradient(rgba(255, 255, 255, 0.03) 1px, transparent 1px), linear-gradient(90deg, rgba(255, 255, 255, 0.03) 1px, transparent 1px)`,
+            backgroundSize: '40px 40px'
           }}
           suppressHydrationWarning
         ></div>

@@ -5,7 +5,7 @@ import dynamic from 'next/dynamic';
 import { useRef, useEffect, useState } from 'react';
 import { gsap } from 'gsap';
 import { useSession } from 'next-auth/react';
-import { useRouter } from 'next/navigation';
+import { useRouter, usePathname } from 'next/navigation';
 import { useCart } from '../providers/CartProvider';
 
 // Dynamically import the 3D component to avoid SSR issues
@@ -22,6 +22,7 @@ interface NavIconsProps {
   isSearchExpanded: boolean;
   setIsSearchExpanded: (val: boolean) => void;
   searchInputRef: React.RefObject<HTMLInputElement | null>;
+  pathname: string;
 }
 
 // Sub-component moved OUTSIDE to prevent remounting loops
@@ -32,72 +33,89 @@ const NavIcons = ({
   cartCount,
   isSearchExpanded,
   setIsSearchExpanded,
-  searchInputRef
-}: NavIconsProps) => (
-  <div className={`nav-icons flex items-center ${isMobileNav ? 'justify-around w-full px-6' : 'gap-4 sm:gap-6'}`} suppressHydrationWarning>
-    <div className={`search-container flex items-center relative h-10 px-3 rounded-full transition-all duration-500 cursor-pointer ${isMobileNav ? 'bg-black/5' : 'bg-white/5 border border-white/10'}`} suppressHydrationWarning
-      onClick={() => {
-        if (!isSearchExpanded) setIsSearchExpanded(true);
-        searchInputRef.current?.focus();
-      }}
-    >
-      <button
-        className="nav-icon z-10"
-        aria-label="Search"
-        onClick={(e) => {
-          e.stopPropagation();
-          setIsSearchExpanded(!isSearchExpanded);
-        }}
-      >
-        <svg fill="none" stroke="currentColor" viewBox="0 0 24 24" className="w-[18px] h-[18px]">
-          <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={1.5} d="M21 21l-6-6m2-5a7 7 0 11-14 0 7 7 0 0114 0z" />
-        </svg>
-      </button>
-      <input
-        ref={searchInputRef}
-        type="text"
-        placeholder="Search..."
-        className={`bg-transparent border-none outline-none text-[10px] uppercase tracking-[0.2em] font-light w-0 opacity-0 overflow-hidden transition-all duration-500 ease-in-out ${isMobileNav ? 'placeholder:text-black/40 text-black' : 'placeholder:text-white/20 text-white'}`}
-        style={{ paddingLeft: isSearchExpanded ? '12px' : '0' }}
-      />
-    </div>
+  searchInputRef,
+  pathname
+}: NavIconsProps) => {
+  const isHomeActive = pathname === '/';
+  const isProfileActive = pathname === '/profile' || pathname === '/login';
+  const isLikesActive = pathname === '/likes';
+  const isCartActive = pathname === '/cart';
 
-    <div className="user-menu-container flex items-center" suppressHydrationWarning>
-      <button
-        className="nav-icon user-button"
-        aria-label="User Account"
-        onClick={() => {
-          if (session) router.push('/profile');
-          else router.push('/login');
-        }}
-        suppressHydrationWarning
-      >
-        {session?.user?.image ? (
-          <img src={session.user.image} alt={session.user.name || 'User'} className="user-avatar" />
-        ) : (
+  return (
+    <div className={`nav-icons flex items-center ${isMobileNav ? 'justify-around w-full' : 'gap-4 sm:gap-6'}`} suppressHydrationWarning>
+      {/* Home Icon - Mobile Only */}
+      {isMobileNav && (
+        <Link href="/" className={`nav-icon ${isHomeActive ? 'active' : ''}`} aria-label="Home" suppressHydrationWarning>
           <svg fill="none" stroke="currentColor" viewBox="0 0 24 24" className="w-[18px] h-[18px]">
-            <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={1.5} d="M16 7a4 4 0 11-8 0 4 4 0 018 0zM12 14a7 7 0 00-7 7h14a7 7 0 00-7-7z" />
+            <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={1.5} d="M3 12l2-2m0 0l7-7 7 7M5 10v10a1 1 0 001 1h3m10-11l2 2m-2-2v10a1 1 0 01-1 1h-3m-6 0a1 1 0 001-1v-4a1 1 0 011-1h2a1 1 0 011 1v4a1 1 0 001 1m-6 0h6" />
           </svg>
-        )}
-      </button>
-    </div>
+        </Link>
+      )}
 
-    <Link href="/likes" className={`nav-icon ${!isMobileNav ? 'always-visible' : ''}`} aria-label="Favorites" suppressHydrationWarning>
-      <svg fill="none" stroke="currentColor" viewBox="0 0 24 24" className="w-[18px] h-[18px]">
-        <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={1.5} d="M4.318 6.318a4.5 4.5 0 000 6.364L12 20.364l7.682-7.682a4.5 4.5 0 00-6.364-6.364L12 7.636l-1.318-1.318a4.5 4.5 0 00-6.364 0z" />
-      </svg>
-    </Link>
-
-    <Link href="/cart" className={`nav-icon ${!isMobileNav ? 'always-visible' : ''}`} aria-label="Cart" suppressHydrationWarning>
-      <div className="cart-icon-wrapper" suppressHydrationWarning>
-        <svg fill="none" stroke="currentColor" viewBox="0 0 24 24" className="cart-svg w-[18px] h-[18px]">
-          <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={1.5} d="M3 3h2l.4 2M7 13h10l4-8H5.4M7 13L5.4 5M7 13l-2.293 2.293c-.63.63-.184 1.707.707 1.707H17m0 0a2 2 0 100 4 2 2 0 000-4zm-8 2a2 2 0 11-4 0 2 2 0 014 0z" />
-        </svg>
-        {cartCount > 0 && <span className="cart-badge">{cartCount}</span>}
+      <div className={`search-container flex items-center relative h-10 px-3 rounded-full transition-all duration-500 cursor-pointer ${isMobileNav ? 'bg-black/5' : 'bg-white/5 border border-white/10'}`} suppressHydrationWarning
+        onClick={() => {
+          if (!isSearchExpanded) setIsSearchExpanded(true);
+          searchInputRef.current?.focus();
+        }}
+      >
+        <button
+          className={`nav-icon z-10 ${isMobileNav && isSearchExpanded ? '!text-white' : ''}`}
+          aria-label="Search"
+          onClick={(e) => {
+            e.stopPropagation();
+            setIsSearchExpanded(!isSearchExpanded);
+          }}
+        >
+          <svg fill="none" stroke="currentColor" viewBox="0 0 24 24" className="w-[18px] h-[18px]">
+            <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={1.5} d="M21 21l-6-6m2-5a7 7 0 11-14 0 7 7 0 0114 0z" />
+          </svg>
+        </button>
+        <input
+          ref={searchInputRef}
+          type="text"
+          placeholder="SEARCH..."
+          className={`bg-transparent border-none outline-none text-[10px] uppercase tracking-[0.2em] font-light w-0 opacity-0 overflow-hidden transition-all duration-500 ease-in-out placeholder:text-white/60 text-white`}
+          style={{ paddingLeft: isSearchExpanded ? '12px' : '0' }}
+        />
       </div>
-    </Link>
-  </div>
-);
+
+      <div className="user-menu-container flex items-center" suppressHydrationWarning>
+        <button
+          className={`nav-icon user-button ${isMobileNav && isProfileActive ? 'active' : ''}`}
+          aria-label="User Account"
+          onClick={() => {
+            if (session) router.push('/profile');
+            else router.push('/login');
+          }}
+          suppressHydrationWarning
+        >
+          {session?.user?.image ? (
+            <img src={session.user.image} alt={session.user.name || 'User'} className={`user-avatar ${isMobileNav && isProfileActive ? 'border-white' : ''}`} />
+          ) : (
+            <svg fill="none" stroke="currentColor" viewBox="0 0 24 24" className="w-[18px] h-[18px]">
+              <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={1.5} d="M16 7a4 4 0 11-8 0 4 4 0 018 0zM12 14a7 7 0 00-7 7h14a7 7 0 00-7-7z" />
+            </svg>
+          )}
+        </button>
+      </div>
+
+      <Link href="/likes" className={`nav-icon ${!isMobileNav ? 'always-visible' : ''} ${isMobileNav && isLikesActive ? 'active' : ''}`} aria-label="Favorites" suppressHydrationWarning>
+        <svg fill="none" stroke="currentColor" viewBox="0 0 24 24" className="w-[18px] h-[18px]">
+          <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={1.5} d="M4.318 6.318a4.5 4.5 0 000 6.364L12 20.364l7.682-7.682a4.5 4.5 0 00-6.364-6.364L12 7.636l-1.318-1.318a4.5 4.5 0 00-6.364 0z" />
+        </svg>
+      </Link>
+
+      <Link href="/cart" className={`nav-icon ${!isMobileNav ? 'always-visible' : ''} ${isMobileNav && isCartActive ? 'active' : ''}`} aria-label="Cart" suppressHydrationWarning>
+        <div className="cart-icon-wrapper" suppressHydrationWarning>
+          <svg fill="none" stroke="currentColor" viewBox="0 0 24 24" className="cart-svg w-[18px] h-[18px]">
+            <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={1.5} d="M3 3h2l.4 2M7 13h10l4-8H5.4M7 13L5.4 5M7 13l-2.293 2.293c-.63.63-.184 1.707.707 1.707H17m0 0a2 2 0 100 4 2 2 0 000-4zm-8 2a2 2 0 11-4 0 2 2 0 014 0z" />
+          </svg>
+          {cartCount > 0 && <span className="cart-badge">{cartCount}</span>}
+        </div>
+      </Link>
+    </div>
+  );
+};
 
 export default function Navbar() {
   const studioRef = useRef<HTMLSpanElement>(null);
@@ -110,6 +128,7 @@ export default function Navbar() {
 
   const { data: session } = useSession();
   const router = useRouter();
+  const pathname = usePathname();
   const { cartCount } = useCart();
 
   useEffect(() => {
@@ -190,6 +209,7 @@ export default function Navbar() {
                 isSearchExpanded={isSearchExpanded}
                 setIsSearchExpanded={setIsSearchExpanded}
                 searchInputRef={searchInputRef}
+                pathname={pathname}
               />
             )}
           </div>
@@ -208,6 +228,7 @@ export default function Navbar() {
                 isSearchExpanded={isSearchExpanded}
                 setIsSearchExpanded={setIsSearchExpanded}
                 searchInputRef={searchInputRef}
+                pathname={pathname}
               />
             </div>
           </div>
