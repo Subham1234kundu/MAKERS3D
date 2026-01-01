@@ -49,24 +49,38 @@ export default function AddProduct({ initialData, onSubmit, onCancel }: AddProdu
     const handleImageUpload = (e: React.ChangeEvent<HTMLInputElement>, index: number) => {
         const file = e.target.files?.[0];
         if (file) {
-            // Create a fake local URL for preview
             const url = URL.createObjectURL(file);
             const newImages = [...formData.images];
-            newImages[index] = url;
-            // Ensure array has no holes if filling 3rd slot before 2nd? 
-            // Better to just push if index is next, or replace. 
-            // Logic: we allow 4 slots.
-            if (index >= newImages.length) {
-                // fill undefined holes?
+
+            // Cleanup old blob if replacing
+            if (newImages[index]?.startsWith('blob:')) {
+                URL.revokeObjectURL(newImages[index]);
             }
+
+            newImages[index] = url;
             setFormData(prev => ({ ...prev, images: newImages }));
         }
     };
 
     const removeImage = (index: number) => {
+        const imageToRemove = formData.images[index];
+        if (imageToRemove?.startsWith('blob:')) {
+            URL.revokeObjectURL(imageToRemove);
+        }
         const newImages = formData.images.filter((_, i) => i !== index);
         setFormData(prev => ({ ...prev, images: newImages }));
     };
+
+    // Cleanup all blobs on unmount
+    useEffect(() => {
+        return () => {
+            formData.images.forEach(img => {
+                if (img?.startsWith('blob:')) {
+                    URL.revokeObjectURL(img);
+                }
+            });
+        };
+    }, [formData.images]);
 
     const handleSubmit = (e: React.FormEvent) => {
         e.preventDefault();

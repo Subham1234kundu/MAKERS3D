@@ -7,7 +7,7 @@ export default function ChatButton() {
     const [isOpen, setIsOpen] = useState(false);
 
     return (
-        <div className="fixed bottom-24 right-4 sm:bottom-8 sm:right-8 z-[9999] flex flex-col items-end gap-4" suppressHydrationWarning>
+        <div className="fixed bottom-32 right-4 sm:bottom-8 sm:right-8 z-[9999] flex flex-col items-end gap-4" suppressHydrationWarning>
             {/* Contact Options Box */}
             <div
                 className={`bg-black/80 backdrop-blur-xl border border-white/10 p-4 sm:p-6 rounded-2xl transition-all duration-500 origin-bottom-right shadow-[0_20px_50px_rgba(0,0,0,0.5)] ${isOpen ? 'scale-100 opacity-100' : 'scale-90 opacity-0 pointer-events-none'

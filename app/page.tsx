@@ -10,7 +10,6 @@ import { gsap } from 'gsap';
 
 export default function HomePage() {
   const [activeCategory, setActiveCategory] = useState('ALL');
-  const underlineRefs = useRef<{ [key: string]: HTMLDivElement | null }>({});
   const heroRef = useRef<HTMLDivElement>(null);
   const titleRef = useRef<HTMLHeadingElement>(null);
   const subtitleRef = useRef<HTMLParagraphElement>(null);
@@ -114,16 +113,6 @@ export default function HomePage() {
 
   const handleCategoryClick = (category: string) => {
     setActiveCategory(category);
-
-    // Animate underline from left to right
-    const underline = underlineRefs.current[category];
-    if (underline) {
-      gsap.fromTo(
-        underline,
-        { scaleX: 0, transformOrigin: 'left' },
-        { scaleX: 1, duration: 0.4, ease: 'power2.out' }
-      );
-    }
   };
 
   const [products, setProducts] = useState<any[]>([]);
@@ -203,60 +192,59 @@ export default function HomePage() {
         <div className="hero-orb-2 absolute -bottom-20 -left-20 w-[500px] h-[500px] rounded-full bg-gradient-to-tr from-white/[0.07] to-transparent blur-[120px] pointer-events-none select-none" suppressHydrationWarning></div>
       </div>
 
-      {/* Mobile Only: Productive Tools section */}
-      <div className="md:hidden bg-black pb-8 px-4" suppressHydrationWarning>
-        <div className="flex flex-col gap-8">
-
+      {/* Categories & Featured Content Section */}
+      <div className="bg-black pb-12 px-4 sm:px-8" suppressHydrationWarning>
+        <div className="max-w-7xl mx-auto flex flex-col gap-12" suppressHydrationWarning>
 
           {/* Quick Categories - Pinterest Style (Visual & Productive) */}
-          {/* <div className="flex flex-col gap-4">
-            <div className="flex justify-between items-center px-1">
-              <h2 className="text-[10px] font-bold tracking-[0.3em] text-white/40 uppercase">Featured Categories</h2>
-              <Link href="/products" className="text-[10px] font-bold tracking-[0.1em] text-white/60 uppercase border-b border-white/20 pb-0.5">View All</Link>
+          <div className="flex flex-col gap-6 " suppressHydrationWarning>
+            <div className="flex justify-between items-center px-1" suppressHydrationWarning>
+              <h2 className="text-[10px] sm:text-xs font-bold tracking-[0.3em] text-white/40 uppercase">Featured Categories</h2>
+              <Link href="/products" className="text-[10px] sm:text-xs font-bold tracking-[0.1em] text-white/60 uppercase border-b border-white/20 pb-0.5 transition-colors hover:text-white hover:border-white">View All</Link>
             </div>
 
-            <div className="flex overflow-x-auto no-scrollbar gap-5 pb-2 -mx-4 px-4">
+            <div className="flex pt-6 md:pt-10 overflow-x-auto no-scrollbar gap-6 sm:gap-10 pb-4 -mx-4 px-4 sm:mx-0 sm:px-0 md:justify-center" suppressHydrationWarning>
               {categories.map((cat) => (
                 <button
                   key={cat}
                   onClick={() => handleCategoryClick(cat)}
-                  className="flex-shrink-0 flex flex-col items-center gap-3 transition-all active:scale-90"
+                  className="flex-shrink-0 flex flex-col items-center gap-4 transition-all active:scale-95 group/cat"
                 >
-                  <div className={`w-[68px] h-[68px] rounded-full flex items-center justify-center transition-all duration-500 overflow-hidden relative group ${activeCategory === cat
-                      ? 'bg-white border-[3px] border-white/20 shadow-[0_0_20px_rgba(255,255,255,0.2)]'
-                      : 'bg-white/5 border border-white/10'
-                    }`}>
-                    <span className={`text-[10px] font-black tracking-tighter z-10 ${activeCategory === cat ? 'text-black' : 'text-white/80'}`}>
+                  <div className={`w-[72px] h-[72px] sm:w-[85px] sm:h-[85px] rounded-full flex items-center justify-center transition-all duration-500 overflow-hidden relative ${activeCategory === cat
+                    ? 'bg-white border-[4px] border-white/20 shadow-[0_0_30px_rgba(255,255,255,0.15)]'
+                    : 'bg-white/5 border border-white/10 hover:border-white/20 hover:bg-white/10'
+                    }`} suppressHydrationWarning>
+                    <span className={`text-[10px] sm:text-[11px] font-black tracking-tighter z-10 transition-colors duration-300 ${activeCategory === cat ? 'text-black' : 'text-white/80'}`}>
                       {cat === 'ALL' ? 'SHOP' : cat.substring(0, 4)}
                     </span>
-                    <div className="absolute inset-0 bg-gradient-to-tr from-white/10 to-transparent opacity-0 group-hover:opacity-100 transition-opacity"></div>
+                    <div className="absolute inset-0 bg-gradient-to-tr from-white/10 to-transparent opacity-0 group-hover/cat:opacity-100 transition-opacity"></div>
                   </div>
-                  <span className={`text-[9px] font-bold tracking-[0.12em] uppercase transition-colors ${activeCategory === cat ? 'text-white' : 'text-white/30'
+                  <span className={`text-[9px] sm:text-[10px] font-bold tracking-[0.15em] uppercase transition-colors duration-300 ${activeCategory === cat ? 'text-white' : 'text-white/30 group-hover/cat:text-white/60'
                     }`}>
                     {cat.split(' ')[0]}
                   </span>
                 </button>
               ))}
             </div>
-          </div> */}
+          </div>
 
-          {/* New Arrivals - Horizontal Scroll (Productive for Mobile) */}
-          <div className="flex flex-col gap-5 mt-4">
-            <div className="flex justify-between items-center px-1">
-              <h2 className="text-[10px] font-bold tracking-[0.3em] text-white/40 uppercase">New Arrivals</h2>
+          {/* New Arrivals - Horizontal Scroll */}
+          <div className="flex flex-col gap-6" suppressHydrationWarning>
+            <div className="flex justify-between items-center px-1" suppressHydrationWarning>
+              <h2 className="text-[10px] sm:text-xs font-bold tracking-[0.3em] text-white/40 uppercase">New Arrivals</h2>
               <div className="flex gap-2">
                 <div className="w-1.5 h-1.5 rounded-full bg-white/40"></div>
                 <div className="w-1.5 h-1.5 rounded-full bg-white/10"></div>
               </div>
             </div>
 
-            <div className="flex overflow-x-auto no-scrollbar gap-4 -mx-4 px-4 pb-4">
+            <div className="flex overflow-x-auto no-scrollbar gap-4 sm:gap-6 -mx-4 px-4 sm:mx-0 sm:px-0 pb-4" suppressHydrationWarning>
               {isLoadingProducts ? (
-                [1, 2, 3].map(i => (
-                  <div key={i} className="min-w-[280px] aspect-[4/5] bg-white/5 rounded-3xl animate-pulse" />
+                [1, 2, 3, 4].map(i => (
+                  <div key={i} className="min-w-[280px] sm:min-w-[320px] aspect-[4/5] bg-white/5 rounded-3xl animate-pulse" />
                 ))
-              ) : products.slice(0, 4).map((product) => (
-                <div key={`new-${product.id || product._id}`} className="min-w-[280px]">
+              ) : products.slice(0, 5).map((product) => (
+                <div key={`new-${product.id || product._id}`} className="min-w-[280px] sm:min-w-[320px]">
                   <ProductCard
                     id={product.id || product._id}
                     image={product.images?.[0] || product.image}
@@ -274,38 +262,13 @@ export default function HomePage() {
       {/* Products Section */}
       <section className="bg-black px-4 sm:px-8 py-12 md:py-32" suppressHydrationWarning>
         <div className="max-w-7xl mx-auto" suppressHydrationWarning>
-          {/* Desktop Only Category Filter */}
-          <div className="hidden md:flex flex-wrap items-center justify-center gap-8 mb-16" suppressHydrationWarning>
-            {categories.map((category) => (
-              <button
-                key={category}
-                onClick={() => handleCategoryClick(category)}
-                className="relative pb-2 text-sm font-thin tracking-widest transition-colors duration-300 whitespace-nowrap"
-                style={{
-                  color: activeCategory === category ? '#ffffff' : 'rgba(255, 255, 255, 0.4)'
-                }}
-                suppressHydrationWarning
-              >
-                {category}
-                <div
-                  ref={(el) => { underlineRefs.current[category] = el; }}
-                  className="absolute bottom-0 left-0 w-full h-[1px] bg-white origin-left"
-                  style={{
-                    transform: activeCategory === category ? 'scaleX(1)' : 'scaleX(0)',
-                  }}
-                  suppressHydrationWarning
-                />
-              </button>
-            ))}
-          </div>
-
-          {/* Section Header for Mobile Products */}
-          <div className="md:hidden flex flex-col gap-2 mb-8 px-1">
-            <h3 className="text-2xl font-thin tracking-tighter text-white">
+          {/* Section Header */}
+          <div className="flex flex-col gap-2 mb-12 px-1">
+            <h3 className="text-2xl sm:text-4xl font-thin tracking-tighter text-white uppercase">
               {activeCategory === 'ALL' ? 'Collection' : activeCategory}
-              <span className="text-white/40 ml-2 font-light">[{filteredProducts.length}]</span>
+              <span className="text-white/30 ml-4 font-light text-sm sm:text-lg tracking-widest">[{filteredProducts.length}]</span>
             </h3>
-            <div className="w-12 h-[1px] bg-white/20"></div>
+            <div className="w-16 h-[1px] bg-white/20"></div>
           </div>
 
           {/* Product Grid */}

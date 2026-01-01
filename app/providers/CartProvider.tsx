@@ -165,36 +165,54 @@ export function CartProvider({ children }: { children: React.ReactNode }) {
             {children}
             {/* Toast Notification */}
             {showToast && lastAddedItem && (
-                <div className="fixed bottom-6 right-6 sm:bottom-8 sm:right-8 z-[2000] animate-toast-in px-4 sm:px-0 w-full sm:w-auto">
-                    <div className="bg-white text-black p-4 pr-12 shadow-[0_20px_50px_rgba(0,0,0,0.3)] flex items-center gap-4 min-w-full sm:min-w-[320px] border-l-4 border-black relative">
-                        <div className="relative w-12 h-12 bg-gray-100 flex-shrink-0">
-                            <img src={lastAddedItem.images?.[0] || lastAddedItem.image} alt="" className="object-cover w-full h-full" />
+                <>
+                    {/* Mobile Toast - Pill shape, Top center middle */}
+                    <div className="sm:hidden fixed top-12 left-0 right-0 z-[10000] flex justify-center pointer-events-none animate-toast-top-in">
+                        <div className="bg-black/80 backdrop-blur-xl text-white px-6 py-2.5 rounded-full border border-white/10 shadow-[0_15px_40px_rgba(0,0,0,0.5)] flex items-center gap-3 pointer-events-auto">
+                            <div className="w-1.5 h-1.5 rounded-full bg-green-500 animate-pulse shadow-[0_0_8px_rgba(34,197,94,0.6)]" />
+                            <span className="text-[10px] font-bold uppercase tracking-[0.2em] whitespace-nowrap">Cart Added</span>
                         </div>
-                        <div className="flex-1 min-w-0">
-                            <p className="text-[9px] uppercase tracking-[0.2em] text-black/40 font-bold mb-0.5">Added to Collection</p>
-                            <p className="text-sm font-light truncate mb-1">{lastAddedItem.name || lastAddedItem.title}</p>
-                            <Link href="/cart" className="text-[10px] font-bold uppercase tracking-widest border-b border-black/20 hover:border-black transition-colors" onClick={() => setShowToast(false)}>
-                                View Collection
-                            </Link>
-                        </div>
-                        <button
-                            onClick={() => setShowToast(false)}
-                            className="absolute top-4 right-4 text-black/20 hover:text-black transition-colors"
-                        >
-                            <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2.5">
-                                <path d="M6 18L18 6M6 6l12 12" strokeLinecap="round" />
-                            </svg>
-                        </button>
                     </div>
-                </div>
+
+                    {/* Desktop Toast - Detailed, Bottom right */}
+                    <div className="hidden sm:block fixed bottom-8 right-8 z-[2000] animate-toast-in w-auto">
+                        <div className="bg-white text-black p-4 pr-12 shadow-[0_20px_50px_rgba(0,0,0,0.3)] flex items-center gap-4 min-w-[320px] border-l-4 border-black relative">
+                            <div className="relative w-12 h-12 bg-gray-100 flex-shrink-0">
+                                <img src={lastAddedItem.images?.[0] || lastAddedItem.image} alt="" className="object-cover w-full h-full" />
+                            </div>
+                            <div className="flex-1 min-w-0">
+                                <p className="text-[9px] uppercase tracking-[0.2em] text-black/40 font-bold mb-0.5">Added to Collection</p>
+                                <p className="text-sm font-light truncate mb-1">{lastAddedItem.name || lastAddedItem.title}</p>
+                                <Link href="/cart" className="text-[10px] font-bold uppercase tracking-widest border-b border-black/20 hover:border-black transition-colors" onClick={() => setShowToast(false)}>
+                                    View Collection
+                                </Link>
+                            </div>
+                            <button
+                                onClick={() => setShowToast(false)}
+                                className="absolute top-4 right-4 text-black/20 hover:text-black transition-colors"
+                            >
+                                <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2.5">
+                                    <path d="M6 18L18 6M6 6l12 12" strokeLinecap="round" />
+                                </svg>
+                            </button>
+                        </div>
+                    </div>
+                </>
             )}
             <style jsx>{`
                 @keyframes toast-in {
                     from { transform: translateX(100%); opacity: 0; }
                     to { transform: translateX(0); opacity: 1; }
                 }
+                @keyframes toast-top-in {
+                    from { transform: translateY(-100%); opacity: 0; }
+                    to { transform: translateY(0); opacity: 1; }
+                }
                 .animate-toast-in {
                     animation: toast-in 0.5s cubic-bezier(0.4, 0, 0.2, 1) forwards;
+                }
+                .animate-toast-top-in {
+                    animation: toast-top-in 0.6s cubic-bezier(0.23, 1, 0.32, 1) forwards;
                 }
             `}</style>
         </CartContext.Provider>

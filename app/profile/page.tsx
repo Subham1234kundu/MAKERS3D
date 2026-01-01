@@ -181,10 +181,29 @@ export default function ProfilePage() {
                 alert('Maximum 3 images allowed');
                 return;
             }
-            const newImages = files.map(file => URL.createObjectURL(file));
-            setReturnImages([...returnImages, ...newImages]);
+            const newImageUrls = files.map(file => URL.createObjectURL(file));
+            setReturnImages(prev => [...prev, ...newImageUrls]);
         }
     };
+
+    const removeReturnImage = (index: number) => {
+        const urlToRevoke = returnImages[index];
+        if (urlToRevoke?.startsWith('blob:')) {
+            URL.revokeObjectURL(urlToRevoke);
+        }
+        setReturnImages(prev => prev.filter((_, i) => i !== index));
+    };
+
+    // Cleanup all blobs on unmount or tab change
+    useEffect(() => {
+        return () => {
+            returnImages.forEach(img => {
+                if (img?.startsWith('blob:')) {
+                    URL.revokeObjectURL(img);
+                }
+            });
+        };
+    }, [returnImages]);
 
     if (isLoading) return <div className="min-h-screen bg-black text-white flex items-center justify-center">Loading...</div>;
 
@@ -212,7 +231,7 @@ export default function ProfilePage() {
                                 <div key={i} className="aspect-square relative border border-white/20">
                                     <img src={img} alt="Return Proof" className="w-full h-full object-cover" />
                                     <button
-                                        onClick={() => setReturnImages(returnImages.filter((_, idx) => idx !== i))}
+                                        onClick={() => removeReturnImage(i)}
                                         className="absolute -top-2 -right-2 bg-red-500 w-5 h-5 rounded-full flex items-center justify-center text-[10px]"
                                     >✕</button>
                                 </div>

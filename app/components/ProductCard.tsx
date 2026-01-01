@@ -84,8 +84,8 @@ export default function ProductCard({ id, image, title, price, originalPrice, ca
                             { transform: 'rotate(0deg)' },
                             { transform: 'rotate(360deg)' }
                         ], {
-                            duration: 500,
-                            easing: 'cubic-bezier(0.4, 0, 0.2, 1)'
+                            duration: 700,
+                            easing: 'cubic-bezier(0.23, 1, 0.32, 1)'
                         });
                     }
                 }}
