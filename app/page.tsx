@@ -144,11 +144,11 @@ export default function HomePage() {
       <Navbar />
 
       {/* Hero Section */}
-      <div ref={heroRef} className="relative min-h-[70vh] sm:min-h-[calc(100vh-70px)] bg-black flex items-center justify-center overflow-hidden px-4 sm:px-8 pt-20 pb-12 sm:py-12 border-b border-white/[0.05] sm:border-none" suppressHydrationWarning>
+      <div ref={heroRef} className="relative min-h-[90vh] sm:min-h-[calc(100vh-70px)] bg-black flex items-center justify-center overflow-hidden px-4 sm:px-8 pt-24 pb-20 sm:py-12 border-b border-white/[0.05] sm:border-none" suppressHydrationWarning>
         <div className="relative z-10 text-center max-w-[1000px] w-full" suppressHydrationWarning>
           {/* Main Heading - Highly Aesthetic Editorial Typography */}
           <h1 ref={titleRef}
-            className="text-4xl sm:text-6xl md:text-8xl lg:text-[10rem] font-thin leading-[0.9] mb-10 md:mb-14 tracking-[-0.04em] font-sans selection:bg-white selection:text-black mt-0 -mt-10 md:mt-16 lg:mt-32 cursor-none"
+            className="text-4xl sm:text-6xl md:text-8xl lg:text-[10rem] font-thin leading-[0.9] mb-10 md:mb-14 tracking-[-0.04em] font-sans selection:bg-white selection:text-black mt-8 md:mt-16 lg:mt-32 cursor-none"
             data-cursor-size="large">
             <span className="block opacity-90">CRAFTING THE</span>
             <span className="block font-black italic text-white relative -mt-2 md:-mt-6">
@@ -163,7 +163,7 @@ export default function HomePage() {
           </h1>
 
           {/* Subheading - More readable on mobile */}
-          <p ref={subtitleRef} className="text-[13px] sm:text-lg lg:text-xl leading-relaxed text-white/50 max-w-[700px] mx-auto mb-10 md:mb-12 font-thin tracking-widest px-6 opacity-80 uppercase">
+          <p ref={subtitleRef} className="text-sm sm:text-lg lg:text-xl leading-relaxed text-white/50 max-w-[700px] mx-auto mb-10 md:mb-12 font-thin tracking-widest px-6 opacity-80 uppercase">
             Precision-engineered pieces. Unparalleled craftsmanship.
           </p>
 
@@ -171,7 +171,7 @@ export default function HomePage() {
           <div ref={ctaRef} className="flex flex-col sm:flex-row gap-4 sm:gap-6 justify-center items-center px-6 mt-12 md:mt-16" suppressHydrationWarning>
             <Link
               href="/customorder"
-              className="group relative w-full sm:w-auto inline-flex items-center justify-center gap-3 px-10 py-4 text-[10px] sm:text-xs font-bold tracking-[0.4em] uppercase rounded-full transition-all duration-500 overflow-hidden bg-white/5 text-white border border-white/20 hover:bg-white/10 hover:border-white/40 hover:scale-[1.02] active:scale-95"
+              className="group relative w-full sm:w-auto inline-flex items-center justify-center gap-3 px-10 py-4 text-xs sm:text-xs font-bold tracking-[0.4em] uppercase rounded-full transition-all duration-500 overflow-hidden bg-white/5 text-white border border-white/20 hover:bg-white/10 hover:border-white/40 hover:scale-[1.02] active:scale-95"
             >
               <span className="relative z-10">CUSTOM ORDER</span>
               <div className="w-2 h-2 rounded-full bg-white/40 animate-pulse"></div>
@@ -181,7 +181,7 @@ export default function HomePage() {
 
             <Link
               href="/products"
-              className="group relative w-full sm:w-auto inline-flex items-center justify-center gap-3 px-10 py-4 text-[10px] sm:text-xs font-black tracking-[0.4em] uppercase rounded-full transition-all duration-500 overflow-hidden bg-white text-black hover:bg-gray-100 hover:scale-[1.02] active:scale-95 shadow-[0_20px_40px_rgba(255,255,255,0.15)]"
+              className="group relative w-full sm:w-auto inline-flex items-center justify-center gap-3 px-10 py-4 text-xs sm:text-xs font-black tracking-[0.4em] uppercase rounded-full transition-all duration-500 overflow-hidden bg-white text-black hover:bg-gray-100 hover:scale-[1.02] active:scale-95 shadow-[0_20px_40px_rgba(255,255,255,0.15)]"
             >
               <span className="relative z-10">SHOP NOW</span>
               <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" className="group-hover:translate-x-1 transition-transform">
