@@ -72,7 +72,7 @@ export default function ProductCard({ id, image, title, price, originalPrice, ca
             {/* Plus Icon - Outside Link to avoid nesting issue, always visible on mobile */}
             <button
                 type="button"
-                className={`absolute bottom-[110px] right-3 sm:bottom-[120px] sm:right-4 w-11 h-11 sm:w-12 sm:h-12 bg-white flex items-center justify-center transition-all duration-300 cursor-pointer lg:opacity-0 lg:-translate-x-4 group-hover:opacity-100 group-hover:translate-x-0 active:scale-90 z-20 ${isPlusHovered ? 'bg-gray-100' : ''
+                className={`absolute bottom-[90px] right-3  sm:right-4 w-11 h-11 sm:w-12 sm:h-12 bg-white flex items-center justify-center transition-all duration-300 cursor-pointer lg:opacity-0 lg:-translate-x-4 group-hover:opacity-100 group-hover:translate-x-0 hover:translate-y-2 active:scale-90 z-20 ${isPlusHovered ? 'bg-gray-100' : ''
                     }`}
                 onMouseEnter={() => setIsPlusHovered(true)}
                 onMouseLeave={() => setIsPlusHovered(false)}
