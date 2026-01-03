@@ -144,27 +144,27 @@ export default function HomePage() {
       <Navbar />
 
       {/* Hero Section */}
-      <div ref={heroRef} className="relative min-h-[90vh] sm:min-h-[calc(100vh-70px)] bg-black flex items-center justify-center overflow-hidden px-4 sm:px-8 pt-24 pb-20 sm:py-12 border-b border-white/[0.05] sm:border-none" suppressHydrationWarning>
+      <div ref={heroRef} className="relative min-h-[95vh] sm:min-h-[calc(100vh-70px)] bg-black flex items-center justify-center overflow-hidden px-4 sm:px-8 pt-32 pb-20 sm:py-12 border-b border-white/[0.05] sm:border-none" suppressHydrationWarning>
         <div className="relative z-10 text-center max-w-[1000px] w-full" suppressHydrationWarning>
           {/* Main Heading - Highly Aesthetic Editorial Typography */}
           <h1 ref={titleRef}
-            className="text-4xl sm:text-6xl md:text-8xl lg:text-[10rem] font-thin leading-[0.9] mb-10 md:mb-14 tracking-[-0.04em] font-sans selection:bg-white selection:text-black mt-8 md:mt-16 lg:mt-32 cursor-none"
+            className="text-[2.6rem] sm:text-6xl md:text-8xl lg:text-[10rem] font-thin leading-[1.1] sm:leading-[0.9] mb-8 md:mb-14 tracking-[-0.04em] font-sans selection:bg-white selection:text-black mt-4 md:mt-16 lg:mt-32 cursor-none"
             data-cursor-size="large">
-            <span className="block opacity-90">CRAFTING THE</span>
-            <span className="block font-black italic text-white relative -mt-2 md:-mt-6">
+            <span className="block opacity-100 text-white/90">CRAFTING THE</span>
+            <span className="block font-black italic text-white relative -mt-1 md:-mt-6">
               FUTURE
               <span className="absolute -inset-1 bg-gradient-to-r from-transparent via-white/10 to-transparent skew-x-[-20deg] animate-shimmer pointer-events-none"></span>
             </span>
-            <div className="flex items-center justify-center gap-4 mt-4 md:mt-8">
-              <div className="h-[1px] w-8 sm:w-16 bg-white/20 hidden sm:block"></div>
-              <span className="text-base sm:text-xl md:text-2xl italic font-light tracking-normal text-white/50 lowercase">one layer at a time</span>
-              <div className="h-[1px] w-8 sm:w-16 bg-white/20 hidden sm:block"></div>
+            <div className="flex items-center justify-center gap-3 mt-6 md:mt-8">
+              <div className="h-[1px] w-6 sm:w-16 bg-white/20 hidden sm:block"></div>
+              <span className="text-sm sm:text-xl md:text-2xl italic font-light tracking-normal text-white/60 lowercase">one layer at a time</span>
+              <div className="h-[1px] w-6 sm:w-16 bg-white/20 hidden sm:block"></div>
             </div>
           </h1>
 
           {/* Subheading - More readable on mobile */}
-          <p ref={subtitleRef} className="text-sm sm:text-lg lg:text-xl leading-relaxed text-white/50 max-w-[700px] mx-auto mb-10 md:mb-12 font-thin tracking-widest px-6 opacity-80 uppercase">
-            Precision-engineered pieces. Unparalleled craftsmanship.
+          <p ref={subtitleRef} className="text-[10px] sm:text-lg lg:text-xl leading-relaxed text-white/40 max-w-[700px] mx-auto mb-8 md:mb-12 font-medium tracking-[0.3em] px-6 opacity-80 uppercase">
+            Precision-engineered pieces. <br className="sm:hidden" /> Unparalleled craftsmanship.
           </p>
 
           {/* CTA Buttons - Slick & Aesthetic Mobile Design */}

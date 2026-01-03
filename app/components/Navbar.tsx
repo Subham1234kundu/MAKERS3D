@@ -42,7 +42,7 @@ const NavIcons = ({
   const isCartActive = pathname === '/cart';
 
   return (
-    <div className={`nav-icons flex items-center ${isMobileNav ? 'justify-around w-full' : 'gap-4 sm:gap-6'}`} suppressHydrationWarning>
+    <div className={`nav-icons flex items-center ${isMobileNav ? 'justify-between w-full px-1' : 'gap-4 sm:gap-6'}`} suppressHydrationWarning>
       {/* Home Icon - Mobile Only */}
       {isMobileNav && (
         <Link href="/" className={`nav-icon ${isHomeActive ? 'active' : ''}`} aria-label="Home" suppressHydrationWarning>
@@ -52,14 +52,15 @@ const NavIcons = ({
         </Link>
       )}
 
-      <div className={`search-container flex items-center relative h-10 px-3 rounded-full transition-all duration-500 cursor-pointer ${isMobileNav ? 'bg-black/5' : 'bg-white/5 border border-white/10'}`} suppressHydrationWarning
-        onClick={() => {
+      <div className={`search-container flex items-center relative h-10 px-3 transition-all duration-500 cursor-pointer ${isMobileNav ? '' : 'bg-white/5 border border-white/10 rounded-full'}`} suppressHydrationWarning
+        onClick={(e) => {
+          e.stopPropagation();
           if (!isSearchExpanded) setIsSearchExpanded(true);
           searchInputRef.current?.focus();
         }}
       >
         <button
-          className={`nav-icon z-10 ${isMobileNav && isSearchExpanded ? '!text-white' : ''}`}
+          className={`nav-icon z-10`}
           aria-label="Search"
           onClick={(e) => {
             e.stopPropagation();
@@ -74,7 +75,7 @@ const NavIcons = ({
           ref={searchInputRef}
           type="text"
           placeholder="SEARCH..."
-          className={`bg-transparent border-none outline-none text-[10px] uppercase tracking-[0.2em] font-light w-0 opacity-0 overflow-hidden transition-all duration-500 ease-in-out placeholder:text-white/60 text-white`}
+          className={`bg-transparent border-none outline-none text-[10px] uppercase tracking-[0.2em] font-light w-0 opacity-0 overflow-hidden transition-all duration-500 ease-in-out`}
           style={{ paddingLeft: isSearchExpanded ? '12px' : '0' }}
         />
       </div>
@@ -122,6 +123,8 @@ export default function Navbar() {
   const logoTextRef = useRef<HTMLDivElement>(null);
   const searchInputRef = useRef<HTMLInputElement>(null);
   const [isScrolled, setIsScrolled] = useState(false);
+  const [showMobileNav, setShowMobileNav] = useState(true);
+  const [lastScrollY, setLastScrollY] = useState(0);
   const [isSearchExpanded, setIsSearchExpanded] = useState(false);
   const [isMobile, setIsMobile] = useState(false);
   const [mounted, setMounted] = useState(false);
@@ -136,7 +139,22 @@ export default function Navbar() {
     const handleResize = () => {
       setIsMobile(window.innerWidth < 1024);
     };
-    const handleScroll = () => setIsScrolled(window.scrollY > 20);
+
+    const handleScroll = () => {
+      const currentScrollY = window.scrollY;
+
+      // Top Navbar logic
+      setIsScrolled(currentScrollY > 20);
+
+      // Bottom Navbar logic (Hide on scroll down, show on scroll up)
+      if (currentScrollY > lastScrollY && currentScrollY > 50) {
+        setShowMobileNav(false);
+      } else {
+        setShowMobileNav(true);
+      }
+
+      setLastScrollY(currentScrollY);
+    };
 
     // Set initial mobile state
     handleResize();
@@ -148,19 +166,27 @@ export default function Navbar() {
       window.removeEventListener('resize', handleResize);
       window.removeEventListener('scroll', handleScroll);
     };
-  }, []);
+  }, [lastScrollY]);
 
   // GSAP Animation for Search Column
   useEffect(() => {
     if (!searchInputRef.current) return;
-    if (isSearchExpanded) {
-      gsap.to(searchInputRef.current, { width: '150px', opacity: 1, duration: 0.3 });
-      gsap.to('.search-container', { borderColor: 'rgba(255,255,255,0.3)', duration: 0.3 });
-    } else {
-      gsap.to(searchInputRef.current, { width: 0, opacity: 0, duration: 0.2 });
-      gsap.to('.search-container', { borderColor: 'rgba(255,255,255,0.1)', duration: 0.2 });
+    const targetWidth = isMobile ? (isSearchExpanded ? '100px' : '0') : (isSearchExpanded ? '150px' : '0');
+
+    gsap.to(searchInputRef.current, {
+      width: targetWidth,
+      opacity: isSearchExpanded ? 1 : 0,
+      duration: 0.4,
+      ease: "power2.out"
+    });
+
+    if (!isMobile) {
+      gsap.to('.search-container', {
+        borderColor: isSearchExpanded ? 'rgba(255,255,255,0.3)' : 'rgba(255,255,255,0.1)',
+        duration: 0.3
+      });
     }
-  }, [isSearchExpanded]);
+  }, [isSearchExpanded, isMobile]);
 
   const handleLogoMouseEnter = () => {
     if (isMobile) return;
@@ -177,7 +203,7 @@ export default function Navbar() {
   return (
     <>
       <nav
-        className={`fixed top-0 left-0 w-full z-[9999] bg-black py-2 transition-all duration-500 ease-in-out ${isScrolled ? '-translate-y-full opacity-0 invisible pointer-events-none' : ''
+        className={`fixed top-0 left-0 w-full z-[9999] bg-black/40 backdrop-blur-xl border-b border-white/5 py-2 transition-all duration-500 ease-in-out ${isScrolled ? '-translate-y-full opacity-0 invisible pointer-events-none' : ''
           }`}
         suppressHydrationWarning
       >
@@ -218,8 +244,9 @@ export default function Navbar() {
 
       <div suppressHydrationWarning>
         {mounted && isMobile && (
-          <div className="mobile-nav fixed bottom-6 left-1/2 -translate-x-1/2 z-[10000] w-[85%] max-w-[380px]" suppressHydrationWarning>
-            <div className="bg-white/25 backdrop-blur-[25px] border border-white/20 rounded-3xl p-2.5 flex" suppressHydrationWarning>
+          <div className={`mobile-nav fixed bottom-8 left-1/2 -translate-x-1/2 z-[10000] w-[92%] max-w-[400px] transition-all duration-500 ease-in-out ${showMobileNav ? 'translate-y-0 opacity-100' : 'translate-y-[150%] opacity-0 pointer-events-none'
+            }`} suppressHydrationWarning>
+            <div className="mobile-nav-container" suppressHydrationWarning>
               <NavIcons
                 isMobileNav={true}
                 session={session}
