@@ -378,3 +378,35 @@ a:active:not(:disabled),
   -ms-overflow-style: none;
   scrollbar-width: none;
 }
+
+/* Image Optimization for Faster Loading */
+img {
+  content-visibility: auto;
+  will-change: transform;
+}
+
+/* GPU Acceleration for Images */
+.group img,
+[class*="Image"] {
+  transform: translateZ(0);
+  backface-visibility: hidden;
+  -webkit-backface-visibility: hidden;
+}
+
+/* Improve Touch Targets on Mobile */
+@media (max-width: 1024px) {
+
+  button,
+  a {
+    min-width: 44px;
+    min-height: 44px;
+  }
+
+  /* Prevent double-tap zoom on buttons */
+  button,
+  a,
+  input[type="button"],
+  input[type="submit"] {
+    touch-action: manipulation;
+  }
+}

@@ -33,6 +33,8 @@ export default function ProductCard({ id, image, alt, secondImage, secondAlt, ti
             className="group relative"
             onMouseEnter={() => setIsHovered(true)}
             onMouseLeave={() => setIsHovered(false)}
+            onTouchStart={() => setIsHovered(true)}
+            onTouchEnd={() => setTimeout(() => setIsHovered(false), 300)}
         >
             <Link href={`/products/${id}`}>
                 <div className="cursor-pointer">
@@ -47,6 +49,8 @@ export default function ProductCard({ id, image, alt, secondImage, secondAlt, ti
                                 className={`object-cover object-center transition-opacity duration-500 ${isHovered && secondImage ? 'opacity-0' : 'opacity-100'
                                     }`}
                                 sizes="(max-width: 640px) 50vw, (max-width: 1024px) 33vw, 25vw"
+                                priority
+                                quality={85}
                             />
                         )}
 
@@ -59,6 +63,7 @@ export default function ProductCard({ id, image, alt, secondImage, secondAlt, ti
                                 className={`object-cover object-center transition-opacity duration-500 ${isHovered ? 'opacity-100' : 'opacity-0'
                                     }`}
                                 sizes="(max-width: 640px) 50vw, (max-width: 1024px) 33vw, 25vw"
+                                quality={85}
                             />
                         )}
 
@@ -96,8 +101,16 @@ export default function ProductCard({ id, image, alt, secondImage, secondAlt, ti
             {/* Plus Icon - Outside Link to avoid nesting issue, always visible on mobile */}
             <button
                 type="button"
-                className={`absolute bottom-[90px] right-3  sm:right-4 w-11 h-11 sm:w-12 sm:h-12 bg-white flex items-center justify-center transition-all duration-300 cursor-pointer lg:opacity-0 lg:-translate-x-4 group-hover:opacity-100 group-hover:translate-x-0 hover:translate-y-2 active:scale-90 z-20 ${isPlusHovered ? 'bg-gray-100' : ''
-                    }`}
+                className={`absolute bottom-[90px] right-3 sm:right-4 
+                    w-12 h-12 sm:w-14 sm:h-14 
+                    bg-white flex items-center justify-center 
+                    transition-all duration-300 cursor-pointer 
+                    lg:opacity-0 lg:-translate-x-4 
+                    group-hover:opacity-100 group-hover:translate-x-0 
+                    hover:translate-y-2 active:scale-90 
+                    z-20 touch-manipulation
+                    ${isPlusHovered ? 'bg-gray-100' : ''}
+                    `}
                 onMouseEnter={() => setIsPlusHovered(true)}
                 onMouseLeave={() => setIsPlusHovered(false)}
                 onClick={(e) => {
@@ -113,7 +126,22 @@ export default function ProductCard({ id, image, alt, secondImage, secondAlt, ti
                         });
                     }
                 }}
+                onTouchEnd={(e) => {
+                    e.preventDefault();
+                    handleAddToCart(e as any);
+                    const icon = e.currentTarget.querySelector('.plus-icon');
+                    if (icon) {
+                        icon.animate([
+                            { transform: 'rotate(0deg)' },
+                            { transform: 'rotate(360deg)' }
+                        ], {
+                            duration: 700,
+                            easing: 'cubic-bezier(0.23, 1, 0.32, 1)'
+                        });
+                    }
+                }}
                 aria-label="Add to cart"
+                style={{ WebkitTapHighlightColor: 'transparent' }}
             >
                 <svg
                     width="20"

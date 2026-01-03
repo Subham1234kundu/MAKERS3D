@@ -189,6 +189,8 @@ export default function ProductDetailPage() {
                                 fill
                                 className="object-cover transition-transform duration-700 group-hover/gallery:scale-105"
                                 priority
+                                quality={90}
+                                loading="eager"
                             />
                             <div className="absolute inset-0 border border-white/10 pointer-events-none" />
                         </div>
@@ -203,16 +205,26 @@ export default function ProductDetailPage() {
                                 return (
                                     <button
                                         key={idx}
-                                        onClick={() => setActiveImage(imgUrl)}
+                                        onClick={(e) => {
+                                            e.preventDefault();
+                                            e.stopPropagation();
+                                            setActiveImage(imgUrl);
+                                        }}
                                         className={`relative border bg-neutral-900/80 backdrop-blur-sm transition-all 
-                                            w-10 h-10 md:w-16 md:h-16 
+                                            w-14 h-14 md:w-16 md:h-16 
+                                            touch-manipulation cursor-pointer
+                                            active:scale-95
                                             ${activeImage === imgUrl ? 'border-white opacity-100 scale-105' : 'border-white/20 hover:border-white/60 opacity-60 hover:opacity-100'}`}
+                                        style={{ WebkitTapHighlightColor: 'transparent' }}
+                                        type="button"
                                     >
                                         <Image
                                             src={imgUrl}
                                             alt={imgAlt}
                                             fill
-                                            className="object-cover"
+                                            className="object-cover pointer-events-none"
+                                            quality={75}
+                                            sizes="64px"
                                         />
                                     </button>
                                 );
