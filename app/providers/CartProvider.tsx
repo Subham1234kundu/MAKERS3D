@@ -10,7 +10,7 @@ interface CartItem {
     name?: string;
     price: number;
     image?: string;
-    images?: string[];
+    images?: (string | { url: string; alt: string })[];
     category: string;
     quantity: number;
 }
@@ -178,7 +178,11 @@ export function CartProvider({ children }: { children: React.ReactNode }) {
                     <div className="hidden sm:block fixed bottom-8 right-8 z-[2000] animate-toast-in w-auto">
                         <div className="bg-white text-black p-4 pr-12 shadow-[0_20px_50px_rgba(0,0,0,0.3)] flex items-center gap-4 min-w-[320px] border-l-4 border-black relative">
                             <div className="relative w-12 h-12 bg-gray-100 flex-shrink-0">
-                                <img src={lastAddedItem.images?.[0] || lastAddedItem.image} alt="" className="object-cover w-full h-full" />
+                                <img
+                                    src={typeof lastAddedItem.images?.[0] === 'string' ? lastAddedItem.images[0] : (lastAddedItem.images?.[0]?.url || lastAddedItem.image)}
+                                    alt={typeof lastAddedItem.images?.[0] === 'object' ? lastAddedItem.images[0].alt : (lastAddedItem.name || lastAddedItem.title || 'Product')}
+                                    className="object-cover w-full h-full"
+                                />
                             </div>
                             <div className="flex-1 min-w-0">
                                 <p className="text-[9px] uppercase tracking-[0.2em] text-black/40 font-bold mb-0.5">Added to Collection</p>

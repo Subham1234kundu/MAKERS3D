@@ -349,7 +349,11 @@ export default function CheckoutPage() {
                             {cartItems.map((item) => (
                                 <div key={item.id} className="flex gap-4 items-center">
                                     <div className="relative w-16 h-20 bg-neutral-900 border border-white/5 overflow-hidden flex-shrink-0">
-                                        <img src={item.images?.[0] || item.image} alt="" className="object-cover w-full h-full" />
+                                        <img
+                                            src={typeof item.images?.[0] === 'string' ? item.images[0] : (item.images?.[0]?.url || item.image)}
+                                            alt={typeof item.images?.[0] === 'object' ? item.images[0].alt : (item.name || item.title || 'Product')}
+                                            className="object-cover w-full h-full"
+                                        />
                                         <span className="absolute -top-2 -right-2 bg-white text-black text-[9px] font-bold w-5 h-5 rounded-full flex items-center justify-center border border-black">
                                             {item.quantity}
                                         </span>

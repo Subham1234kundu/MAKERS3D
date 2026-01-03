@@ -96,16 +96,28 @@ export default function ProductsPage() {
                         </div>
                     ) : (
                         <div className="grid grid-cols-2 md:grid-cols-3 lg:grid-cols-4 gap-x-4 gap-y-10 sm:gap-8">
-                            {filteredProducts.map((product) => (
-                                <ProductCard
-                                    key={product.id}
-                                    id={product.id}
-                                    image={product.images?.[0] || product.image}
-                                    title={product.name || product.title}
-                                    price={product.price}
-                                    originalPrice={product.originalPrice}
-                                />
-                            ))}
+                            {filteredProducts.map((product) => {
+                                const firstImage = typeof product.images?.[0] === 'string' ? product.images[0] : (product.images?.[0]?.url || product.image);
+                                const firstAlt = typeof product.images?.[0] === 'object' ? product.images[0].alt : product.name;
+
+                                // Extract second image for hover effect
+                                const secondImage = product.images?.[1] ? (typeof product.images[1] === 'string' ? product.images[1] : product.images[1]?.url) : undefined;
+                                const secondAlt = typeof product.images?.[1] === 'object' ? product.images[1].alt : `${product.name} - view 2`;
+
+                                return (
+                                    <ProductCard
+                                        key={product.id}
+                                        id={product.id}
+                                        image={firstImage}
+                                        alt={firstAlt}
+                                        secondImage={secondImage}
+                                        secondAlt={secondAlt}
+                                        title={product.name || product.title}
+                                        price={product.price}
+                                        originalPrice={product.originalPrice}
+                                    />
+                                );
+                            })}
                         </div>
                     )}
 

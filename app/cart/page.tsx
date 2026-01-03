@@ -112,8 +112,8 @@ export default function CartPage() {
                 >
                   <Link href={`/products/${item.id}`} className="relative w-full sm:w-40 aspect-[4/5] sm:aspect-[3/4] bg-neutral-900 overflow-hidden block">
                     <Image
-                      src={item.images?.[0] || item.image || '/images/placeholder.jpg'}
-                      alt={item.name || item.title || 'Product'}
+                      src={typeof item.images?.[0] === 'string' ? item.images[0] : (item.images?.[0]?.url || item.image || '/images/placeholder.jpg')}
+                      alt={typeof item.images?.[0] === 'object' ? item.images[0].alt : (item.name || item.title || 'Product')}
                       fill
                       className="object-cover transition-transform duration-500 group-hover:scale-110"
                     />

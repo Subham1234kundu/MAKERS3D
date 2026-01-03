@@ -44,7 +44,8 @@ export default function ProductDetailPage() {
                 if (res.ok) {
                     const data = await res.json();
                     setProduct(data);
-                    setActiveImage(data.images?.[0] || data.image);
+                    const firstImage = data.images?.[0];
+                    setActiveImage(typeof firstImage === 'string' ? firstImage : (firstImage?.url || data.image));
 
                     // Check if liked if logged in
                     if (session?.user?.email) {
@@ -182,7 +183,9 @@ export default function ProductDetailPage() {
                         <div className="relative aspect-square sm:aspect-[4/5] bg-neutral-900 overflow-hidden">
                             <Image
                                 src={activeImage}
-                                alt={product.name || product.title}
+                                alt={typeof product.images?.find((i: any) => (typeof i === 'string' ? i : i.url) === activeImage) === 'object'
+                                    ? product.images.find((i: any) => i.url === activeImage).alt
+                                    : product.name}
                                 fill
                                 className="object-cover transition-transform duration-700 group-hover/gallery:scale-105"
                                 priority
@@ -194,22 +197,26 @@ export default function ProductDetailPage() {
                             md:absolute md:mt-0 md:z-10 md:top-1/2 md:-translate-y-1/2 md:left-4 md:flex-col md:gap-3
                             md:opacity-0 md:group-hover/gallery:opacity-100 
                             md:-translate-x-4 md:group-hover/gallery:translate-x-0`}>
-                            {(product.images || [product.image]).map((img: string, idx: number) => (
-                                <button
-                                    key={idx}
-                                    onClick={() => setActiveImage(img)}
-                                    className={`relative border bg-neutral-900/80 backdrop-blur-sm transition-all 
-                                        w-10 h-10 md:w-16 md:h-16 
-                                        ${activeImage === img ? 'border-white opacity-100 scale-105' : 'border-white/20 hover:border-white/60 opacity-60 hover:opacity-100'}`}
-                                >
-                                    <Image
-                                        src={img}
-                                        alt={`${product.name || product.title} view ${idx + 1}`}
-                                        fill
-                                        className="object-cover"
-                                    />
-                                </button>
-                            ))}
+                            {(product.images || [product.image]).map((img: any, idx: number) => {
+                                const imgUrl = typeof img === 'string' ? img : img.url;
+                                const imgAlt = typeof img === 'string' ? `${product.name} view ${idx + 1}` : img.alt;
+                                return (
+                                    <button
+                                        key={idx}
+                                        onClick={() => setActiveImage(imgUrl)}
+                                        className={`relative border bg-neutral-900/80 backdrop-blur-sm transition-all 
+                                            w-10 h-10 md:w-16 md:h-16 
+                                            ${activeImage === imgUrl ? 'border-white opacity-100 scale-105' : 'border-white/20 hover:border-white/60 opacity-60 hover:opacity-100'}`}
+                                    >
+                                        <Image
+                                            src={imgUrl}
+                                            alt={imgAlt}
+                                            fill
+                                            className="object-cover"
+                                        />
+                                    </button>
+                                );
+                            })}
                         </div>
                     </div>
 

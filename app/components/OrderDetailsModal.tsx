@@ -70,8 +70,24 @@ export default function OrderDetailsModal({ isOpen, onClose, order }: OrderDetai
                         </div>
 
                         <div>
-                            <p className="text-[10px] text-white/40 uppercase tracking-widest mb-1">Product</p>
-                            <p className="text-sm font-light text-white">{order.product}</p>
+                            <p className="text-[10px] text-white/40 uppercase tracking-widest mb-2">Items</p>
+                            <div className="space-y-3">
+                                {order.items && order.items.length > 0 ? (
+                                    order.items.map((item: any, i: number) => (
+                                        <div key={i} className="flex items-center gap-4 bg-white/5 p-3 rounded-sm border border-white/5">
+                                            <div className="w-12 h-16 bg-neutral-800 relative flex-shrink-0 overflow-hidden">
+                                                <img src={item.image} alt={item.name} className="w-full h-full object-cover" />
+                                            </div>
+                                            <div className="flex-1">
+                                                <p className="text-sm font-light text-white">{item.name}</p>
+                                                <p className="text-[10px] text-white/40 uppercase tracking-widest">Qty: {item.quantity}</p>
+                                            </div>
+                                        </div>
+                                    ))
+                                ) : (
+                                    <p className="text-sm font-light text-white">{order.product}</p>
+                                )}
+                            </div>
                         </div>
 
                         {order.description && (

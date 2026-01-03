@@ -256,17 +256,31 @@ export default function HomePage() {
                 [1, 2, 3, 4].map(i => (
                   <div key={i} className="min-w-[280px] sm:min-w-[320px] aspect-[4/5] bg-white/5 rounded-3xl animate-pulse" />
                 ))
-              ) : products.slice(0, 5).map((product) => (
-                <div key={`new-${product.id || product._id}`} className="min-w-[280px] sm:min-w-[320px]">
-                  <ProductCard
-                    id={product.id || product._id}
-                    image={product.images?.[0] || product.image}
-                    title={product.name || product.title}
-                    price={product.price}
-                    originalPrice={product.originalPrice}
-                  />
-                </div>
-              ))}
+              ) : products.slice(0, 5).map((product) => {
+                const imageData = product.images?.[0] || product.image;
+                const imageUrl = typeof imageData === 'object' ? imageData?.url : imageData;
+                const imageAlt = typeof imageData === 'object' ? imageData?.alt : product.name || product.title;
+
+                // Extract second image for hover effect
+                const secondImageData = product.images?.[1];
+                const secondImageUrl = secondImageData ? (typeof secondImageData === 'object' ? secondImageData?.url : secondImageData) : undefined;
+                const secondImageAlt = secondImageData && typeof secondImageData === 'object' ? secondImageData?.alt : `${product.name || product.title} - view 2`;
+
+                return (
+                  <div key={`new-${product.id || product._id}`} className="min-w-[280px] sm:min-w-[320px]">
+                    <ProductCard
+                      id={product.id || product._id}
+                      image={imageUrl}
+                      alt={imageAlt}
+                      secondImage={secondImageUrl}
+                      secondAlt={secondImageAlt}
+                      title={product.name || product.title}
+                      price={product.price}
+                      originalPrice={product.originalPrice}
+                    />
+                  </div>
+                );
+              })}
             </div>
           </div>
         </div>
@@ -291,16 +305,30 @@ export default function HomePage() {
                 <div key={i} className="aspect-[3/4] bg-white/5 animate-pulse rounded-2xl" suppressHydrationWarning />
               ))
             ) : filteredProducts.length > 0 ? (
-              filteredProducts.map((product) => (
-                <ProductCard
-                  key={product.id || product._id}
-                  id={product.id || product._id}
-                  image={product.images?.[0] || product.image}
-                  title={product.name || product.title}
-                  price={product.price}
-                  originalPrice={product.originalPrice}
-                />
-              ))
+              filteredProducts.map((product) => {
+                const imageData = product.images?.[0] || product.image;
+                const imageUrl = typeof imageData === 'object' ? imageData?.url : imageData;
+                const imageAlt = typeof imageData === 'object' ? imageData?.alt : product.name || product.title;
+
+                // Extract second image for hover effect
+                const secondImageData = product.images?.[1];
+                const secondImageUrl = secondImageData ? (typeof secondImageData === 'object' ? secondImageData?.url : secondImageData) : undefined;
+                const secondImageAlt = secondImageData && typeof secondImageData === 'object' ? secondImageData?.alt : `${product.name || product.title} - view 2`;
+
+                return (
+                  <ProductCard
+                    key={product.id || product._id}
+                    id={product.id || product._id}
+                    image={imageUrl}
+                    alt={imageAlt}
+                    secondImage={secondImageUrl}
+                    secondAlt={secondImageAlt}
+                    title={product.name || product.title}
+                    price={product.price}
+                    originalPrice={product.originalPrice}
+                  />
+                );
+              })
             ) : (
               <div className="col-span-full text-center py-20 text-white/10 font-thin tracking-[0.3em] uppercase text-[10px]">
                 No masterpieces in this drawer

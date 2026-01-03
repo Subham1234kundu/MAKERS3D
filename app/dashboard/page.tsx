@@ -409,7 +409,11 @@ export default function DashboardPage() {
                                 <div key={product.id} className="group relative border border-white/5 bg-neutral-900/20 p-4 hover:border-white/20 transition-all">
                                     <div className="aspect-square bg-neutral-800 mb-4 overflow-hidden relative">
                                         <div className="absolute inset-0 bg-black/40 opacity-0 group-hover:opacity-100 transition-opacity z-10 backdrop-blur-[2px]" />
-                                        <img src={product.images[0] || '/images/placeholder.jpg'} alt={product.name} className="w-full h-full object-cover opacity-80 group-hover:opacity-100 group-hover:scale-105 transition-all duration-700" />
+                                        <img
+                                            src={typeof product.images[0] === 'string' ? product.images[0] : (product.images[0]?.url || '/images/placeholder.jpg')}
+                                            alt={typeof product.images[0] === 'string' ? product.name : (product.images[0]?.alt || product.name)}
+                                            className="w-full h-full object-cover opacity-80 group-hover:opacity-100 group-hover:scale-105 transition-all duration-700"
+                                        />
 
                                         <div className="absolute inset-0 z-20 flex items-center justify-center gap-3 opacity-0 group-hover:opacity-100 transition-all duration-300 translate-y-2 group-hover:translate-y-0">
                                             <button
@@ -489,9 +493,19 @@ export default function DashboardPage() {
                                                 </span>
                                             </div>
 
-                                            <div>
-                                                <div className="text-lg font-light text-white mb-1">{order.product}</div>
-                                                <div className="text-sm text-white/60">{order.customer}</div>
+                                            <div className="flex gap-4">
+                                                <div className="w-16 h-20 bg-neutral-900 border border-white/5 overflow-hidden flex-shrink-0">
+                                                    {order.items?.[0]?.image ? (
+                                                        <img src={order.items[0].image} alt={order.items[0].name} className="w-full h-full object-cover" />
+                                                    ) : (
+                                                        <div className="w-full h-full flex items-center justify-center text-[8px] text-white/20 uppercase tracking-widest">N/A</div>
+                                                    )}
+                                                </div>
+                                                <div className="flex-1">
+                                                    <div className="text-sm font-light text-white mb-1">{order.product}</div>
+                                                    <div className="text-xs text-white/60 mb-1">{order.customer}</div>
+                                                    <div className="text-[10px] text-white/40 uppercase tracking-widest">{order.payment_method?.toUpperCase()}</div>
+                                                </div>
                                             </div>
                                         </div>
 
@@ -549,8 +563,8 @@ export default function DashboardPage() {
                                     <thead>
                                         <tr className="border-b border-white/10">
                                             <th className="py-4 text-[10px] uppercase tracking-widest text-white/40 font-normal">Order ID</th>
-                                            <th className="py-4 text-[10px] uppercase tracking-widest text-white/40 font-normal">Customer</th>
                                             <th className="py-4 text-[10px] uppercase tracking-widest text-white/40 font-normal">Product</th>
+                                            <th className="py-4 text-[10px] uppercase tracking-widest text-white/40 font-normal">Customer</th>
                                             <th className="py-4 text-[10px] uppercase tracking-widest text-white/40 font-normal">Amount</th>
                                             <th className="py-4 text-[10px] uppercase tracking-widest text-white/40 font-normal">Date</th>
                                             <th className="py-4 text-[10px] uppercase tracking-widest text-white/40 font-normal">Status</th>
@@ -564,8 +578,19 @@ export default function DashboardPage() {
                                                 className="border-b border-white/5 hover:bg-white/5 transition-colors group"
                                             >
                                                 <td onClick={() => setSelectedOrder(order)} className="py-4 text-sm font-light text-white font-mono cursor-pointer">{order.id}</td>
+                                                <td onClick={() => setSelectedOrder(order)} className="py-4 cursor-pointer">
+                                                    <div className="flex items-center gap-3">
+                                                        <div className="w-8 h-10 bg-neutral-900 border border-white/5 overflow-hidden flex-shrink-0">
+                                                            {order.items?.[0]?.image ? (
+                                                                <img src={order.items[0].image} alt={order.items[0].name} className="w-full h-full object-cover" />
+                                                            ) : (
+                                                                <div className="w-full h-full flex items-center justify-center text-[8px] text-white/20">N/A</div>
+                                                            )}
+                                                        </div>
+                                                        <span className="text-sm font-light text-white/80">{order.product}</span>
+                                                    </div>
+                                                </td>
                                                 <td onClick={() => setSelectedOrder(order)} className="py-4 text-sm font-light text-white cursor-pointer">{order.customer}</td>
-                                                <td onClick={() => setSelectedOrder(order)} className="py-4 text-sm font-light text-white/80 cursor-pointer">{order.product}</td>
                                                 <td onClick={() => setSelectedOrder(order)} className="py-4 text-sm font-light text-white/80 cursor-pointer">{order.amount}</td>
                                                 <td onClick={() => setSelectedOrder(order)} className="py-4 text-[10px] text-white/40 uppercase tracking-widest cursor-pointer">{order.date}</td>
                                                 <td onClick={() => setSelectedOrder(order)} className="py-4 cursor-pointer">

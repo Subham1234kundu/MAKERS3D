@@ -8,13 +8,16 @@ import { useCart } from '../providers/CartProvider';
 interface ProductCardProps {
     id: number | string;
     image: string;
+    alt?: string;
+    secondImage?: string; // Second image for hover effect
+    secondAlt?: string;   // Alt text for second image
     title: string;
     price: number;
     originalPrice: number;
-    category?: string; // Added category
+    category?: string;
 }
 
-export default function ProductCard({ id, image, title, price, originalPrice, category = 'ALL' }: ProductCardProps) {
+export default function ProductCard({ id, image, alt, secondImage, secondAlt, title, price, originalPrice, category = 'ALL' }: ProductCardProps) {
     const [isHovered, setIsHovered] = useState(false);
     const [isPlusHovered, setIsPlusHovered] = useState(false);
     const { addToCart } = useCart();
@@ -35,14 +38,35 @@ export default function ProductCard({ id, image, title, price, originalPrice, ca
                 <div className="cursor-pointer">
                     {/* Image Container */}
                     <div className="relative aspect-[3/4] mb-3 sm:mb-4 overflow-hidden transition-all duration-300 bg-black">
-                        {/* Image */}
-                        <Image
-                            src={image}
-                            alt={title}
-                            fill
-                            className="object-cover object-center"
-                            sizes="(max-width: 640px) 50vw, (max-width: 1024px) 33vw, 25vw"
-                        />
+                        {/* First Image */}
+                        {image && (
+                            <Image
+                                src={image}
+                                alt={alt || title}
+                                fill
+                                className={`object-cover object-center transition-opacity duration-500 ${isHovered && secondImage ? 'opacity-0' : 'opacity-100'
+                                    }`}
+                                sizes="(max-width: 640px) 50vw, (max-width: 1024px) 33vw, 25vw"
+                            />
+                        )}
+
+                        {/* Second Image - Shows on hover */}
+                        {secondImage && (
+                            <Image
+                                src={secondImage}
+                                alt={secondAlt || `${title} - alternate view`}
+                                fill
+                                className={`object-cover object-center transition-opacity duration-500 ${isHovered ? 'opacity-100' : 'opacity-0'
+                                    }`}
+                                sizes="(max-width: 640px) 50vw, (max-width: 1024px) 33vw, 25vw"
+                            />
+                        )}
+
+                        {!image && !secondImage && (
+                            <div className="absolute inset-0 flex items-center justify-center text-white/20 text-xs">
+                                No Image
+                            </div>
+                        )}
 
                         {/* Border - Black by default, Gray on hover */}
                         <div className={`absolute inset-0 border transition-colors duration-300 ${isHovered ? 'border-gray-500' : 'border-white/5'
