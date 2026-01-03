@@ -8,41 +8,6 @@ import Navbar from '../components/Navbar';
 import Footer from '../components/Footer';
 import Link from 'next/link';
 
-// Mock Data
-const MOCK_ORDERS = [
-    {
-        id: 'ORD-7782-XJ',
-        date: '2024-12-28',
-        status: 'Processing',
-        returnStatus: null,
-        total: 4500,
-        items: [
-            { name: 'Geometric Cube Lamp', image: '/images/product-1.jpg' },
-            { name: 'Custom Map Frame', image: '/images/product-4.jpg' }
-        ]
-    },
-    {
-        id: 'ORD-9921-MC',
-        date: '2024-11-15',
-        status: 'Delivered',
-        returnStatus: 'Approved',
-        total: 2000,
-        items: [
-            { name: 'Shiva Meditation Statue', image: '/images/product-5.jpg' }
-        ]
-    },
-    {
-        id: 'ORD-1124-DL',
-        date: '2024-12-10',
-        status: 'Delivered',
-        returnStatus: null,
-        total: 2000,
-        items: [
-            { name: 'Hexagonal Wall Art', image: '/images/product-3.jpg' }
-        ]
-    }
-];
-
 const MOCK_ADDRESSES = [
     {
         id: 1,
@@ -62,6 +27,8 @@ export default function ProfilePage() {
     const router = useRouter();
     const [activeTab, setActiveTab] = useState<Tab>('orders');
     const [isLoading, setIsLoading] = useState(true);
+    const [orders, setOrders] = useState<any[]>([]);
+    const [isLoadingOrders, setIsLoadingOrders] = useState(false);
 
     // Return Flow States
     const [returnModalOpen, setReturnModalOpen] = useState(false);
@@ -83,6 +50,21 @@ export default function ProfilePage() {
     const containerRef = useRef<HTMLDivElement>(null);
     const passwordFormRef = useRef<HTMLDivElement>(null);
 
+    const fetchOrders = async () => {
+        setIsLoadingOrders(true);
+        try {
+            const res = await fetch('/api/user/orders');
+            if (res.ok) {
+                const data = await res.json();
+                setOrders(data);
+            }
+        } catch (error) {
+            console.error('Error fetching orders:', error);
+        } finally {
+            setIsLoadingOrders(false);
+        }
+    };
+
     useEffect(() => {
         if (status === 'unauthenticated') {
             router.push('/login');
@@ -92,6 +74,7 @@ export default function ProfilePage() {
                 name: session?.user?.name || '',
                 email: session?.user?.email || ''
             });
+            fetchOrders();
         }
     }, [status, router, session]);
 
@@ -318,9 +301,8 @@ export default function ProfilePage() {
 
                         {activeTab === 'orders' && (
                             <div className="space-y-6">
-                                <h2 className="text-xl font-thin tracking-widest mb-8 border-b border-white/10 pb-4">ORDER HISTORY</h2>
-                                {MOCK_ORDERS.length > 0 ? (
-                                    MOCK_ORDERS.map((order) => (
+                                {orders.length > 0 ? (
+                                    orders.map((order: any) => (
                                         <div key={order.id} className="bg-neutral-900/30 border border-white/5 p-6 md:p-8 hover:border-white/20 transition-colors group">
                                             <div className="flex flex-col md:flex-row justify-between md:items-center gap-4 mb-6">
                                                 <div>
@@ -361,7 +343,7 @@ export default function ProfilePage() {
                                                     )}
                                                 </div>
                                                 <div className="grid gap-4">
-                                                    {order.items.map((item, i) => (
+                                                    {order.items?.map((item: any, i: number) => (
                                                         <div key={i} className="flex items-center gap-4 bg-black/40 p-3 border border-white/5">
                                                             <div className="w-12 h-12 bg-neutral-800 relative flex-shrink-0">
                                                                 <img src={item.image} alt={item.name} className="w-full h-full object-cover" />

@@ -25,9 +25,12 @@ export async function GET(request: NextRequest) {
             phone: order.customer_mobile,
             product: order.p_info || 'Custom Order',
             amount: `₹${Number(order.amount).toLocaleString('en-IN')}`,
-            status: order.status.charAt(0).toUpperCase() + order.status.slice(1), // Capitalize
+            status: order.status === 'pending' ? 'Pending Payment' :
+                order.status === 'cod_pending' ? 'COD Pending' :
+                    order.status.charAt(0).toUpperCase() + order.status.slice(1),
             date: new Date(order.createdAt).toISOString().split('T')[0],
-            rawStatus: order.status
+            rawStatus: order.status,
+            payment_method: order.payment_method || 'upi'
         }));
 
         return NextResponse.json(formattedOrders);

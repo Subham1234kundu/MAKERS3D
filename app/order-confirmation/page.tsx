@@ -1,20 +1,34 @@
 'use client';
 
 import { useState, useEffect, useRef } from 'react';
-import { useRouter } from 'next/navigation';
+import { useRouter, useSearchParams } from 'next/navigation';
 import { useCart } from '../providers/CartProvider';
 import Navbar from '../components/Navbar';
 import Footer from '../components/Footer';
 import Link from 'next/link';
 
 export default function OrderConfirmation() {
-    const [status, setStatus] = useState<'loading' | 'success' | 'failure' | 'pending'>('loading');
+    const [status, setStatus] = useState<'loading' | 'success' | 'failure' | 'pending' | 'cod_success'>('loading');
     const [orderDetails, setOrderDetails] = useState<any>(null);
     const { clearCart } = useCart();
     const router = useRouter();
+    const searchParams = useSearchParams();
     const checkCountRef = useRef(0);
 
     const checkStatus = async () => {
+        const method = searchParams.get('method');
+        const id = searchParams.get('id');
+
+        if (method === 'cod') {
+            setStatus('cod_success');
+            setOrderDetails({
+                order_id: id || 'N/A',
+                payment_method: 'cod'
+            });
+            clearCart();
+            return;
+        }
+
         const txn_id = localStorage.getItem('last_txn_id');
         const txn_date = localStorage.getItem('last_txn_date');
 
@@ -58,7 +72,7 @@ export default function OrderConfirmation() {
 
     useEffect(() => {
         checkStatus();
-    }, []);
+    }, [searchParams]);
 
     return (
         <div className="bg-black min-h-screen text-white font-['Helvetica_Neue',Arial,sans-serif]">
@@ -73,7 +87,7 @@ export default function OrderConfirmation() {
                     </div>
                 )}
 
-                {status === 'success' && (
+                {(status === 'success' || status === 'cod_success') && (
                     <div className="space-y-8 text-center animate-fadeIn">
                         <div className="w-20 h-20 bg-white rounded-full mx-auto flex items-center justify-center shadow-[0_0_50px_rgba(255,255,255,0.2)]">
                             <svg width="40" height="40" viewBox="0 0 24 24" fill="none" stroke="black" strokeWidth="2.5">
@@ -83,19 +97,21 @@ export default function OrderConfirmation() {
                         <div className="space-y-4">
                             <h1 className="text-3xl md:text-5xl font-thin tracking-tighter">Order Confirmed</h1>
                             <p className="text-white/60 font-light tracking-wide max-w-md mx-auto">
-                                Thank you for your purchase. Your payment was successful and we've started preparing your masterpiece.
+                                {status === 'cod_success'
+                                    ? "Thank you for your purchase. Your order has been placed successfully via Cash on Delivery. Please keep the exact amount ready at the time of delivery."
+                                    : "Thank you for your purchase. Your payment was successful and we've started preparing your masterpiece."}
                             </p>
                         </div>
 
                         {orderDetails && (
                             <div className="bg-white/5 border border-white/10 p-8 rounded-2xl max-w-md mx-auto text-left space-y-4">
                                 <div className="flex justify-between text-[10px] tracking-widest uppercase text-white/40">
-                                    <span>Transaction ID</span>
-                                    <span>Amount Paid</span>
+                                    <span>{status === 'cod_success' ? 'Order ID' : 'Transaction ID'}</span>
+                                    <span>{status === 'cod_success' ? 'Amount to Pay' : 'Amount Paid'}</span>
                                 </div>
                                 <div className="flex justify-between font-light">
-                                    <span className="truncate max-w-[150px]">{orderDetails.upi_txn_id}</span>
-                                    <span>₹{orderDetails.amount.toLocaleString('en-IN')}</span>
+                                    <span className="truncate max-w-[150px]">{status === 'cod_success' ? orderDetails.order_id : orderDetails.upi_txn_id}</span>
+                                    <span>₹{Number(orderDetails.amount || 0).toLocaleString('en-IN')}</span>
                                 </div>
                             </div>
                         )}
