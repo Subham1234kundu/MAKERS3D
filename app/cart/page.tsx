@@ -218,14 +218,14 @@ export default function CartPage() {
                 </div>
 
                 <div className="space-y-4">
-                  <button
-                    ref={checkoutBtnRef}
-                    className="w-full border border-white/20 text-white py-4 sm:py-5 text-[11px] sm:text-xs font-bold uppercase tracking-[0.3em] relative overflow-hidden transition-all duration-300 hover:bg-white hover:text-black hover:border-white hover:shadow-[0_0_20px_rgba(255,255,255,0.3)]"
+                  <Link
+                    href="/checkout"
+                    className="w-full border border-white/20 text-white py-4 sm:py-5 text-[11px] sm:text-xs font-bold uppercase tracking-[0.3em] relative overflow-hidden transition-all duration-300 hover:bg-white hover:text-black hover:border-white hover:shadow-[0_0_20px_rgba(255,255,255,0.3)] flex items-center justify-center"
                   >
                     Secure Checkout
-                  </button>
+                  </Link>
                   <p className="text-[9px] sm:text-[10px] text-center text-white/30 tracking-widest leading-relaxed">
-                    SECURE PAYMENT POWERED BY RAZORPAY
+                    SECURE PAYMENT POWERED BY UPIGATEWAY
                   </p>
                 </div>
               </div>
