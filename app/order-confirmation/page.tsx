@@ -1,13 +1,13 @@
 'use client';
 
-import { useState, useEffect, useRef } from 'react';
+import { useState, useEffect, useRef, Suspense } from 'react';
 import { useRouter, useSearchParams } from 'next/navigation';
 import { useCart } from '../providers/CartProvider';
 import Navbar from '../components/Navbar';
 import Footer from '../components/Footer';
 import Link from 'next/link';
 
-export default function OrderConfirmation() {
+function OrderConfirmationContent() {
     const [status, setStatus] = useState<'loading' | 'success' | 'failure' | 'pending' | 'cod_success'>('loading');
     const [orderDetails, setOrderDetails] = useState<any>(null);
     const { clearCart } = useCart();
@@ -26,6 +26,11 @@ export default function OrderConfirmation() {
                 payment_method: 'cod'
             });
             clearCart();
+            return;
+        }
+
+        // Check if we're in the browser before accessing localStorage
+        if (typeof window === 'undefined') {
             return;
         }
 
@@ -179,5 +184,17 @@ export default function OrderConfirmation() {
                 }
             `}</style>
         </div>
+    );
+}
+
+export default function OrderConfirmation() {
+    return (
+        <Suspense fallback={
+            <div className="bg-black min-h-screen text-white flex items-center justify-center">
+                <div className="w-16 h-16 border-2 border-white/10 border-t-white rounded-full animate-spin" />
+            </div>
+        }>
+            <OrderConfirmationContent />
+        </Suspense>
     );
 }
