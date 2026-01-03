@@ -34,6 +34,8 @@ export async function POST(req: Request) {
             // Save order to database as pending
             try {
                 const db = await getDatabase('makers3d_db');
+
+                // 1. Add/Update Order
                 await db.collection('orders').insertOne({
                     client_txn_id,
                     order_id: data.data.order_id,
@@ -46,8 +48,28 @@ export async function POST(req: Request) {
                     createdAt: new Date(),
                     updatedAt: new Date()
                 });
+
+                // 2. Add/Update Customer record
+                await db.collection('customers').updateOne(
+                    { email: customer_email.toLowerCase() },
+                    {
+                        $set: {
+                            name: customer_name,
+                            phone: customer_mobile,
+                            lastOrderAt: new Date(),
+                            updatedAt: new Date()
+                        },
+                        $setOnInsert: {
+                            createdAt: new Date(),
+                        },
+                        $inc: {
+                            orderAttempts: 1
+                        }
+                    },
+                    { upsert: true }
+                );
             } catch (dbError) {
-                console.error('Database order creation error:', dbError);
+                console.error('Database maintenance error:', dbError);
                 // We still proceed since payment gateway order was created
             }
 

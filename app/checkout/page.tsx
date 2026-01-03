@@ -213,105 +213,104 @@ export default function CheckoutPage() {
                     />
 
                     {/* Modal Content */}
-                    <div className="relative bg-[#0a0a0a] border border-white/10 w-full max-w-[420px] rounded-3xl overflow-hidden shadow-[0_0_50px_rgba(0,0,0,0.5)] animate-modalEntrance">
+                    <div className="relative bg-[#0a0a0a] border border-white/10 w-full max-w-[400px] rounded-[2rem] overflow-hidden shadow-[0_0_80px_rgba(0,0,0,0.8)] animate-modalEntrance mx-auto">
                         {/* Header */}
-                        <div className="bg-[#111] p-6 border-b border-white/5 flex justify-between items-center">
+                        <div className="bg-[#111] p-5 border-b border-white/5 flex justify-between items-center">
                             <div className="flex items-center gap-3">
-                                <div className="w-8 h-8 rounded-full bg-white/5 flex items-center justify-center border border-white/10">
-                                    <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="white" strokeWidth="2">
+                                <div className="w-7 h-7 rounded-full bg-white/5 flex items-center justify-center border border-white/10">
+                                    <svg width="12" height="12" viewBox="0 0 24 24" fill="none" stroke="white" strokeWidth="2.5">
                                         <rect x="3" y="11" width="18" height="11" rx="2" ry="2" />
                                         <path d="M7 11V7a5 5 0 0 1 10 0v4" />
                                     </svg>
                                 </div>
                                 <div>
-                                    <p className="text-[10px] text-white/40 uppercase tracking-widest font-bold">Secure Checkout</p>
-                                    <p className="text-[12px] text-white font-medium tracking-wide">Order #{paymentData.order_id || paymentData.data?.order_id}</p>
+                                    <p className="text-[9px] text-white/40 uppercase tracking-[0.2em] font-bold">Secure Gateway</p>
+                                    <p className="text-[11px] text-white font-medium tracking-tight">ORDER #{paymentData.order_id || paymentData.data?.order_id}</p>
                                 </div>
                             </div>
                             <button
                                 onClick={() => setShowPaymentModal(false)}
-                                className="text-white/30 hover:text-white transition-colors"
+                                className="text-white/20 hover:text-white transition-colors p-1"
                             >
-                                <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2">
+                                <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2">
                                     <path d="M18 6L6 18M6 6l12 12" />
                                 </svg>
                             </button>
                         </div>
 
-                        {/* Amount Section */}
-                        <div className="p-8 text-center space-y-2">
-                            <p className="text-[10px] text-white/30 uppercase tracking-[0.2em]">Amount to Pay</p>
-                            <h2 className="text-4xl font-thin tracking-tight">₹{cartTotal.toLocaleString('en-IN')}</h2>
+                        {/* Amount Section & QR (Desktop Only) */}
+                        <div className="p-6 sm:p-8 pb-4 text-center space-y-6">
+                            <div className="space-y-1">
+                                <p className="text-[10px] text-white/30 uppercase tracking-[0.2em]">Total Outstanding</p>
+                                <h2 className="text-4xl sm:text-5xl font-thin tracking-tighter italic">₹{cartTotal.toLocaleString('en-IN')}</h2>
+                            </div>
+
+                            {/* QR Code - Hidden on Mobile */}
+                            <div className="hidden sm:block space-y-4">
+                                <div className="relative group mx-auto w-44 h-44 bg-white p-3 rounded-2xl shadow-[0_0_40px_rgba(255,255,255,0.03)] transition-all hover:scale-[1.02]">
+                                    <img
+                                        src={`https://api.qrserver.com/v1/create-qr-code/?size=200x200&data=${encodeURIComponent(paymentData.data?.payment_url || '')}`}
+                                        alt="Payment QR"
+                                        className="w-full h-full object-contain"
+                                    />
+                                </div>
+                                <p className="text-[9px] text-white/20 uppercase tracking-[0.4em] font-medium">Scan with any UPI app</p>
+                            </div>
                         </div>
 
                         {/* Payment Options Section */}
-                        <div className="px-8 pb-10 space-y-6">
-                            <div className="space-y-4">
-                                <p className="text-[9px] text-white/20 uppercase tracking-[0.3em] font-bold">Select UPI App</p>
+                        <div className="px-6 sm:px-8 pb-10 space-y-6">
+                            <div className="space-y-5">
+                                <div className="flex items-center gap-4">
+                                    <div className="h-[1px] flex-1 bg-white/5"></div>
+                                    <p className="text-[9px] text-white/40 uppercase tracking-[0.3em] font-bold whitespace-nowrap">Express Checkout</p>
+                                    <div className="h-[1px] flex-1 bg-white/5"></div>
+                                </div>
 
-                                <div className="grid grid-cols-1 gap-3">
+                                <div className="grid grid-cols-3 gap-3">
                                     {/* Google Pay */}
                                     <button
                                         onClick={() => window.location.href = paymentData.data?.upi_intent?.gpay_link || paymentData.data?.payment_url}
-                                        className="w-full bg-white/5 border border-white/10 hover:border-white/20 hover:bg-white/10 p-4 rounded-2xl flex items-center justify-between group transition-all text-left"
+                                        className="bg-white/[0.03] border border-white/5 hover:border-white/20 hover:bg-white/5 py-5 rounded-2xl flex flex-col items-center gap-3 transition-all group"
                                     >
-                                        <div className="flex items-center gap-4">
-                                            <div className="w-10 h-10 bg-white rounded-lg flex items-center justify-center overflow-hidden p-1.5 flex-shrink-0">
-                                                <img src="https://upload.wikimedia.org/wikipedia/commons/f/f2/Google_Pay_Logo.svg" alt="GPay" className="w-full h-full object-contain" />
-                                            </div>
-                                            <span className="text-sm font-light tracking-wide">Google Pay</span>
+                                        <div className="w-10 h-10 bg-white rounded-xl flex items-center justify-center overflow-hidden p-1.5 flex-shrink-0 transition-all group-hover:scale-110 group-active:scale-95 shadow-lg">
+                                            <img src="https://upload.wikimedia.org/wikipedia/commons/f/f2/Google_Pay_Logo.svg" alt="GPay" className="w-full h-full object-contain" />
                                         </div>
-                                        <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="white" strokeWidth="2" className="opacity-0 group-hover:opacity-100 transition-opacity">
-                                            <path d="M5 12h14m-7-7l7 7-7 7" />
-                                        </svg>
+                                        <span className="text-[8px] text-white/30 uppercase tracking-widest font-black group-hover:text-white/60 transition-colors">G-Pay</span>
                                     </button>
 
                                     {/* PhonePe */}
                                     <button
                                         onClick={() => window.location.href = paymentData.data?.upi_intent?.phonepe_link || paymentData.data?.payment_url}
-                                        className="w-full bg-white/5 border border-white/10 hover:border-white/20 hover:bg-white/10 p-4 rounded-2xl flex items-center justify-between group transition-all text-left"
+                                        className="bg-white/[0.03] border border-white/5 hover:border-white/20 hover:bg-white/5 py-5 rounded-2xl flex flex-col items-center gap-3 transition-all group"
                                     >
-                                        <div className="flex items-center gap-4">
-                                            <div className="w-10 h-10 bg-[#5f259f] rounded-lg flex items-center justify-center p-2 flex-shrink-0">
-                                                <img src="https://upload.wikimedia.org/wikipedia/commons/7/71/PhonePe_Logo.svg" alt="PhonePe" className="w-full h-full object-contain brightness-0 invert" />
-                                            </div>
-                                            <span className="text-sm font-light tracking-wide">PhonePe</span>
+                                        <div className="w-10 h-10 bg-[#5f259f] rounded-xl flex items-center justify-center p-2 flex-shrink-0 transition-all group-hover:scale-110 group-active:scale-95 shadow-lg">
+                                            <img src="https://upload.wikimedia.org/wikipedia/commons/7/71/PhonePe_Logo.svg" alt="PhonePe" className="w-full h-full object-contain brightness-0 invert" />
                                         </div>
-                                        <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="white" strokeWidth="2" className="opacity-0 group-hover:opacity-100 transition-opacity">
-                                            <path d="M5 12h14m-7-7l7 7-7 7" />
-                                        </svg>
+                                        <span className="text-[8px] text-white/30 uppercase tracking-widest font-black group-hover:text-white/60 transition-colors">PhonePe</span>
                                     </button>
 
                                     {/* Amazon Pay */}
                                     <button
                                         onClick={() => window.location.href = paymentData.data?.payment_url}
-                                        className="w-full bg-white/5 border border-white/10 hover:border-white/20 hover:bg-white/10 p-4 rounded-2xl flex items-center justify-between group transition-all text-left"
+                                        className="bg-white/[0.03] border border-white/5 hover:border-white/20 hover:bg-white/5 py-5 rounded-2xl flex flex-col items-center gap-3 transition-all group"
                                     >
-                                        <div className="flex items-center gap-4">
-                                            <div className="w-10 h-10 bg-black rounded-lg flex items-center justify-center p-1 flex-shrink-0 border border-white/10">
-                                                <img src="https://upload.wikimedia.org/wikipedia/commons/a/a9/Amazon_logo.svg" alt="Amazon Pay" className="w-full h-full object-contain brightness-0 invert pt-1" />
-                                            </div>
-                                            <span className="text-sm font-light tracking-wide">Amazon Pay / Other UPI</span>
+                                        <div className="w-10 h-10 bg-black rounded-xl flex items-center justify-center p-1 flex-shrink-0 border border-white/10 transition-all group-hover:scale-110 group-active:scale-95 shadow-lg">
+                                            <img src="https://upload.wikimedia.org/wikipedia/commons/a/a9/Amazon_logo.svg" alt="Amazon Pay" className="w-full h-full object-contain brightness-0 invert pt-1" />
                                         </div>
-                                        <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="white" strokeWidth="2" className="opacity-0 group-hover:opacity-100 transition-opacity">
-                                            <path d="M5 12h14m-7-7l7 7-7 7" />
-                                        </svg>
+                                        <span className="text-[8px] text-white/30 uppercase tracking-widest font-black group-hover:text-white/60 transition-colors">Amazon</span>
                                     </button>
                                 </div>
                             </div>
 
-                            <div className="space-y-4 pt-4 border-t border-white/5">
-                                <button
-                                    onClick={() => window.location.href = paymentData.data?.payment_url}
-                                    className="w-full bg-white text-black py-4 rounded-2xl text-[11px] font-bold uppercase tracking-[0.3em] hover:bg-gray-200 transition-all flex items-center justify-center gap-2"
-                                >
-                                    OPEN PAYMENT PAGE
-                                    <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="3">
-                                        <path d="M18 13v6a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2V8a2 2 0 0 1 2-2h6M15 3h6v6M10 14L21 3" />
-                                    </svg>
-                                </button>
-                                <p className="text-[9px] text-center text-white/20 tracking-widest uppercase">
-                                    SECURE 256-BIT ENCRYPTED PAYMENT
+                            <div className="pt-2 flex flex-col items-center gap-3">
+                                <div className="flex items-center gap-2 opacity-20">
+                                    <div className="w-1 h-1 rounded-full bg-white"></div>
+                                    <div className="w-1 h-1 rounded-full bg-white"></div>
+                                    <div className="w-1 h-1 rounded-full bg-white"></div>
+                                </div>
+                                <p className="text-[8px] text-center text-white/10 tracking-[0.4em] uppercase font-bold">
+                                    Makers3D Architectural Payment Mesh
                                 </p>
                             </div>
                         </div>

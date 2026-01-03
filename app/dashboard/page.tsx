@@ -23,12 +23,8 @@ export default function DashboardPage() {
     const [customers, setCustomers] = useState<any[]>([]);
     const [searchQuery, setSearchQuery] = useState('');
 
-    const [orders, setOrders] = useState([
-        { id: 'ORD-7821', customer: 'Arjun K.', product: 'Geometric Cube Lamp', amount: '₹2,500', status: 'Pending', date: '2023-12-25' },
-        { id: 'ORD-7822', customer: 'Sarah M.', product: 'Minimalist Wall Clock', amount: '₹1,800', status: 'Approved', date: '2023-12-24' },
-        { id: 'ORD-7823', customer: 'Rahul D.', product: 'Hexagonal Planter', amount: '₹1,200', status: 'Shipped', date: '2023-12-23' },
-        { id: 'ORD-7820', customer: 'Vihaan S.', product: 'Abstract Vase 01', amount: '₹1,500', status: 'Delivered', date: '2023-12-20' }
-    ]);
+    const [orders, setOrders] = useState<any[]>([]);
+    const [isLoadingOrders, setIsLoadingOrders] = useState(false);
 
     const [requests, setRequests] = useState<any[]>([]);
 
@@ -68,11 +64,39 @@ export default function DashboardPage() {
         }
     };
 
-    const handleStatusUpdate = (orderId: string, newStatus: string) => {
-        console.log(`Updating ${orderId} to ${newStatus}`);
-        setOrders(prevOrders => prevOrders.map(order =>
-            order.id === orderId ? { ...order, status: newStatus } : order
-        ));
+    const fetchOrders = async () => {
+        setIsLoadingOrders(true);
+        try {
+            const res = await fetch('/api/admin/orders');
+            if (res.ok) {
+                const data = await res.json();
+                setOrders(data);
+            }
+        } catch (error) {
+            console.error('Error fetching orders:', error);
+        } finally {
+            setIsLoadingOrders(false);
+        }
+    };
+
+    const handleStatusUpdate = async (orderId: string, newStatus: string) => {
+        try {
+            const res = await fetch('/api/admin/orders', {
+                method: 'PATCH',
+                headers: { 'Content-Type': 'application/json' },
+                body: JSON.stringify({ orderId, status: newStatus })
+            });
+
+            if (res.ok) {
+                setOrders(prevOrders => prevOrders.map(order =>
+                    order.id === orderId ? { ...order, status: newStatus.charAt(0).toUpperCase() + newStatus.slice(1) } : order
+                ));
+            } else {
+                alert('Failed to update status');
+            }
+        } catch (error) {
+            console.error('Status update error:', error);
+        }
     };
 
     const handleConfirmDelete = async () => {
@@ -130,6 +154,14 @@ export default function DashboardPage() {
             fetchCustomers();
         }
         if (activeView === 'products' && products.length === 0) {
+            fetchProducts();
+        }
+        if (activeView === 'orders' && orders.length === 0) {
+            fetchOrders();
+        }
+        if (activeView === 'overview') {
+            fetchOrders();
+            fetchCustomers();
             fetchProducts();
         }
     }, [activeView]);
@@ -271,10 +303,14 @@ export default function DashboardPage() {
                     <>
                         <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-6 mb-12">
                             {[
-                                { label: 'Total Sales', value: '₹1,24,500', change: '+12%' },
-                                { label: 'Total Orders', value: (138 + orders.length).toString(), change: '+5%' },
-                                { label: 'New Customers', value: '34', change: '+18%' },
-                                { label: 'Pending Shipments', value: (10 + orders.filter(o => o.status === 'Approved').length).toString(), change: '-2%' }
+                                {
+                                    label: 'Total Sales',
+                                    value: `₹${orders.filter(o => o.rawStatus === 'success' || o.rawStatus === 'delivered').reduce((acc, o) => acc + parseInt(o.amount.replace(/[^0-9]/g, '')), 0).toLocaleString('en-IN')}`,
+                                    change: '+12%'
+                                },
+                                { label: 'Total Orders', value: orders.length.toString(), change: '+5%' },
+                                { label: 'Total Customers', value: customers.length.toString(), change: '+18%' },
+                                { label: 'Pending Shipments', value: orders.filter(o => o.rawStatus === 'approved' || o.rawStatus === 'pending').length.toString(), change: '-2%' }
                             ].map((stat, i) => (
                                 <div key={i} className="dashboard-card bg-neutral-900/30 border border-white/5 p-6 hover:border-white/20 transition-all">
                                     <h3 className="text-[10px] uppercase tracking-[0.2em] text-white/40 mb-2">{stat.label}</h3>
@@ -293,20 +329,29 @@ export default function DashboardPage() {
                                     <button className="text-[10px] uppercase tracking-widest text-white/40 hover:text-white">View All</button>
                                 </div>
                                 <div className="space-y-4">
-                                    {[1, 2, 3, 4, 5].map((item) => (
-                                        <div key={item} className="flex items-center justify-between py-3 border-b border-white/5 last:border-0">
-                                            <div className="flex items-center gap-4">
-                                                <div className="w-8 h-8 bg-white/5 rounded-full flex items-center justify-center text-[10px] text-white/40">
-                                                    #{item}
+                                    {orders.length === 0 ? (
+                                        <div className="text-center py-6 text-[10px] uppercase tracking-widest text-white/20">No recent activity</div>
+                                    ) : (
+                                        orders.slice(0, 5).map((order) => (
+                                            <div key={order.id} className="flex items-center justify-between py-3 border-b border-white/5 last:border-0">
+                                                <div className="flex items-center gap-4">
+                                                    <div className="w-8 h-8 bg-white/5 rounded-full flex items-center justify-center text-[8px] text-white/40 overflow-hidden">
+                                                        {order.id.slice(-4)}
+                                                    </div>
+                                                    <div>
+                                                        <p className="text-sm font-light">Order #{order.id.slice(0, 8)}...</p>
+                                                        <p className="text-[10px] text-white/30">{order.date}</p>
+                                                    </div>
                                                 </div>
-                                                <div>
-                                                    <p className="text-sm font-light">Order #ORD-{7820 + item}</p>
-                                                    <p className="text-[10px] text-white/30">2 mins ago</p>
-                                                </div>
+                                                <span className={`text-[10px] uppercase tracking-widest px-2 py-1 
+                                                    ${order.rawStatus === 'success' || order.rawStatus === 'delivered' ? 'text-green-400 bg-green-400/10' :
+                                                        order.rawStatus === 'pending' ? 'text-yellow-400 bg-yellow-400/10' :
+                                                            'text-blue-400 bg-blue-400/10'}`}>
+                                                    {order.status}
+                                                </span>
                                             </div>
-                                            <span className="text-[10px] uppercase tracking-widest text-green-400 bg-green-400/10 px-2 py-1">Completed</span>
-                                        </div>
-                                    ))}
+                                        ))
+                                    )}
                                 </div>
                             </div>
 
