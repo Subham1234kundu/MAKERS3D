@@ -455,7 +455,7 @@ export default function CheckoutPage() {
                                         <div className="space-y-4">
                                             <div className="relative group mx-auto w-48 h-48 bg-white p-4 rounded-3xl shadow-[0_0_40px_rgba(255,255,255,0.03)] transition-all">
                                                 <img
-                                                    src={`https://api.qrserver.com/v1/create-qr-code/?size=200x200&data=${encodeURIComponent(paymentData.data?.payment_url || '')}`}
+                                                    src={`https://api.qrserver.com/v1/create-qr-code/?size=200x200&data=${encodeURIComponent(paymentData.data?.upi_intent?.web || '')}`}
                                                     alt="Payment QR"
                                                     className="w-full h-full object-contain"
                                                 />
@@ -480,7 +480,12 @@ export default function CheckoutPage() {
                                             <div className="grid grid-cols-3 gap-3">
                                                 {/* Google Pay */}
                                                 <button
-                                                    onClick={() => window.location.href = paymentData.data?.upi_intent?.gpay_link || paymentData.data?.payment_url}
+                                                    onClick={() => {
+                                                        const link = paymentData.data?.upi_intent?.gpay_link;
+                                                        if (link) {
+                                                            window.location.href = link;
+                                                        }
+                                                    }}
                                                     className="bg-white/[0.03] border border-white/5 hover:border-white/20 hover:bg-white/5 py-5 rounded-2xl flex flex-col items-center gap-3 transition-all group"
                                                 >
                                                     <div className="w-10 h-10 bg-white rounded-xl flex items-center justify-center overflow-hidden p-1.5 flex-shrink-0 transition-all group-hover:scale-110 group-active:scale-95 shadow-lg">
@@ -491,7 +496,12 @@ export default function CheckoutPage() {
 
                                                 {/* PhonePe */}
                                                 <button
-                                                    onClick={() => window.location.href = paymentData.data?.upi_intent?.phonepe_link || paymentData.data?.payment_url}
+                                                    onClick={() => {
+                                                        const link = paymentData.data?.upi_intent?.phonepe_link;
+                                                        if (link) {
+                                                            window.location.href = link;
+                                                        }
+                                                    }}
                                                     className="bg-white/[0.03] border border-white/5 hover:border-white/20 hover:bg-white/5 py-5 rounded-2xl flex flex-col items-center gap-3 transition-all group"
                                                 >
                                                     <div className="w-10 h-10 bg-[#5f259f] rounded-xl flex items-center justify-center p-2 flex-shrink-0 transition-all group-hover:scale-110 group-active:scale-95 shadow-lg">
@@ -502,7 +512,12 @@ export default function CheckoutPage() {
 
                                                 {/* Amazon Pay */}
                                                 <button
-                                                    onClick={() => window.location.href = paymentData.data?.payment_url}
+                                                    onClick={() => {
+                                                        const link = paymentData.data?.upi_intent?.web;
+                                                        if (link) {
+                                                            window.location.href = link;
+                                                        }
+                                                    }}
                                                     className="bg-white/[0.03] border border-white/5 hover:border-white/20 hover:bg-white/5 py-5 rounded-2xl flex flex-col items-center gap-3 transition-all group"
                                                 >
                                                     <div className="w-10 h-10 bg-black rounded-xl flex items-center justify-center p-1 flex-shrink-0 border border-white/10 transition-all group-hover:scale-110 group-active:scale-95 shadow-lg">
