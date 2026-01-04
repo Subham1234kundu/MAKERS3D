@@ -296,6 +296,7 @@ export default function HomePage() {
                       title={product.name || product.title}
                       price={product.price}
                       originalPrice={product.originalPrice}
+                      fixedMobileHeight={true}
                     />
                   </div>
                 );

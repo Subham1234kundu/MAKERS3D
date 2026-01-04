@@ -15,9 +15,10 @@ interface ProductCardProps {
     price: number;
     originalPrice: number;
     category?: string;
+    fixedMobileHeight?: boolean; // Use fixed height on mobile for New Arrivals
 }
 
-export default function ProductCard({ id, image, alt, secondImage, secondAlt, title, price, originalPrice, category = 'ALL' }: ProductCardProps) {
+export default function ProductCard({ id, image, alt, secondImage, secondAlt, title, price, originalPrice, category = 'ALL', fixedMobileHeight = false }: ProductCardProps) {
     const [isHovered, setIsHovered] = useState(false);
     const [isPlusHovered, setIsPlusHovered] = useState(false);
     const { addToCart } = useCart();
@@ -39,7 +40,7 @@ export default function ProductCard({ id, image, alt, secondImage, secondAlt, ti
             <Link href={`/products/${id}`}>
                 <div className="cursor-pointer">
                     {/* Image Container */}
-                    <div className="relative aspect-[3/4] mb-3 sm:mb-4 overflow-hidden transition-all duration-300 bg-black">
+                    <div className={`relative ${fixedMobileHeight ? 'h-[320px] sm:aspect-[3/4]' : 'aspect-[3/4]'} mb-3 sm:mb-4 overflow-hidden transition-all duration-300 bg-black`}>
                         {/* First Image */}
                         {image && (
                             <Image
