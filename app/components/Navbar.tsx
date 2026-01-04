@@ -203,7 +203,7 @@ export default function Navbar() {
   return (
     <>
       <nav
-        className={`fixed top-0 left-0 w-full z-[9999] bg-black/40 backdrop-blur-xl border-b border-white/5 py-2 transition-all duration-500 ease-in-out ${isScrolled ? '-translate-y-full opacity-0 invisible pointer-events-none' : ''
+        className={`fixed top-0 left-0 w-full z-[9999] bg-black/80 backdrop-blur-2xl border-b border-white/10 py-2 transition-all duration-500 ease-in-out ${isScrolled ? '-translate-y-full opacity-0 invisible pointer-events-none' : ''
           }`}
         suppressHydrationWarning
       >

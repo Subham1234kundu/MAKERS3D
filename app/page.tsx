@@ -285,7 +285,7 @@ export default function HomePage() {
                 return (
                   <div
                     key={`new-${product.id || product._id}`}
-                    className={`min-w-[280px] sm:min-w-[320px] flex-shrink-0 ${isLast ? 'pr-4 sm:pr-0' : ''}`}
+                    className={`w-[280px] sm:w-[320px] flex-shrink-0 ${isLast ? 'pr-4 sm:pr-0' : ''}`}
                   >
                     <ProductCard
                       id={product.id || product._id}
