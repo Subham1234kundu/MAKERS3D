@@ -5,6 +5,7 @@
   --foreground: #171717;
 }
 
+/* stylelint-disable-next-line at-rule-no-unknown */
 @theme inline {
   --color-background: var(--background);
   --color-foreground: var(--foreground);
@@ -408,5 +409,18 @@ img {
   input[type="button"],
   input[type="submit"] {
     touch-action: manipulation;
+  }
+
+  /* Enhanced Touch Scrolling */
+  .overflow-x-auto,
+  [class*="overflow-x"] {
+    -webkit-overflow-scrolling: touch;
+    scroll-behavior: smooth;
+    overscroll-behavior-x: contain;
+  }
+
+  /* Ensure last items in horizontal scrolls are accessible */
+  .overflow-x-auto>*:last-child {
+    padding-right: 16px;
   }
 }

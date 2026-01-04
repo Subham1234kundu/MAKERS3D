@@ -20,7 +20,7 @@ export default function ProductDetailPage() {
     const [hasMounted, setHasMounted] = useState(false);
     const [activeTab, setActiveTab] = useState('description');
     const [isLiked, setIsLiked] = useState(false);
-    const [activeImage, setActiveImage] = useState('');
+    const [activeImageIndex, setActiveImageIndex] = useState(0);
     const { addToCart, cartCount } = useCart();
     const { data: session } = useSession();
     const [isLiking, setIsLiking] = useState(false);
@@ -28,8 +28,6 @@ export default function ProductDetailPage() {
     const containerRef = useRef<HTMLDivElement>(null);
     const imageRef = useRef<HTMLDivElement>(null);
     const contentRef = useRef<HTMLDivElement>(null);
-    const buyBtnRef = useRef<HTMLButtonElement>(null);
-    const filterRef = useRef<SVGFETurbulenceElement>(null);
 
     useEffect(() => {
         setHasMounted(true);
@@ -44,8 +42,6 @@ export default function ProductDetailPage() {
                 if (res.ok) {
                     const data = await res.json();
                     setProduct(data);
-                    const firstImage = data.images?.[0];
-                    setActiveImage(typeof firstImage === 'string' ? firstImage : (firstImage?.url || data.image));
 
                     // Check if liked if logged in
                     if (session?.user?.email) {
@@ -83,59 +79,6 @@ export default function ProductDetailPage() {
                 { opacity: 0, x: 50, filter: 'blur(10px)' },
                 { opacity: 1, x: 0, filter: 'blur(0px)', duration: 1, stagger: 0.1, ease: 'power3.out', delay: 0.2 }
             );
-
-            if (buyBtnRef.current && filterRef.current) {
-                const btn = buyBtnRef.current;
-                const liquidBg = btn.querySelector('.liquid-bg');
-                const filter = filterRef.current;
-
-                gsap.set(liquidBg, { y: '100%' });
-
-                const rippleTl = gsap.timeline({ paused: true, repeat: -1, yoyo: true });
-                rippleTl.to(filter, {
-                    attr: { baseFrequency: '0.06 0.06' },
-                    duration: 0.5,
-                    ease: "none"
-                });
-
-                const onEnter = () => {
-                    gsap.to(btn, { scale: 1.02, duration: 0.3, overwrite: true });
-                    gsap.to(liquidBg, { y: '0%', duration: 0.4, ease: 'power2.out', overwrite: true });
-                    rippleTl.play();
-                };
-
-                const onLeave = () => {
-                    gsap.to(btn, { scale: 1, duration: 0.3, overwrite: true });
-                    gsap.to(liquidBg, { y: '100%', duration: 0.4, ease: 'power2.in', overwrite: true });
-                    rippleTl.pause();
-                    gsap.to(filter, { attr: { baseFrequency: '0.00001 0.00001' }, duration: 0.3, overwrite: true });
-                };
-
-                const onDown = () => {
-                    gsap.to(btn, { scale: 0.98, duration: 0.1, overwrite: true });
-                    gsap.to(filter, { attr: { baseFrequency: '0.15 0.15' }, duration: 0.1, overwrite: true });
-                };
-
-                const onUp = () => {
-                    gsap.to(btn, { scale: 1.05, duration: 0.4, ease: 'elastic.out(1, 0.3)', overwrite: true });
-                    gsap.to(filter, { attr: { baseFrequency: '0.06 0.06' }, duration: 0.4, overwrite: true });
-                    const surge = gsap.timeline();
-                    surge.to(liquidBg, { filter: 'brightness(2)', duration: 0.1 })
-                        .to(liquidBg, { filter: 'brightness(1)', duration: 0.3 });
-                };
-
-                btn.addEventListener('mouseenter', onEnter);
-                btn.addEventListener('mouseleave', onLeave);
-                btn.addEventListener('mousedown', onDown);
-                btn.addEventListener('mouseup', onUp);
-
-                return () => {
-                    btn.removeEventListener('mouseenter', onEnter);
-                    btn.removeEventListener('mouseleave', onLeave);
-                    btn.removeEventListener('mousedown', onDown);
-                    btn.removeEventListener('mouseup', onUp);
-                };
-            }
         }, containerRef);
 
         return () => ctx.revert();
@@ -161,6 +104,12 @@ export default function ProductDetailPage() {
         );
     }
 
+    // Get all images
+    const allImages = product.images || [product.image];
+    const currentImageData = allImages[activeImageIndex];
+    const currentImageUrl = typeof currentImageData === 'string' ? currentImageData : currentImageData?.url;
+    const currentImageAlt = typeof currentImageData === 'string' ? product.name : currentImageData?.alt || product.name;
+
     return (
         <div
             className="bg-black min-h-screen text-white font-['Helvetica_Neue',Arial,sans-serif]"
@@ -170,6 +119,7 @@ export default function ProductDetailPage() {
             <Navbar />
 
             <main className="max-w-7xl mx-auto px-4 sm:px-6 pt-24 md:pt-32 pb-12 md:pb-20">
+                {/* Breadcrumb */}
                 <nav className="mb-8 md:mb-12 flex items-center gap-2 text-[10px] sm:text-xs uppercase tracking-[0.2em] text-white/40">
                     <Link href="/" className="hover:text-white transition-colors">Home</Link>
                     <span>/</span>
@@ -179,59 +129,68 @@ export default function ProductDetailPage() {
                 </nav>
 
                 <div className="grid grid-cols-1 lg:grid-cols-2 gap-10 md:gap-16 lg:gap-24 items-start">
-                    <div ref={imageRef} className="group/gallery relative">
-                        <div className="relative aspect-square sm:aspect-[4/5] bg-neutral-900 overflow-hidden">
+                    {/* Image Gallery Section */}
+                    <div ref={imageRef} className="space-y-4">
+                        {/* Main Image */}
+                        <div className="relative aspect-square sm:aspect-[4/5] bg-neutral-900 overflow-hidden group">
                             <Image
-                                src={activeImage}
-                                alt={typeof product.images?.find((i: any) => (typeof i === 'string' ? i : i.url) === activeImage) === 'object'
-                                    ? product.images.find((i: any) => i.url === activeImage).alt
-                                    : product.name}
+                                src={currentImageUrl}
+                                alt={currentImageAlt}
                                 fill
-                                className="object-cover transition-transform duration-700 group-hover/gallery:scale-105"
+                                className="object-cover transition-transform duration-700 group-hover:scale-105"
                                 priority
                                 quality={90}
                                 loading="eager"
                             />
                             <div className="absolute inset-0 border border-white/10 pointer-events-none" />
+
+                            {/* Image Counter */}
+                            {allImages.length > 1 && (
+                                <div className="absolute top-4 right-4 bg-black/60 backdrop-blur-sm px-3 py-1.5 text-[10px] tracking-wider border border-white/20">
+                                    {activeImageIndex + 1} / {allImages.length}
+                                </div>
+                            )}
                         </div>
 
-                        <div className={`mt-4 flex gap-3 justify-center transition-all duration-300
-                            md:absolute md:mt-0 md:z-10 md:top-1/2 md:-translate-y-1/2 md:left-4 md:flex-col md:gap-3
-                            md:opacity-0 md:group-hover/gallery:opacity-100 
-                            md:-translate-x-4 md:group-hover/gallery:translate-x-0`}>
-                            {(product.images || [product.image]).map((img: any, idx: number) => {
-                                const imgUrl = typeof img === 'string' ? img : img.url;
-                                const imgAlt = typeof img === 'string' ? `${product.name} view ${idx + 1}` : img.alt;
-                                return (
-                                    <button
-                                        key={idx}
-                                        onClick={(e) => {
-                                            e.preventDefault();
-                                            e.stopPropagation();
-                                            setActiveImage(imgUrl);
-                                        }}
-                                        className={`relative border bg-neutral-900/80 backdrop-blur-sm transition-all 
-                                            w-14 h-14 md:w-16 md:h-16 
-                                            touch-manipulation cursor-pointer
-                                            active:scale-95
-                                            ${activeImage === imgUrl ? 'border-white opacity-100 scale-105' : 'border-white/20 hover:border-white/60 opacity-60 hover:opacity-100'}`}
-                                        style={{ WebkitTapHighlightColor: 'transparent' }}
-                                        type="button"
-                                    >
-                                        <Image
-                                            src={imgUrl}
-                                            alt={imgAlt}
-                                            fill
-                                            className="object-cover pointer-events-none"
-                                            quality={75}
-                                            sizes="64px"
-                                        />
-                                    </button>
-                                );
-                            })}
-                        </div>
+                        {/* Thumbnail Gallery */}
+                        {allImages.length > 1 && (
+                            <div className="flex gap-2 sm:gap-3 justify-start sm:justify-center overflow-x-auto overflow-y-visible no-scrollbar py-2 scroll-smooth -mx-4 px-4 sm:mx-0 sm:px-0 [scrollbar-width:none] [-ms-overflow-style:none] [&::-webkit-scrollbar]:hidden">
+                                {allImages.map((img: any, idx: number, arr: any[]) => {
+                                    const imgUrl = typeof img === 'string' ? img : img.url;
+                                    const imgAlt = typeof img === 'string' ? `${product.name} view ${idx + 1}` : img.alt;
+                                    const isLast = idx === arr.length - 1;
+                                    return (
+                                        <button
+                                            key={idx}
+                                            onClick={() => setActiveImageIndex(idx)}
+                                            onTouchEnd={(e) => {
+                                                e.preventDefault();
+                                                setActiveImageIndex(idx);
+                                            }}
+                                            className={`relative flex-shrink-0 w-14 h-14 min-w-[56px] min-h-[56px] sm:w-16 sm:h-16 sm:min-w-[64px] sm:min-h-[64px] border transition-all duration-300 touch-manipulation cursor-pointer active:scale-95 [-webkit-tap-highlight-color:transparent] ${isLast ? 'mr-16 sm:mr-0' : ''} ${activeImageIndex === idx
+                                                    ? 'border-white shadow-lg shadow-white/20 opacity-100'
+                                                    : 'border-white/20 opacity-60 hover:opacity-100 hover:border-white/40'
+                                                }`}
+                                            type="button"
+                                            aria-label={`View ${imgAlt}`}
+                                        >
+                                            <Image
+                                                src={imgUrl}
+                                                alt={imgAlt}
+                                                fill
+                                                className="object-cover pointer-events-none select-none"
+                                                quality={75}
+                                                sizes="64px"
+                                                draggable={false}
+                                            />
+                                        </button>
+                                    );
+                                })}
+                            </div>
+                        )}
                     </div>
 
+                    {/* Product Info Section */}
                     <div ref={contentRef} className="flex flex-col">
                         <span className="text-[10px] sm:text-xs font-light uppercase tracking-[0.4em] text-white/40 mb-3 sm:mb-4">{product.category}</span>
                         <h1 className="text-3xl sm:text-4xl md:text-5xl lg:text-6xl font-thin leading-tight mb-4 sm:mb-6 tracking-tight bg-clip-text text-transparent bg-gradient-to-b from-white to-white/60">
@@ -254,8 +213,10 @@ export default function ProductDetailPage() {
                             {product.description}
                         </p>
 
+                        {/* Action Buttons */}
                         <div className="flex flex-col gap-3 sm:gap-4 mb-12 sm:mb-16">
                             <div className="flex gap-3 sm:gap-4">
+                                {/* Like Button */}
                                 <button
                                     onClick={async () => {
                                         if (!session) {
@@ -278,7 +239,7 @@ export default function ProductDetailPage() {
                                             setIsLiking(false);
                                         }
                                     }}
-                                    className={`border border-white/20 text-white py-4 sm:py-5 px-6 sm:px-8 hover:bg-white/5 transition-all duration-300 group ${isLiking ? 'opacity-50' : ''}`}
+                                    className={`border border-white/20 text-white py-4 sm:py-5 px-6 sm:px-8 hover:bg-white/5 transition-all duration-300 group touch-manipulation active:scale-95 ${isLiking ? 'opacity-50' : ''}`}
                                     aria-label="Like product"
                                     disabled={isLiking}
                                 >
@@ -299,43 +260,48 @@ export default function ProductDetailPage() {
                                     </svg>
                                 </button>
 
+                                {/* Add to Cart Button */}
                                 <button
                                     onClick={() => {
                                         addToCart(product);
                                         router.push('/cart');
                                     }}
-                                    className="flex-1 bg-white text-black py-4 sm:py-5 px-6 text-[11px] sm:text-xs font-bold uppercase tracking-[0.2em] border border-white hover:bg-gray-100 transition-all duration-300 flex items-center justify-center gap-3 relative"
+                                    className="flex-1 bg-white text-black py-4 sm:py-5 px-6 text-[11px] sm:text-xs font-bold uppercase tracking-[0.2em] border border-white hover:bg-gray-100 transition-all duration-300 flex items-center justify-center gap-3 relative touch-manipulation active:scale-95"
                                 >
                                     <div className="relative">
                                         <svg fill="none" stroke="currentColor" viewBox="0 0 24 24" className="w-5 h-5">
                                             <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={1.5} d="M3 3h2l.4 2M7 13h10l4-8H5.4M7 13L5.4 5M7 13l-2.293 2.293c-.63.63-.184 1.707.707 1.707H17m0 0a2 2 0 100 4 2 2 0 000-4zm-8 2a2 2 0 11-4 0 2 2 0 014 0z" />
                                         </svg>
-                                        {cartCount > 0 && <span className="product-cart-badge">{cartCount}</span>}
+                                        {cartCount > 0 && (
+                                            <span className="absolute -top-2 left-1/2 -translate-x-1/2 bg-red-600 text-white text-[8px] font-black min-w-[16px] h-[16px] rounded-full flex items-center justify-center border-2 border-black">
+                                                {cartCount}
+                                            </span>
+                                        )}
                                     </div>
                                     <span>Add to Cart</span>
                                 </button>
                             </div>
 
+                            {/* Buy Now Button */}
                             <button
-                                ref={buyBtnRef}
                                 onClick={() => {
                                     addToCart(product);
                                     router.push('/checkout');
                                 }}
-                                className="buy-now-btn group w-full border border-white/20 text-white py-4 sm:py-5 text-[11px] sm:text-xs font-bold uppercase tracking-[0.2em] relative overflow-hidden transition-all duration-300 active:scale-95"
+                                className="w-full border-2 border-white text-white py-4 sm:py-5 text-[11px] sm:text-xs font-bold uppercase tracking-[0.2em] hover:bg-white hover:text-black transition-all duration-300 touch-manipulation active:scale-95"
                             >
-                                <div className="liquid-bg absolute inset-[-10px] bg-white translate-y-full" />
-                                <span className="relative z-10 transition-colors duration-300 group-hover:text-black">Buy Now</span>
+                                Buy Now
                             </button>
                         </div>
 
+                        {/* Product Details Tabs */}
                         <div className="border-t border-white/10 pt-8 sm:pt-10">
                             <div className="flex gap-6 sm:gap-8 mb-6 sm:mb-8 border-b border-white/5 pb-4 overflow-x-auto no-scrollbar">
                                 {['description', 'specifications', 'shipping'].map((tab) => (
                                     <button
                                         key={tab}
                                         onClick={() => setActiveTab(tab)}
-                                        className={`text-[9px] sm:text-[10px] uppercase tracking-[0.3em] transition-all relative pb-4 whitespace-nowrap ${activeTab === tab ? 'text-white' : 'text-white/30 hover:text-white/60'}`}
+                                        className={`text-[9px] sm:text-[10px] uppercase tracking-[0.3em] transition-all relative pb-4 whitespace-nowrap touch-manipulation ${activeTab === tab ? 'text-white' : 'text-white/30 hover:text-white/60'}`}
                                     >
                                         {tab}
                                         {activeTab === tab && <div className="absolute bottom-0 left-0 w-full h-[1px] bg-white animate-expand" />}
@@ -371,40 +337,9 @@ export default function ProductDetailPage() {
                 </div>
             </main>
 
-            <svg style={{ position: 'absolute', width: 0, height: 0 }} aria-hidden="true" focusable="false">
-                <defs>
-                    <filter id="liquify" x="-20%" y="-20%" width="140%" height="140%">
-                        <feTurbulence ref={filterRef} type="fractalNoise" baseFrequency="0.00001 0.00001" numOctaves="2" result="warp" />
-                        <feDisplacementMap in="SourceGraphic" in2="warp" scale="25" xChannelSelector="R" yChannelSelector="G" />
-                    </filter>
-                </defs>
-            </svg>
-
             <Footer />
 
             <style jsx>{`
-                .buy-now-btn { isolation: isolate; overflow: hidden; }
-                .liquid-bg { filter: url(#liquify); pointer-events: none; z-index: 1; background-color: white !important; opacity: 1; }
-                .buy-now-btn span { z-index: 2; }
-                 .product-cart-badge {
-                    position: absolute; 
-                    top: -8px; /* TOP middle */
-                    left: 50%;
-                    transform: translateX(-50%);
-                    background: #ff0000; 
-                    color: white; 
-                    font-size: 8px; 
-                    font-weight: 800;
-                    min-width: 15px; 
-                    height: 15px; 
-                    border-radius: 50%; 
-                    display: flex; 
-                    align-items: center; 
-                    justify-content: center;
-                    box-shadow: 0 0 12px rgba(255, 0, 0, 0.5); 
-                    z-index: 50;
-                    border: 1.5px solid #000;
-                }
                 @keyframes expand { from { transform: scaleX(0); } to { transform: scaleX(1); } }
                 .animate-expand { animation: expand 0.4s ease forwards; transform-origin: left; }
                 @keyframes fadeIn { from { opacity: 0; transform: translateY(10px); } to { opacity: 1; transform: translateY(0); } }

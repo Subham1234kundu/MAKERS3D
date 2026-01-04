@@ -216,28 +216,35 @@ export default function HomePage() {
               <Link href="/products" className="text-[10px] sm:text-xs font-bold tracking-[0.1em] text-white/60 uppercase border-b border-white/20 pb-0.5 transition-colors hover:text-white hover:border-white">View All</Link>
             </div>
 
-            <div className="flex pt-6 md:pt-10 overflow-x-auto no-scrollbar gap-6 sm:gap-10 pb-4 -mx-4 px-4 sm:mx-0 sm:px-0 md:justify-center" suppressHydrationWarning>
-              {categories.map((cat) => (
-                <button
-                  key={cat}
-                  onClick={() => handleCategoryClick(cat)}
-                  className="flex-shrink-0 flex flex-col items-center gap-4 transition-all active:scale-95 group/cat"
-                >
-                  <div className={`w-[72px] h-[72px] sm:w-[85px] sm:h-[85px] rounded-full flex items-center justify-center transition-all duration-500 overflow-hidden relative ${activeCategory === cat
-                    ? 'bg-white border-[4px] border-white/20 shadow-[0_0_30px_rgba(255,255,255,0.15)]'
-                    : 'bg-white/5 border border-white/10 hover:border-white/20 hover:bg-white/10'
-                    }`} suppressHydrationWarning>
-                    <span className={`text-[10px] sm:text-[11px] font-black tracking-tighter z-10 transition-colors duration-300 ${activeCategory === cat ? 'text-black' : 'text-white/80'}`}>
-                      {cat === 'ALL' ? 'SHOP' : cat.substring(0, 4)}
+            <div
+              className="flex pt-6 md:pt-10 overflow-x-auto no-scrollbar gap-6 sm:gap-10 pb-4 -mx-4 px-4 sm:mx-0 sm:px-0 md:justify-center scroll-smooth"
+              style={{ WebkitOverflowScrolling: 'touch' }}
+              suppressHydrationWarning
+            >
+              {categories.map((cat, index) => {
+                const isLast = index === categories.length - 1;
+                return (
+                  <button
+                    key={cat}
+                    onClick={() => handleCategoryClick(cat)}
+                    className={`flex-shrink-0 flex flex-col items-center gap-4 transition-all active:scale-95 group/cat ${isLast ? 'pr-4 sm:pr-0' : ''}`}
+                  >
+                    <div className={`w-[72px] h-[72px] sm:w-[85px] sm:h-[85px] rounded-full flex items-center justify-center transition-all duration-500 overflow-hidden relative ${activeCategory === cat
+                      ? 'bg-white border-[4px] border-white/20 shadow-[0_0_30px_rgba(255,255,255,0.15)]'
+                      : 'bg-white/5 border border-white/10 hover:border-white/20 hover:bg-white/10'
+                      }`} suppressHydrationWarning>
+                      <span className={`text-[10px] sm:text-[11px] font-black tracking-tighter z-10 transition-colors duration-300 ${activeCategory === cat ? 'text-black' : 'text-white/80'}`}>
+                        {cat === 'ALL' ? 'SHOP' : cat.substring(0, 4)}
+                      </span>
+                      <div className="absolute inset-0 bg-gradient-to-tr from-white/10 to-transparent opacity-0 group-hover/cat:opacity-100 transition-opacity"></div>
+                    </div>
+                    <span className={`text-[9px] sm:text-[10px] font-bold tracking-[0.15em] uppercase transition-colors duration-300 ${activeCategory === cat ? 'text-white' : 'text-white/30 group-hover/cat:text-white/60'
+                      }`}>
+                      {cat.split(' ')[0]}
                     </span>
-                    <div className="absolute inset-0 bg-gradient-to-tr from-white/10 to-transparent opacity-0 group-hover/cat:opacity-100 transition-opacity"></div>
-                  </div>
-                  <span className={`text-[9px] sm:text-[10px] font-bold tracking-[0.15em] uppercase transition-colors duration-300 ${activeCategory === cat ? 'text-white' : 'text-white/30 group-hover/cat:text-white/60'
-                    }`}>
-                    {cat.split(' ')[0]}
-                  </span>
-                </button>
-              ))}
+                  </button>
+                )
+              })}
             </div>
           </div>
 
@@ -251,12 +258,19 @@ export default function HomePage() {
               </div>
             </div>
 
-            <div className="flex overflow-x-auto no-scrollbar gap-4 sm:gap-6 -mx-4 px-4 sm:mx-0 sm:px-0 pb-4" suppressHydrationWarning>
+            <div
+              className="flex overflow-x-auto no-scrollbar gap-4 sm:gap-6 -mx-4 px-4 sm:mx-0 sm:px-0 pb-4 scroll-smooth"
+              style={{
+                WebkitOverflowScrolling: 'touch',
+                scrollPaddingRight: '16px'
+              }}
+              suppressHydrationWarning
+            >
               {isLoadingProducts ? (
                 [1, 2, 3, 4].map(i => (
                   <div key={i} className="min-w-[280px] sm:min-w-[320px] aspect-[4/5] bg-white/5 rounded-3xl animate-pulse" />
                 ))
-              ) : products.slice(0, 5).map((product) => {
+              ) : products.slice(0, 5).map((product, index, arr) => {
                 const imageData = product.images?.[0] || product.image;
                 const imageUrl = typeof imageData === 'object' ? imageData?.url : imageData;
                 const imageAlt = typeof imageData === 'object' ? imageData?.alt : product.name || product.title;
@@ -266,8 +280,13 @@ export default function HomePage() {
                 const secondImageUrl = secondImageData ? (typeof secondImageData === 'object' ? secondImageData?.url : secondImageData) : undefined;
                 const secondImageAlt = secondImageData && typeof secondImageData === 'object' ? secondImageData?.alt : `${product.name || product.title} - view 2`;
 
+                const isLast = index === arr.length - 1;
+
                 return (
-                  <div key={`new-${product.id || product._id}`} className="min-w-[280px] sm:min-w-[320px]">
+                  <div
+                    key={`new-${product.id || product._id}`}
+                    className={`min-w-[280px] sm:min-w-[320px] flex-shrink-0 ${isLast ? 'pr-4 sm:pr-0' : ''}`}
+                  >
                     <ProductCard
                       id={product.id || product._id}
                       image={imageUrl}
