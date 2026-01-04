@@ -39,7 +39,7 @@ export default function ProductCard({ id, image, alt, secondImage, secondAlt, ti
             <Link href={`/products/${id}`}>
                 <div className="cursor-pointer">
                     {/* Image Container */}
-                    <div className="relative h-[373px] sm:aspect-[3/4] mb-3 sm:mb-4 overflow-hidden transition-all duration-300 bg-black">
+                    <div className="relative aspect-[3/4] mb-3 sm:mb-4 overflow-hidden transition-all duration-300 bg-black">
                         {/* First Image */}
                         {image && (
                             <Image

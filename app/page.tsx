@@ -268,7 +268,7 @@ export default function HomePage() {
             >
               {isLoadingProducts ? (
                 [1, 2, 3, 4].map(i => (
-                  <div key={i} className="min-w-[280px] sm:min-w-[320px] aspect-[4/5] bg-white/5 rounded-3xl animate-pulse" />
+                  <div key={i} className="min-w-[240px] sm:min-w-[280px] aspect-[4/5] bg-white/5 rounded-3xl animate-pulse" />
                 ))
               ) : products.slice(0, 5).map((product, index, arr) => {
                 const imageData = product.images?.[0] || product.image;
@@ -285,7 +285,7 @@ export default function HomePage() {
                 return (
                   <div
                     key={`new-${product.id || product._id}`}
-                    className={`w-[280px] sm:w-[320px] flex-shrink-0 ${isLast ? 'pr-4 sm:pr-0' : ''}`}
+                    className={`w-[240px] sm:w-[280px] flex-shrink-0 ${isLast ? 'pr-4 sm:pr-0' : ''}`}
                   >
                     <ProductCard
                       id={product.id || product._id}
@@ -318,7 +318,7 @@ export default function HomePage() {
           </div>
 
           {/* Product Grid */}
-          <div className="grid grid-cols-2 lg:grid-cols-4 gap-x-3 gap-y-8 sm:gap-8 children-appear" suppressHydrationWarning>
+          <div className="grid grid-cols-2 lg:grid-cols-4 gap-x-2.5 gap-y-6 sm:gap-6 children-appear" suppressHydrationWarning>
             {isLoadingProducts ? (
               [1, 2, 3, 4, 5, 6].map((i) => (
                 <div key={i} className="aspect-[3/4] bg-white/5 animate-pulse rounded-2xl" suppressHydrationWarning />

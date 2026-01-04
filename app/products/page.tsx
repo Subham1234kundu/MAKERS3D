@@ -89,13 +89,13 @@ export default function ProductsPage() {
 
                     {/* Product Grid */}
                     {isLoading ? (
-                        <div className="grid grid-cols-2 md:grid-cols-3 lg:grid-cols-4 gap-x-4 gap-y-10 sm:gap-8">
+                        <div className="grid grid-cols-2 md:grid-cols-3 lg:grid-cols-4 gap-x-2.5 gap-y-6 sm:gap-6">
                             {[1, 2, 3, 4, 5, 6, 7, 8].map((i) => (
                                 <div key={i} className="aspect-square bg-white/5 animate-pulse rounded-sm" />
                             ))}
                         </div>
                     ) : (
-                        <div className="grid grid-cols-2 md:grid-cols-3 lg:grid-cols-4 gap-x-4 gap-y-10 sm:gap-8">
+                        <div className="grid grid-cols-2 md:grid-cols-3 lg:grid-cols-4 gap-x-2.5 gap-y-6 sm:gap-6">
                             {filteredProducts.map((product) => {
                                 const firstImage = typeof product.images?.[0] === 'string' ? product.images[0] : (product.images?.[0]?.url || product.image);
                                 const firstAlt = typeof product.images?.[0] === 'object' ? product.images[0].alt : product.name;
