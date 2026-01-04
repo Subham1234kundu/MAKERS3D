@@ -49,6 +49,13 @@ export async function POST(request: NextRequest) {
             createdAt: new Date(),
         });
 
+        // Send welcome email (non-blocking)
+        const { sendWelcomeEmail } = await import('@/lib/email-service');
+        sendWelcomeEmail({
+            customerName: name,
+            customerEmail: email,
+        }).catch(err => console.error('Welcome email error:', err));
+
         return NextResponse.json(
             {
                 message: 'User created successfully',

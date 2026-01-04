@@ -46,6 +46,19 @@ export async function POST(req: Request) {
                     { upsert: true }
                 );
 
+                // Send order confirmation email (non-blocking)
+                const { sendOrderConfirmationEmail } = await import('@/lib/email-service');
+                sendOrderConfirmationEmail({
+                    customerName: customer_name,
+                    customerEmail: customer_email,
+                    orderId: orderData.order_id,
+                    amount,
+                    items: p_info,
+                    address,
+                    paymentMethod: 'cod'
+                }).catch(err => console.error('Order confirmation email error:', err));
+
+
                 return NextResponse.json({
                     success: true,
                     payment_method: 'cod',

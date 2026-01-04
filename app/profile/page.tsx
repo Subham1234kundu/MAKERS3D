@@ -34,6 +34,8 @@ export default function ProfilePage() {
     const [returnModalOpen, setReturnModalOpen] = useState(false);
     const [selectedOrderId, setSelectedOrderId] = useState<string | null>(null);
     const [returnImages, setReturnImages] = useState<string[]>([]); // Storing preview URLs
+    const [deleteAccountModalOpen, setDeleteAccountModalOpen] = useState(false);
+    const [isDeletingAccount, setIsDeletingAccount] = useState(false);
 
     // Form States
     const [passwordForm, setPasswordForm] = useState({ current: '', new: '', confirm: '' });
@@ -135,6 +137,28 @@ export default function ProfilePage() {
             if (passwordFormRef.current) gsap.to(passwordFormRef.current, { x: 10, duration: 0.1, yoyo: true, repeat: 5, ease: 'power2.inOut' });
         } finally {
             setIsSubmittingPassword(false);
+        }
+    };
+
+    const handleDeleteAccount = async () => {
+        setIsDeletingAccount(true);
+        try {
+            const res = await fetch('/api/auth/delete-account', {
+                method: 'DELETE',
+                headers: { 'Content-Type': 'application/json' },
+            });
+
+            if (!res.ok) {
+                const data = await res.json();
+                throw new Error(data.message || 'Failed to delete account');
+            }
+
+            // Sign out and redirect to home
+            await signOut({ callbackUrl: '/' });
+        } catch (err: any) {
+            alert(err.message);
+            setIsDeletingAccount(false);
+            setDeleteAccountModalOpen(false);
         }
     };
 
@@ -250,6 +274,72 @@ export default function ProfilePage() {
                 </div>
             )}
 
+            {/* Delete Account Confirmation Modal */}
+            {deleteAccountModalOpen && (
+                <div className="fixed inset-0 z-50 flex items-center justify-center bg-black/90 backdrop-blur-sm p-4">
+                    <div className="bg-[#111] border border-red-500/20 w-full max-w-md p-6 md:p-8 relative">
+                        <button
+                            onClick={() => setDeleteAccountModalOpen(false)}
+                            disabled={isDeletingAccount}
+                            className="absolute top-4 right-4 text-white/40 hover:text-white disabled:opacity-50"
+                        >
+                            <svg width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="1.5"><path d="M18 6L6 18M6 6l12 12" /></svg>
+                        </button>
+
+                        <div className="text-center mb-6">
+                            <div className="w-16 h-16 mx-auto mb-4 rounded-full bg-red-500/10 border border-red-500/20 flex items-center justify-center">
+                                <svg width="32" height="32" viewBox="0 0 24 24" fill="none" stroke="#ef4444" strokeWidth="2">
+                                    <path d="M12 9v4m0 4h.01M21 12a9 9 0 1 1-18 0 9 9 0 0 1 18 0z" />
+                                </svg>
+                            </div>
+                            <h3 className="text-2xl font-thin tracking-wide mb-2 text-white">Delete Account</h3>
+                            <p className="text-[10px] uppercase tracking-[0.3em] text-red-400/60">This action cannot be undone</p>
+                        </div>
+
+                        <div className="bg-red-500/5 border border-red-500/10 p-4 mb-6">
+                            <p className="text-sm text-white/70 font-light leading-relaxed mb-3">
+                                Are you sure you want to permanently delete your account? This will:
+                            </p>
+                            <ul className="space-y-2 text-xs text-white/60">
+                                <li className="flex items-start gap-2">
+                                    <span className="text-red-400 mt-0.5">•</span>
+                                    <span>Delete all your personal information</span>
+                                </li>
+                                <li className="flex items-start gap-2">
+                                    <span className="text-red-400 mt-0.5">•</span>
+                                    <span>Remove your order history</span>
+                                </li>
+                                <li className="flex items-start gap-2">
+                                    <span className="text-red-400 mt-0.5">•</span>
+                                    <span>Cancel any pending orders</span>
+                                </li>
+                                <li className="flex items-start gap-2">
+                                    <span className="text-red-400 mt-0.5">•</span>
+                                    <span>Permanently erase your account data</span>
+                                </li>
+                            </ul>
+                        </div>
+
+                        <div className="space-y-3">
+                            <button
+                                onClick={handleDeleteAccount}
+                                disabled={isDeletingAccount}
+                                className="w-full bg-red-500 hover:bg-red-600 text-white py-4 text-xs font-bold uppercase tracking-widest transition-all disabled:opacity-50 disabled:cursor-not-allowed"
+                            >
+                                {isDeletingAccount ? 'DELETING ACCOUNT...' : 'YES, DELETE MY ACCOUNT'}
+                            </button>
+                            <button
+                                onClick={() => setDeleteAccountModalOpen(false)}
+                                disabled={isDeletingAccount}
+                                className="w-full bg-white/5 hover:bg-white/10 border border-white/10 text-white py-4 text-xs font-bold uppercase tracking-widest transition-all disabled:opacity-50"
+                            >
+                                CANCEL
+                            </button>
+                        </div>
+                    </div>
+                </div>
+            )}
+
             <main className="max-w-7xl mx-auto px-4 sm:px-8 pt-32 pb-20">
 
                 {/* Header Profile Section */}
@@ -270,6 +360,12 @@ export default function ProfilePage() {
                     <div className="flex gap-4">
                         <button onClick={() => signOut({ callbackUrl: '/' })} className="text-xs uppercase tracking-[0.2em] text-white/60 hover:text-white border border-white/10 hover:border-white/40 px-6 py-3 transition-all">
                             Sign Out
+                        </button>
+                        <button
+                            onClick={() => setDeleteAccountModalOpen(true)}
+                            className="text-xs uppercase tracking-[0.2em] text-red-400/60 hover:text-red-400 border border-red-400/10 hover:border-red-400/40 px-6 py-3 transition-all"
+                        >
+                            Delete Account
                         </button>
                     </div>
                 </div>

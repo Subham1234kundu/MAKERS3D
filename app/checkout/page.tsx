@@ -159,6 +159,9 @@ export default function CheckoutPage() {
                 } else {
                     localStorage.setItem('last_txn_id', data.client_txn_id);
                     localStorage.setItem('last_txn_date', new Date().toLocaleDateString('en-GB').replace(/\//g, '-'));
+                    console.log('Payment Data Received:', data);
+                    console.log('Payment URL:', data.data?.payment_url);
+                    console.log('UPI Intent Web:', data.data?.upi_intent?.web);
                     setPaymentData(data);
                     setShowPaymentModal(true);
                     setTimeLeft(300);
@@ -455,9 +458,17 @@ export default function CheckoutPage() {
                                         <div className="space-y-4">
                                             <div className="relative group mx-auto w-48 h-48 bg-white p-4 rounded-3xl shadow-[0_0_40px_rgba(255,255,255,0.03)] transition-all">
                                                 <img
-                                                    src={`https://api.qrserver.com/v1/create-qr-code/?size=200x200&data=${encodeURIComponent(paymentData.data?.upi_intent?.web || '')}`}
+                                                    src={`https://api.qrserver.com/v1/create-qr-code/?size=200x200&data=${encodeURIComponent(
+                                                        paymentData.data?.payment_url ||
+                                                        paymentData.data?.upi_intent?.web ||
+                                                        ''
+                                                    )}`}
                                                     alt="Payment QR"
                                                     className="w-full h-full object-contain"
+                                                    onError={(e) => {
+                                                        console.error('QR Code failed to load');
+                                                        console.log('Payment data:', paymentData);
+                                                    }}
                                                 />
                                                 <div className="absolute inset-0 bg-white/10 backdrop-blur-[1px] opacity-0 group-hover:opacity-100 transition-opacity" />
                                             </div>
