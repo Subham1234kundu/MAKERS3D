@@ -73,6 +73,21 @@ export async function POST(req: Request) {
         // Existing UPI logic
         const apiKey = process.env.UPIGATEWAY_KEY;
 
+        // Debug logging
+        console.log('=== UPIGateway Payment Request ===');
+        console.log('API Key present:', !!apiKey);
+        console.log('API Key length:', apiKey?.length);
+        console.log('Client TXN ID:', client_txn_id);
+        console.log('Amount:', amount);
+
+        if (!apiKey) {
+            console.error('UPIGATEWAY_KEY is not set in environment variables');
+            return NextResponse.json({
+                success: false,
+                msg: 'Payment gateway configuration error. Please contact support.'
+            }, { status: 500 });
+        }
+
         const payload = {
             key: apiKey,
             client_txn_id,
@@ -84,6 +99,8 @@ export async function POST(req: Request) {
             redirect_url
         };
 
+        console.log('Request payload:', { ...payload, key: '***' + apiKey.slice(-4) });
+
         const response = await fetch('https://api.ekqr.in/api/v2/create_order', {
             method: 'POST',
             headers: { 'Content-Type': 'application/json' },
@@ -91,6 +108,9 @@ export async function POST(req: Request) {
         });
 
         const data = await response.json();
+
+        console.log('UPIGateway Response Status:', data.status);
+        console.log('UPIGateway Response:', data);
 
         if (data.status) {
             try {
@@ -130,6 +150,7 @@ export async function POST(req: Request) {
                 console.error('Database maintenance error:', dbError);
             }
 
+            console.log('✅ Payment order created successfully');
             return NextResponse.json({
                 success: true,
                 data: data.data,
@@ -137,6 +158,8 @@ export async function POST(req: Request) {
                 payment_method: 'upi'
             });
         } else {
+            console.error('❌ UPIGateway Error:', data.msg);
+            console.error('Full error response:', data);
             return NextResponse.json({ success: false, msg: data.msg }, { status: 400 });
         }
 

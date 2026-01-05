@@ -347,8 +347,7 @@ export default function CheckoutPage() {
             <UPIPaymentModal
                 isOpen={showPaymentModal && paymentData !== null}
                 onClose={() => setShowPaymentModal(false)}
-                sessionId={paymentData?.data?.session_id || ''}
-                orderId={paymentData?.data?.order_id || paymentData?.order_id || ''}
+                paymentData={paymentData}
                 amount={finalTotal}
                 onSuccess={(response) => {
                     console.log('Payment successful:', response);

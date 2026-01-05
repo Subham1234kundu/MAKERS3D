@@ -6,8 +6,7 @@ import Script from 'next/script';
 interface UPIPaymentModalProps {
     isOpen: boolean;
     onClose: () => void;
-    sessionId: string;
-    orderId: string;
+    paymentData: any;
     amount: number;
     onSuccess: (response: any) => void;
     onError: (response: any) => void;
@@ -23,8 +22,7 @@ declare global {
 export default function UPIPaymentModal({
     isOpen,
     onClose,
-    sessionId,
-    orderId,
+    paymentData,
     amount,
     onSuccess,
     onError,
@@ -35,11 +33,38 @@ export default function UPIPaymentModal({
     const paymentContainerRef = useRef<HTMLDivElement>(null);
     const sdkInstanceRef = useRef<any>(null);
 
+    const sessionId = paymentData?.data?.session_id || '';
+    const orderId = paymentData?.data?.order_id || paymentData?.order_id || '';
+    const upiIntent = paymentData?.data?.upi_intent || {};
+
     useEffect(() => {
         if (sdkLoaded && isOpen && sessionId && !isInitialized) {
             initializeSDK();
         }
     }, [sdkLoaded, isOpen, sessionId, isInitialized]);
+
+    useEffect(() => {
+        const handleMessage = (event: MessageEvent) => {
+            // Check if the message is from our expected origin
+            if (event.origin !== 'https://qrstuff.me' && event.origin !== 'https://merchant.upigateway.com') {
+                return;
+            }
+
+            const data = event.data;
+            if (data && data.status) {
+                if (data.status === 'success') {
+                    onSuccess(data);
+                } else if (data.status === 'failure' || data.status === 'error') {
+                    onError(data);
+                } else if (data.status === 'cancelled') {
+                    onCancelled(data);
+                }
+            }
+        };
+
+        window.addEventListener('message', handleMessage);
+        return () => window.removeEventListener('message', handleMessage);
+    }, [onSuccess, onError, onCancelled]);
 
     const initializeSDK = () => {
         try {
@@ -50,20 +75,21 @@ export default function UPIPaymentModal({
 
             console.log('Initializing EKQR SDK with session:', sessionId);
 
-            // Create SDK instance
+            // Create SDK instance just to handle internal logic if needed, 
+            // but we won't call .pay() because it opens a duplicate modal.
             const paymentSDK = new window.EKQR({
                 sessionId: sessionId,
                 callbacks: {
                     onSuccess: (response: any) => {
-                        console.log('Payment Successful:', response);
+                        console.log('SDK Success callback:', response);
                         onSuccess(response);
                     },
                     onError: (response: any) => {
-                        console.error('Payment Error:', response);
+                        console.error('SDK Error callback:', response);
                         onError(response);
                     },
                     onCancelled: (response: any) => {
-                        console.info('Payment Cancelled:', response);
+                        console.info('SDK Cancelled callback:', response);
                         onCancelled(response);
                     }
                 }
@@ -72,27 +98,79 @@ export default function UPIPaymentModal({
             sdkInstanceRef.current = paymentSDK;
             setIsInitialized(true);
 
-            // Trigger payment - this will open the payment interface
-            setTimeout(() => {
-                paymentSDK.pay();
-            }, 500);
+            // We DO NOT call paymentSDK.pay() here to avoid the double modal issue.
+            // Instead we render our own interface using the session details.
 
         } catch (error) {
             console.error('SDK Initialization Error:', error);
-            onError({ error: 'Failed to initialize payment SDK' });
+            // We can still proceed with our manual iframe even if SDK init fails
+            setIsInitialized(true);
         }
     };
 
     const handleClose = () => {
-        if (sdkInstanceRef.current) {
-            // Clean up SDK instance if needed
-            sdkInstanceRef.current = null;
-        }
         setIsInitialized(false);
         onClose();
     };
 
     if (!isOpen) return null;
+
+    const upiApps = [
+        {
+            name: 'PhonePe',
+            color: '#5f259f',
+            link: upiIntent.phonepe_link,
+            icon: (
+                <svg viewBox="0 0 24 24" className="w-6 h-6 fill-white">
+                    <path d="M19.1 7.2c-.1-.1-.3-.2-.5-.2h-1.3l-2-2c-.1-.1-.3-.2-.5-.2H9.2c-.2 0-.4.1-.5.2l-2 2H5.4c-.2 0-.4.1-.5.2-.1.1-.2.3-.2.5v11.4c0 .2.1.4.2.5.1.1.3.2.5.2h13.2c.2 0 .4-.1.5-.2.1-.1.2-.3.2-.5V7.7c0-.2-.1-.4-.2-.5zm-7.1 11.1c-2.4 0-4.4-2-4.4-4.4s2-4.4 4.4-4.4 4.4 2 4.4 4.4-2 4.4-4.4 4.4zm0-7.3c-1.6 0-2.9 1.3-2.9 2.9s1.3 2.9 2.9 2.9 2.9-1.3 2.9-2.9-1.3-2.9-2.9-2.9z" />
+                </svg>
+            )
+        },
+        {
+            name: 'GPay',
+            color: '#ffffff',
+            link: upiIntent.gpay_link,
+            icon: (
+                <svg viewBox="0 0 24 24" className="w-6 h-6">
+                    <path fill="#4285F4" d="M22.56 12.25c0-.78-.07-1.53-.2-2.25H12v4.26h5.92c-.26 1.37-1.04 2.53-2.21 3.31v2.77h3.57c2.08-1.92 3.28-4.74 3.28-8.09z" />
+                    <path fill="#34A853" d="M12 23c2.97 0 5.46-.98 7.28-2.66l-3.57-2.77c-.98.66-2.23 1.06-3.71 1.06-2.86 0-5.29-1.93-6.16-4.53H2.18v2.84C3.99 20.53 7.7 23 12 23z" />
+                    <path fill="#FBBC05" d="M5.84 14.1c-.22-.66-.35-1.36-.35-2.1s.13-1.44.35-2.1V7.06H2.18C1.43 8.55 1 10.22 1 12s.43 3.45 1.18 4.94l3.66-2.84z" />
+                    <path fill="#EA4335" d="M12 5.38c1.62 0 3.06.56 4.21 1.66l3.15-3.15C17.45 2.09 14.97 1 12 1 7.7 1 3.99 3.47 2.18 7.06l3.66 2.84c.87-2.6 3.3-4.52 6.16-4.52z" />
+                </svg>
+            )
+        },
+        {
+            name: 'Paytm',
+            color: '#00baf2',
+            link: upiIntent.paytm_link,
+            icon: (
+                <svg viewBox="0 0 24 24" className="w-7 h-7 fill-white">
+                    <path d="M1.3 11.1h1.3v4.6c0 1.9 1.5 3.5 3.4 3.5s3.4-1.6 3.4-3.5V1.2H8V11H6.7V1.2H1.3v9.9zm13.1 9c2.4 0 4.4-1.5 5.5-3.7V21h1.3v-8.2c0-3.3-2.7-6-6-6s-6 2.7-6 6v8.2h1.3V20c1-.5 2.2-.9 3.9-.9z" />
+                </svg>
+            )
+        },
+        {
+            name: 'Amazon',
+            color: '#232f3e',
+            link: upiIntent.amazonpay_link || upiIntent.bhim_link,
+            icon: (
+                <svg viewBox="0 0 24 24" className="w-6 h-6 fill-white">
+                    <path d="M15.93 17.13c-1.47.81-2.94 1.22-4.41 1.22-4.05 0-6.12-2.31-6.13-4.62 0-3.07 2.52-5.06 6.35-5.06h3.69V7.61c0-1.89-1.29-2.91-3.6-2.91-1.43 0-3 .42-4.32 1.22l-.76-2.05c1.42-.92 3.42-1.47 5.37-1.47 4.14 0 5.61 2.27 5.61 5.43v6.75c0 1.22.45 1.74 1.2 1.74.27 0 .54-.05.81-.14l.32 1.91c-.41.13-.82.18-1.23.18-1.74 0-2.82-1.27-2.9-3.26zm-3.69-6.95c-2.4 0-3.9 1.09-3.9 2.86 0 1.5.86 2.68 2.64 2.68 1.14 0 2.28-.46 3.42-1.36v-4.18h-2.16z" />
+                </svg>
+            )
+        },
+        {
+            name: 'SBI',
+            color: '#2563eb',
+            link: upiIntent.bhim_link,
+            icon: (
+                <svg viewBox="0 0 24 24" className="w-5 h-5 fill-white">
+                    <path d="M12 1C5.9 1 1 5.9 1 12s4.9 11 11 11 11-4.9 11-11S18.1 1 12 1zm0 18.5c-3.6 0-6.5-2.9-6.5-6.5s2.9-6.5 6.5-6.5 6.5 2.9 6.5 6.5-2.9 6.5-6.5 6.5z" />
+                    <rect x="11" y="4" width="2" height="6.5" />
+                </svg>
+            )
+        }
+    ];
 
     return (
         <>
@@ -117,24 +195,24 @@ export default function UPIPaymentModal({
                 />
 
                 {/* Modal Content */}
-                <div className="relative bg-[#0a0a0a] border border-white/10 w-full max-w-[500px] rounded-3xl shadow-[0_0_100px_rgba(0,0,0,0.9)] animate-modalEntrance mx-auto max-h-[90vh] flex flex-col overflow-hidden">
+                <div className="relative bg-[#0a0a0a] border border-white/10 w-full max-w-[450px] rounded-[2.5rem] shadow-[0_0_100px_rgba(0,0,0,0.9)] animate-modalEntrance mx-auto max-h-[95vh] flex flex-col overflow-hidden">
                     {/* Header */}
                     <div className="bg-[#111] p-6 border-b border-white/5 flex justify-between items-center shrink-0">
                         <div className="flex items-center gap-4">
-                            <div className="w-10 h-10 rounded-full bg-gradient-to-br from-purple-500 to-blue-500 flex items-center justify-center shadow-lg">
+                            <div className="w-10 h-10 rounded-2xl bg-gradient-to-br from-indigo-500 via-purple-500 to-pink-500 flex items-center justify-center shadow-lg transform rotate-3">
                                 <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="white" strokeWidth="2.5">
-                                    <rect x="3" y="11" width="18" height="11" rx="2" ry="2" />
-                                    <path d="M7 11V7a5 5 0 0 1 10 0v4" />
+                                    <path d="M12 22s8-4 8-10V5l-8-3-8 3v7c0 6 8 10 8 10z" />
+                                    <path d="M9 12l2 2 4-4" strokeLinecap="round" strokeLinejoin="round" />
                                 </svg>
                             </div>
                             <div>
-                                <p className="text-[10px] text-white/40 uppercase tracking-[0.2em] font-bold">Secure Payment Gateway</p>
+                                <p className="text-[10px] text-white/40 uppercase tracking-[0.2em] font-bold">Checkout Securely</p>
                                 <p className="text-sm text-white font-medium tracking-tight">Order #{orderId}</p>
                             </div>
                         </div>
                         <button
                             onClick={handleClose}
-                            className="text-white/30 hover:text-white transition-colors p-2 hover:bg-white/5 rounded-full"
+                            className="text-white/30 hover:text-white transition-colors p-2 hover:bg-white/5 rounded-xl"
                         >
                             <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2">
                                 <path d="M18 6L6 18M6 6l12 12" />
@@ -142,68 +220,98 @@ export default function UPIPaymentModal({
                         </button>
                     </div>
 
-                    {/* Payment Container */}
+                    {/* Payment Content */}
                     <div className="flex-1 overflow-y-auto custom-scrollbar">
-                        <div className="p-8 space-y-6">
-                            {/* Amount Display */}
-                            <div className="text-center space-y-2 pb-6 border-b border-white/5">
-                                <p className="text-[10px] text-white/30 uppercase tracking-[0.3em] font-bold">Total Amount</p>
+                        <div className="p-8 space-y-8">
+                            {/* Amount & Timer */}
+                            <div className="text-center space-y-1">
+                                <p className="text-[10px] text-white/30 uppercase tracking-[0.3em] font-bold">Amount to Pay</p>
                                 <h2 className="text-5xl font-thin tracking-tighter text-white">₹{amount.toLocaleString('en-IN')}</h2>
                             </div>
 
-                            {/* SDK Loading State */}
-                            {!sdkLoaded && (
-                                <div className="flex flex-col items-center justify-center py-12 space-y-4">
-                                    <div className="w-16 h-16 border-4 border-white/10 border-t-white rounded-full animate-spin" />
-                                    <p className="text-sm text-white/40 uppercase tracking-widest">Loading Payment Gateway...</p>
-                                </div>
-                            )}
-
-                            {/* Payment Interface Container */}
-                            <div
-                                ref={paymentContainerRef}
-                                id="upi-payment-container"
-                                className="min-h-[300px] flex items-center justify-center"
-                            >
-                                {sdkLoaded && !isInitialized && (
-                                    <div className="flex flex-col items-center space-y-4">
-                                        <div className="w-12 h-12 border-3 border-white/20 border-t-white rounded-full animate-spin" />
-                                        <p className="text-xs text-white/40 uppercase tracking-widest">Initializing Payment...</p>
+                            {/* QR Code Container */}
+                            <div className="relative aspect-square w-full max-w-[280px] mx-auto bg-white rounded-3xl p-4 shadow-[0_20px_50px_rgba(0,0,0,0.5)] group">
+                                {!sdkLoaded && (
+                                    <div className="absolute inset-0 flex flex-col items-center justify-center bg-black/5 rounded-3xl space-y-3">
+                                        <div className="w-10 h-10 border-2 border-indigo-500 border-t-transparent rounded-full animate-spin" />
+                                        <p className="text-[10px] text-black/40 uppercase tracking-widest font-bold">Secure Connection...</p>
                                     </div>
                                 )}
-                            </div>
 
-                            {/* Payment Instructions */}
-                            <div className="space-y-4 pt-6 border-t border-white/5">
-                                <p className="text-[9px] text-white/20 uppercase tracking-[0.3em] font-bold text-center">Payment Instructions</p>
-                                <div className="space-y-3">
-                                    <div className="flex items-start gap-3">
-                                        <div className="w-6 h-6 rounded-full bg-white/5 flex items-center justify-center flex-shrink-0 mt-0.5">
-                                            <span className="text-[10px] text-white/40 font-bold">1</span>
-                                        </div>
-                                        <p className="text-[11px] text-white/40 leading-relaxed">Scan the QR code with any UPI app (GPay, PhonePe, Paytm, etc.)</p>
-                                    </div>
-                                    <div className="flex items-start gap-3">
-                                        <div className="w-6 h-6 rounded-full bg-white/5 flex items-center justify-center flex-shrink-0 mt-0.5">
-                                            <span className="text-[10px] text-white/40 font-bold">2</span>
-                                        </div>
-                                        <p className="text-[11px] text-white/40 leading-relaxed">Complete the payment in your UPI app</p>
-                                    </div>
-                                    <div className="flex items-start gap-3">
-                                        <div className="w-6 h-6 rounded-full bg-white/5 flex items-center justify-center flex-shrink-0 mt-0.5">
-                                            <span className="text-[10px] text-white/40 font-bold">3</span>
-                                        </div>
-                                        <p className="text-[11px] text-white/40 leading-relaxed">Wait for confirmation - do not close this window</p>
-                                    </div>
+                                {sessionId && (
+                                    <iframe
+                                        src={`https://qrstuff.me/gateway/iframe_pay/${sessionId}`}
+                                        className="w-full h-full border-0 rounded-2xl"
+                                        title="UPI QR Code"
+                                        scrolling="no"
+                                    />
+                                )}
+
+                                <div className="absolute -bottom-3 left-1/2 -translate-x-1/2 bg-indigo-500 text-white text-[9px] font-black uppercase tracking-widest px-4 py-1.5 rounded-full shadow-lg whitespace-nowrap opacity-0 group-hover:opacity-100 transition-opacity">
+                                    Official UPI QR
                                 </div>
                             </div>
 
-                            {/* Security Badge */}
-                            <div className="flex items-center justify-center gap-2 pt-4">
-                                <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="rgba(255,255,255,0.2)" strokeWidth="2">
-                                    <path d="M12 22s8-4 8-10V5l-8-3-8 3v7c0 6 8 10 8 10z" />
-                                </svg>
-                                <p className="text-[8px] text-white/20 uppercase tracking-[0.4em] font-bold">256-bit Encrypted</p>
+                            {/* Payment Apps Section */}
+                            <div className="space-y-5">
+                                <div className="flex items-center gap-4">
+                                    <div className="h-px flex-1 bg-white/5" />
+                                    <p className="text-[9px] text-white/20 uppercase tracking-[0.4em] font-bold">Direct App Payment</p>
+                                    <div className="h-px flex-1 bg-white/5" />
+                                </div>
+
+                                <div className="grid grid-cols-5 gap-3">
+                                    {upiApps.map((app) => (
+                                        <a
+                                            key={app.name}
+                                            href={app.link || '#'}
+                                            target={app.link ? "_self" : undefined}
+                                            className={`flex flex-col items-center gap-2 group ${!app.link ? 'opacity-30 grayscale cursor-not-allowed' : 'cursor-pointer'}`}
+                                            onClick={(e) => {
+                                                if (!app.link) e.preventDefault();
+                                            }}
+                                        >
+                                            <div
+                                                className="w-12 h-12 rounded-2xl flex items-center justify-center transition-all duration-300 group-hover:scale-110 group-active:scale-95 shadow-lg relative overflow-hidden"
+                                                style={{ backgroundColor: app.color }}
+                                            >
+                                                {/* App Specific Icons */}
+                                                {app.icon}
+
+                                                {/* Decorative Overlay */}
+                                                <div className="absolute inset-0 bg-black/0 group-hover:bg-black/10 transition-colors" />
+                                            </div>
+                                            <span className="text-[8px] text-white/40 uppercase tracking-widest font-bold group-hover:text-white/60 transition-colors">{app.name}</span>
+                                        </a>
+                                    ))}
+                                </div>
+                                <p className="text-[8px] text-white/20 text-center uppercase tracking-widest leading-relaxed">
+                                    Click an icon to pay directly via installed UPI app
+                                </p>
+                            </div>
+
+                            {/* Security & Support */}
+                            <div className="pt-4 flex flex-col items-center gap-4">
+                                <div className="flex items-center gap-6">
+                                    <div className="flex items-center gap-2 opacity-30">
+                                        <svg width="12" height="12" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2">
+                                            <path d="M12 22s8-4 8-10V5l-8-3-8 3v7c0 6 8 10 8 10z" />
+                                        </svg>
+                                        <span className="text-[8px] uppercase tracking-widest font-bold">Secure</span>
+                                    </div>
+                                    <div className="flex items-center gap-2 opacity-30">
+                                        <svg width="12" height="12" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2">
+                                            <path d="M22 11.08V12a10 10 0 1 1-5.93-9.14" />
+                                            <polyline points="22 4 12 14.01 9 11.01" />
+                                        </svg>
+                                        <span className="text-[8px] uppercase tracking-widest font-bold">Verified</span>
+                                    </div>
+                                </div>
+                                <div className="bg-white/5 w-full p-4 rounded-2xl border border-white/5 text-center">
+                                    <p className="text-[9px] text-white/40 leading-relaxed uppercase tracking-tighter">
+                                        Waiting for payment. Do not refresh or close this window.
+                                    </p>
+                                </div>
                             </div>
                         </div>
                     </div>
@@ -216,17 +324,17 @@ export default function UPIPaymentModal({
                     to { opacity: 1; }
                 }
                 @keyframes modalEntrance {
-                    from { opacity: 0; transform: scale(0.95) translateY(20px); }
+                    from { opacity: 0; transform: scale(0.95) translateY(30px); }
                     to { opacity: 1; transform: scale(1) translateY(0); }
                 }
                 .animate-fadeIn {
-                    animation: fadeIn 0.3s ease-out forwards;
+                    animation: fadeIn 0.4s cubic-bezier(0.16, 1, 0.3, 1) forwards;
                 }
                 .animate-modalEntrance {
-                    animation: modalEntrance 0.4s cubic-bezier(0.19, 1, 0.22, 1) forwards;
+                    animation: modalEntrance 0.6s cubic-bezier(0.34, 1.56, 0.64, 1) forwards;
                 }
                 .custom-scrollbar::-webkit-scrollbar {
-                    width: 6px;
+                    width: 4px;
                 }
                 .custom-scrollbar::-webkit-scrollbar-track {
                     background: transparent;
@@ -234,9 +342,6 @@ export default function UPIPaymentModal({
                 .custom-scrollbar::-webkit-scrollbar-thumb {
                     background: rgba(255, 255, 255, 0.1);
                     border-radius: 10px;
-                }
-                .custom-scrollbar::-webkit-scrollbar-thumb:hover {
-                    background: rgba(255, 255, 255, 0.2);
                 }
             `}</style>
         </>
