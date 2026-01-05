@@ -6,6 +6,7 @@ import { useCart } from '../providers/CartProvider';
 import Navbar from '../components/Navbar';
 import Footer from '../components/Footer';
 import { useSession } from 'next-auth/react';
+import UPIPaymentModal from '../components/UPIPaymentModal';
 
 export default function CheckoutPage() {
     const { cartItems, cartTotal, clearCart } = useCart();
@@ -15,8 +16,6 @@ export default function CheckoutPage() {
     const [showPaymentModal, setShowPaymentModal] = useState(false);
     const [paymentData, setPaymentData] = useState<any>(null);
     const [paymentMethod, setPaymentMethod] = useState<'upi' | 'cod'>('upi');
-    const [timeLeft, setTimeLeft] = useState(300); // 5 minutes in seconds
-    const [isCheckingStatus, setIsCheckingStatus] = useState(false);
     const [isPaymentSuccess, setIsPaymentSuccess] = useState(false);
 
     const [formData, setFormData] = useState({
@@ -40,56 +39,7 @@ export default function CheckoutPage() {
         }
     }, [cartItems, router]);
 
-    // Timer logic for QR
-    useEffect(() => {
-        if (showPaymentModal && timeLeft > 0 && !isPaymentSuccess) {
-            const timer = setInterval(() => {
-                setTimeLeft((prev) => prev - 1);
-            }, 1000);
-            return () => clearInterval(timer);
-        } else if (timeLeft === 0) {
-            setShowPaymentModal(false);
-            alert('Payment session expired. Please try again.');
-        }
-    }, [showPaymentModal, timeLeft, isPaymentSuccess]);
 
-    // Status Polling logic
-    useEffect(() => {
-        let pollInterval: NodeJS.Timeout;
-
-        if (showPaymentModal && paymentData?.client_txn_id && !isPaymentSuccess) {
-            pollInterval = setInterval(async () => {
-                try {
-                    const res = await fetch('/api/payment/check-status', {
-                        method: 'POST',
-                        headers: { 'Content-Type': 'application/json' },
-                        body: JSON.stringify({
-                            client_txn_id: paymentData.client_txn_id,
-                            txn_date: new Date().toLocaleDateString('en-GB').replace(/\//g, '-')
-                        })
-                    });
-                    const data = await res.json();
-                    if (data.status && data.data?.status === 'success') {
-                        setIsPaymentSuccess(true);
-                        clearCart();
-                        setTimeout(() => {
-                            router.push(`/order-confirmation?id=${paymentData.client_txn_id}`);
-                        }, 2000);
-                    }
-                } catch (error) {
-                    console.error('Polling error:', error);
-                }
-            }, 5000);
-        }
-
-        return () => clearInterval(pollInterval);
-    }, [showPaymentModal, paymentData, isPaymentSuccess, router, clearCart]);
-
-    const formatTime = (seconds: number) => {
-        const mins = Math.floor(seconds / 60);
-        const secs = seconds % 60;
-        return `${mins}:${secs.toString().padStart(2, '0')}`;
-    };
 
     const handleInputChange = (e: React.ChangeEvent<HTMLInputElement | HTMLTextAreaElement>) => {
         const { name, value } = e.target;
@@ -160,11 +110,10 @@ export default function CheckoutPage() {
                     localStorage.setItem('last_txn_id', data.client_txn_id);
                     localStorage.setItem('last_txn_date', new Date().toLocaleDateString('en-GB').replace(/\//g, '-'));
                     console.log('Payment Data Received:', data);
+                    console.log('Session ID:', data.data?.session_id);
                     console.log('Payment URL:', data.data?.payment_url);
-                    console.log('UPI Intent Web:', data.data?.upi_intent?.web);
                     setPaymentData(data);
                     setShowPaymentModal(true);
-                    setTimeLeft(300);
                 }
             } else {
                 alert(data.msg || 'Failed to initiate checkout');
@@ -394,168 +343,31 @@ export default function CheckoutPage() {
                 </div>
             </main>
 
-            {/* Payment Gateway Modal */}
-            {showPaymentModal && paymentData && (
-                <div className="fixed inset-0 z-[10000] flex items-center justify-center px-4 overflow-hidden">
-                    {/* Backdrop */}
-                    <div
-                        className="absolute inset-0 bg-black/90 backdrop-blur-md animate-fadeIn"
-                        onClick={() => !isPaymentSuccess && setShowPaymentModal(false)}
-                    />
-
-                    {/* Modal Content */}
-                    <div className="relative bg-[#0a0a0a] border border-white/10 w-full max-w-[400px] rounded-[2rem] shadow-[0_0_80px_rgba(0,0,0,0.8)] animate-modalEntrance mx-auto max-h-[90vh] flex flex-col overflow-hidden">
-                        {/* Header - Fixed to top */}
-                        <div className="bg-[#111] p-5 border-b border-white/5 flex justify-between items-center shrink-0">
-                            <div className="flex items-center gap-3">
-                                <div className="w-7 h-7 rounded-full bg-white/5 flex items-center justify-center border border-white/10">
-                                    <svg width="12" height="12" viewBox="0 0 24 24" fill="none" stroke="white" strokeWidth="2.5">
-                                        <rect x="3" y="11" width="18" height="11" rx="2" ry="2" />
-                                        <path d="M7 11V7a5 5 0 0 1 10 0v4" />
-                                    </svg>
-                                </div>
-                                <div>
-                                    <p className="text-[9px] text-white/40 uppercase tracking-[0.2em] font-bold">Secure Gateway</p>
-                                    <p className="text-[11px] text-white font-medium tracking-tight">ORDER #{paymentData.order_id || paymentData.data?.order_id}</p>
-                                </div>
-                            </div>
-                            {!isPaymentSuccess && (
-                                <button
-                                    onClick={() => setShowPaymentModal(false)}
-                                    className="text-white/20 hover:text-white transition-colors p-1"
-                                >
-                                    <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2">
-                                        <path d="M18 6L6 18M6 6l12 12" />
-                                    </svg>
-                                </button>
-                            )}
-                        </div>
-
-                        {/* Scrollable Body Container */}
-                        <div className="overflow-y-auto flex-1 custom-scrollbar">
-                            {isPaymentSuccess ? (
-                                <div className="p-12 text-center space-y-6 animate-fadeIn">
-                                    <div className="w-20 h-20 bg-green-500 rounded-full flex items-center justify-center mx-auto shadow-[0_0_40px_rgba(34,197,94,0.4)]">
-                                        <svg width="32" height="32" viewBox="0 0 24 24" fill="none" stroke="white" strokeWidth="3">
-                                            <polyline points="20 6 9 17 4 12" />
-                                        </svg>
-                                    </div>
-                                    <div className="space-y-2">
-                                        <h2 className="text-2xl font-thin tracking-wide">PAYMENT SUCCESSFUL</h2>
-                                        <p className="text-white/40 text-[10px] uppercase tracking-widest">Redirecting to confirmation...</p>
-                                    </div>
-                                </div>
-                            ) : (
-                                <>
-                                    {/* Amount Section & QR */}
-                                    <div className="p-6 sm:p-8 pb-4 text-center space-y-6">
-                                        <div className="space-y-1">
-                                            <p className="text-[10px] text-white/30 uppercase tracking-[0.2em]">Total Outstanding</p>
-                                            <h2 className="text-4xl sm:text-5xl font-thin tracking-tighter italic">₹{finalTotal.toLocaleString('en-IN')}</h2>
-                                        </div>
-
-                                        {/* QR Code */}
-                                        <div className="space-y-4">
-                                            <div className="relative group mx-auto w-48 h-48 bg-white p-4 rounded-3xl shadow-[0_0_40px_rgba(255,255,255,0.03)] transition-all">
-                                                <img
-                                                    src={`https://api.qrserver.com/v1/create-qr-code/?size=200x200&data=${encodeURIComponent(
-                                                        paymentData.data?.payment_url ||
-                                                        paymentData.data?.upi_intent?.web ||
-                                                        ''
-                                                    )}`}
-                                                    alt="Payment QR"
-                                                    className="w-full h-full object-contain"
-                                                    onError={(e) => {
-                                                        console.error('QR Code failed to load');
-                                                        console.log('Payment data:', paymentData);
-                                                    }}
-                                                />
-                                                <div className="absolute inset-0 bg-white/10 backdrop-blur-[1px] opacity-0 group-hover:opacity-100 transition-opacity" />
-                                            </div>
-                                            <div className="flex flex-col items-center gap-1">
-                                                <p className="text-[9px] text-white/20 uppercase tracking-[0.4em] font-medium">Scan to pay within</p>
-                                                <p className="text-xl font-mono text-white/80 tabular-nums">{formatTime(timeLeft)}</p>
-                                            </div>
-                                        </div>
-                                    </div>
-
-                                    {/* Payment Options Section */}
-                                    <div className="px-6 sm:px-8 pb-10 space-y-6">
-                                        <div className="space-y-5">
-                                            <div className="flex items-center gap-4">
-                                                <div className="h-[1px] flex-1 bg-white/5"></div>
-                                                <p className="text-[9px] text-white/40 uppercase tracking-[0.3em] font-bold whitespace-nowrap">Express Checkout</p>
-                                                <div className="h-[1px] flex-1 bg-white/5"></div>
-                                            </div>
-
-                                            <div className="grid grid-cols-3 gap-3">
-                                                {/* Google Pay */}
-                                                <button
-                                                    onClick={() => {
-                                                        const link = paymentData.data?.upi_intent?.gpay_link;
-                                                        if (link) {
-                                                            window.location.href = link;
-                                                        }
-                                                    }}
-                                                    className="bg-white/[0.03] border border-white/5 hover:border-white/20 hover:bg-white/5 py-5 rounded-2xl flex flex-col items-center gap-3 transition-all group"
-                                                >
-                                                    <div className="w-10 h-10 bg-white rounded-xl flex items-center justify-center overflow-hidden p-1.5 flex-shrink-0 transition-all group-hover:scale-110 group-active:scale-95 shadow-lg">
-                                                        <img src="https://upload.wikimedia.org/wikipedia/commons/f/f2/Google_Pay_Logo.svg" alt="GPay" className="w-full h-full object-contain" />
-                                                    </div>
-                                                    <span className="text-[8px] text-white/30 uppercase tracking-widest font-black group-hover:text-white/60 transition-colors">G-Pay</span>
-                                                </button>
-
-                                                {/* PhonePe */}
-                                                <button
-                                                    onClick={() => {
-                                                        const link = paymentData.data?.upi_intent?.phonepe_link;
-                                                        if (link) {
-                                                            window.location.href = link;
-                                                        }
-                                                    }}
-                                                    className="bg-white/[0.03] border border-white/5 hover:border-white/20 hover:bg-white/5 py-5 rounded-2xl flex flex-col items-center gap-3 transition-all group"
-                                                >
-                                                    <div className="w-10 h-10 bg-[#5f259f] rounded-xl flex items-center justify-center p-2 flex-shrink-0 transition-all group-hover:scale-110 group-active:scale-95 shadow-lg">
-                                                        <img src="https://upload.wikimedia.org/wikipedia/commons/7/71/PhonePe_Logo.svg" alt="PhonePe" className="w-full h-full object-contain brightness-0 invert" />
-                                                    </div>
-                                                    <span className="text-[8px] text-white/30 uppercase tracking-widest font-black group-hover:text-white/60 transition-colors">PhonePe</span>
-                                                </button>
-
-                                                {/* Amazon Pay */}
-                                                <button
-                                                    onClick={() => {
-                                                        const link = paymentData.data?.upi_intent?.web;
-                                                        if (link) {
-                                                            window.location.href = link;
-                                                        }
-                                                    }}
-                                                    className="bg-white/[0.03] border border-white/5 hover:border-white/20 hover:bg-white/5 py-5 rounded-2xl flex flex-col items-center gap-3 transition-all group"
-                                                >
-                                                    <div className="w-10 h-10 bg-black rounded-xl flex items-center justify-center p-1 flex-shrink-0 border border-white/10 transition-all group-hover:scale-110 group-active:scale-95 shadow-lg">
-                                                        <img src="https://upload.wikimedia.org/wikipedia/commons/a/a9/Amazon_logo.svg" alt="Amazon Pay" className="w-full h-full object-contain brightness-0 invert pt-1" />
-                                                    </div>
-                                                    <span className="text-[8px] text-white/30 uppercase tracking-widest font-black group-hover:text-white/60 transition-colors">Amazon</span>
-                                                </button>
-                                            </div>
-                                        </div>
-
-                                        <div className="pt-2 flex flex-col items-center gap-3">
-                                            <div className="flex items-center gap-2 opacity-20">
-                                                <div className="w-1 h-1 rounded-full bg-white"></div>
-                                                <div className="w-1 h-1 rounded-full bg-white"></div>
-                                                <div className="w-1 h-1 rounded-full bg-white"></div>
-                                            </div>
-                                            <p className="text-[8px] text-center text-white/10 tracking-[0.4em] uppercase font-bold">
-                                                Makers3D Architectural Payment Mesh
-                                            </p>
-                                        </div>
-                                    </div>
-                                </>
-                            )}
-                        </div>
-                    </div>
-                </div>
-            )}
+            {/* UPI Payment Modal - SDK Based */}
+            <UPIPaymentModal
+                isOpen={showPaymentModal && paymentData !== null}
+                onClose={() => setShowPaymentModal(false)}
+                sessionId={paymentData?.data?.session_id || ''}
+                orderId={paymentData?.data?.order_id || paymentData?.order_id || ''}
+                amount={finalTotal}
+                onSuccess={(response) => {
+                    console.log('Payment successful:', response);
+                    setIsPaymentSuccess(true);
+                    clearCart();
+                    setTimeout(() => {
+                        router.push(`/order-confirmation?id=${paymentData.client_txn_id}`);
+                    }, 2000);
+                }}
+                onError={(response) => {
+                    console.error('Payment error:', response);
+                    alert('Payment failed. Please try again.');
+                    setShowPaymentModal(false);
+                }}
+                onCancelled={(response) => {
+                    console.log('Payment cancelled:', response);
+                    setShowPaymentModal(false);
+                }}
+            />
 
             <Footer />
 

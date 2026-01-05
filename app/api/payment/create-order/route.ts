@@ -84,7 +84,7 @@ export async function POST(req: Request) {
             redirect_url
         };
 
-        const response = await fetch('https://api.ekqr.in/api/create_order', {
+        const response = await fetch('https://api.ekqr.in/api/v2/create_order', {
             method: 'POST',
             headers: { 'Content-Type': 'application/json' },
             body: JSON.stringify(payload)
