@@ -6,14 +6,20 @@ import { useCart } from '../providers/CartProvider';
 import Navbar from '../components/Navbar';
 import Footer from '../components/Footer';
 import { useSession } from 'next-auth/react';
-import UPIPaymentModal from '../components/UPIPaymentModal';
+import Script from 'next/script';
+
+declare global {
+    interface Window {
+        EKQR: any;
+    }
+}
 
 export default function CheckoutPage() {
     const { cartItems, cartTotal, clearCart } = useCart();
     const { data: session } = useSession();
     const router = useRouter();
     const [isProcessing, setIsProcessing] = useState(false);
-    const [showPaymentModal, setShowPaymentModal] = useState(false);
+    const [showPaymentModal, setShowPaymentModal] = useState(false); // Used for loading state during SDK init
     const [paymentData, setPaymentData] = useState<any>(null);
     const [paymentMethod, setPaymentMethod] = useState<'upi' | 'cod'>('upi');
     const [isPaymentSuccess, setIsPaymentSuccess] = useState(false);
@@ -109,11 +115,31 @@ export default function CheckoutPage() {
                 } else {
                     localStorage.setItem('last_txn_id', data.client_txn_id);
                     localStorage.setItem('last_txn_date', new Date().toLocaleDateString('en-GB').replace(/\//g, '-'));
-                    console.log('Payment Data Received:', data);
-                    console.log('Session ID:', data.data?.session_id);
-                    console.log('Payment URL:', data.data?.payment_url);
-                    setPaymentData(data);
-                    setShowPaymentModal(true);
+
+                    if (window.EKQR && data.data?.session_id) {
+                        const paymentSDK = new window.EKQR({
+                            sessionId: data.data.session_id,
+                            callbacks: {
+                                onSuccess: (response: any) => {
+                                    console.log('Payment successful:', response);
+                                    setIsPaymentSuccess(true);
+                                    clearCart();
+                                    router.push(`/order-confirmation?id=${data.client_txn_id}`);
+                                },
+                                onError: (response: any) => {
+                                    console.error('Payment error:', response);
+                                    alert('Payment failed. Please try again.');
+                                },
+                                onCancelled: (response: any) => {
+                                    console.log('Payment cancelled:', response);
+                                }
+                            }
+                        });
+                        paymentSDK.pay();
+                    } else {
+                        // Fallback to payment URL if SDK fails or isn't loaded
+                        window.location.href = data.data?.payment_url || '#';
+                    }
                 }
             } else {
                 alert(data.msg || 'Failed to initiate checkout');
@@ -343,61 +369,108 @@ export default function CheckoutPage() {
                 </div>
             </main>
 
-            {/* UPI Payment Modal - SDK Based */}
-            <UPIPaymentModal
-                isOpen={showPaymentModal && paymentData !== null}
-                onClose={() => setShowPaymentModal(false)}
-                paymentData={paymentData}
-                amount={finalTotal}
-                onSuccess={(response) => {
-                    console.log('Payment successful:', response);
-                    setIsPaymentSuccess(true);
-                    clearCart();
-                    setTimeout(() => {
-                        router.push(`/order-confirmation?id=${paymentData.client_txn_id}`);
-                    }, 2000);
-                }}
-                onError={(response) => {
-                    console.error('Payment error:', response);
-                    alert('Payment failed. Please try again.');
-                    setShowPaymentModal(false);
-                }}
-                onCancelled={(response) => {
-                    console.log('Payment cancelled:', response);
-                    setShowPaymentModal(false);
-                }}
+            {/* Load Official UPIGateway SDK */}
+            <Script
+                src="https://cdn.ekqr.in/ekqr_sdk.js"
+                strategy="lazyOnload"
+                onLoad={() => console.log('EKQR SDK Loaded')}
             />
+
+            {/* Payment Options Overlay/Section */}
+            {paymentData && showPaymentModal && (
+                <div className="fixed inset-0 z-[10001] flex items-center justify-center p-4">
+                    <div className="absolute inset-0 bg-black/95 backdrop-blur-xl animate-fadeIn" onClick={() => setShowPaymentModal(false)} />
+                    <div className="relative bg-[#0a0a0a] border border-white/10 w-full max-w-[450px] rounded-[2.5rem] shadow-[0_0_100px_rgba(0,0,0,0.9)] animate-modalEntrance mx-auto p-8 overflow-hidden">
+                        <div className="flex justify-between items-center mb-8">
+                            <div>
+                                <p className="text-[10px] text-white/40 uppercase tracking-[0.2em] font-bold">Secure Payment</p>
+                                <p className="text-sm text-white font-medium tracking-tight">Order #{paymentData.data?.order_id || '...'}</p>
+                            </div>
+                            <button onClick={() => setShowPaymentModal(false)} className="text-white/30 hover:text-white transition-colors p-2 hover:bg-white/5 rounded-xl">
+                                <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2"><path d="M18 6L6 18M6 6l12 12" /></svg>
+                            </button>
+                        </div>
+
+                        <div className="text-center mb-10">
+                            <p className="text-[10px] text-white/30 uppercase tracking-[0.3em] font-bold mb-1">Amount to Pay</p>
+                            <h2 className="text-5xl font-thin tracking-tighter text-white">₹{finalTotal.toLocaleString('en-IN')}</h2>
+                        </div>
+
+                        <div className="space-y-6">
+                            {/* Official QR Code Option */}
+                            <button
+                                onClick={() => {
+                                    if (window.EKQR && paymentData.data?.session_id) {
+                                        const paymentSDK = new window.EKQR({
+                                            sessionId: paymentData.data.session_id,
+                                            callbacks: {
+                                                onSuccess: (response: any) => {
+                                                    setIsPaymentSuccess(true);
+                                                    clearCart();
+                                                    router.push(`/order-confirmation?id=${paymentData.client_txn_id}`);
+                                                },
+                                                onError: (response: any) => alert('Payment failed. Please try again.')
+                                            }
+                                        });
+                                        paymentSDK.pay();
+                                        setShowPaymentModal(false);
+                                    }
+                                }}
+                                className="w-full bg-white text-black py-6 rounded-3xl flex flex-col items-center gap-2 hover:scale-[1.02] active:scale-[0.98] transition-all group"
+                            >
+                                <div className="flex items-center gap-3">
+                                    <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2"><path d="M3 7V5a2 2 0 0 1 2-2h2m10 0h2a2 2 0 0 1 2 2v2m0 10v2a2 2 0 0 1-2 2h-2M7 21H5a2 2 0 0 1-2-2v-2" /><rect x="7" y="7" width="3" height="3" /><rect x="14" y="7" width="3" height="3" /><rect x="7" y="14" width="3" height="3" /><rect x="14" y="14" width="3" height="3" /></svg>
+                                    <span className="text-[11px] font-black uppercase tracking-[0.2em]">Show Payment QR Code</span>
+                                </div>
+                                <p className="text-[8px] opacity-40 uppercase font-bold tracking-widest">Recommended for Desktop</p>
+                            </button>
+
+                            <div className="flex items-center gap-4">
+                                <div className="h-px flex-1 bg-white/5" />
+                                <p className="text-[9px] text-white/20 uppercase tracking-[0.4em] font-bold">Direct App Pay</p>
+                                <div className="h-px flex-1 bg-white/5" />
+                            </div>
+
+                            {/* Direct App Buttons */}
+                            <div className="grid grid-cols-4 gap-4">
+                                {[
+                                    { name: 'PhonePe', color: '#5f259f', link: paymentData.data?.upi_intent?.phonepe_link },
+                                    { name: 'GPay', color: '#ffffff', iconColor: '#4285F4', link: paymentData.data?.upi_intent?.gpay_link },
+                                    { name: 'BHIM', color: '#000000', link: paymentData.data?.upi_intent?.bhim_link },
+                                    { name: 'SBI', color: '#2563eb', link: paymentData.data?.upi_intent?.bhim_link } // Using generic for SBI if specific not available
+                                ].map((app) => (
+                                    <a
+                                        key={app.name}
+                                        href={app.link || '#'}
+                                        className={`flex flex-col items-center gap-2 group ${!app.link ? 'opacity-30 grayscale cursor-not-allowed' : 'cursor-pointer'}`}
+                                        onClick={(e) => { if (!app.link) e.preventDefault(); }}
+                                    >
+                                        <div className="w-14 h-14 rounded-2xl flex items-center justify-center transition-all group-hover:scale-110 shadow-lg" style={{ backgroundColor: app.color }}>
+                                            <span className="text-[10px] font-black text-white" style={{ color: app.iconColor || 'white' }}>{app.name[0]}</span>
+                                        </div>
+                                        <span className="text-[8px] text-white/40 uppercase tracking-widest font-bold">{app.name}</span>
+                                    </a>
+                                ))}
+                            </div>
+                        </div>
+
+                        <div className="mt-10 pt-6 border-t border-white/5 text-center">
+                            <p className="text-[9px] text-white/20 uppercase tracking-widest leading-relaxed">
+                                Officially Supported by UPIGateway<br />
+                                Secured with 256-bit Encryption
+                            </p>
+                        </div>
+                    </div>
+                </div>
+            )}
 
             <Footer />
 
             <style jsx>{`
-                @keyframes fadeIn {
-                    from { opacity: 0; }
-                    to { opacity: 1; }
-                }
-                @keyframes modalEntrance {
-                    from { opacity: 0; transform: scale(0.9) translateY(20px); }
-                    to { opacity: 1; transform: scale(1) translateY(0); }
-                }
-                .animate-fadeIn {
-                    animation: fadeIn 0.4s ease-out forwards;
-                }
-                .animate-modalEntrance {
-                    animation: modalEntrance 0.5s cubic-bezier(0.19, 1, 0.22, 1) forwards;
-                }
-                .custom-scrollbar::-webkit-scrollbar {
-                    width: 4px;
-                }
-                .custom-scrollbar::-webkit-scrollbar-track {
-                    background: transparent;
-                }
-                .custom-scrollbar::-webkit-scrollbar-thumb {
-                    background: rgba(255, 255, 255, 0.1);
-                    border-radius: 10px;
-                }
-                .custom-scrollbar::-webkit-scrollbar-thumb:hover {
-                    background: rgba(255, 255, 255, 0.2);
-                }
+                @keyframes fadeIn { from { opacity: 0; } to { opacity: 1; } }
+                @keyframes modalEntrance { from { opacity: 0; transform: scale(0.95) translateY(30px); } to { opacity: 1; transform: scale(1) translateY(0); } }
+                .animate-fadeIn { animation: fadeIn 0.4s cubic-bezier(0.16, 1, 0.3, 1) forwards; }
+                .animate-modalEntrance { animation: modalEntrance 0.6s cubic-bezier(0.34, 1.56, 0.64, 1) forwards; }
             `}</style>
         </div>
 
