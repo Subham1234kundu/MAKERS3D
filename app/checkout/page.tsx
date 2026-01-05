@@ -115,31 +115,8 @@ export default function CheckoutPage() {
                 } else {
                     localStorage.setItem('last_txn_id', data.client_txn_id);
                     localStorage.setItem('last_txn_date', new Date().toLocaleDateString('en-GB').replace(/\//g, '-'));
-
-                    if (window.EKQR && data.data?.session_id) {
-                        const paymentSDK = new window.EKQR({
-                            sessionId: data.data.session_id,
-                            callbacks: {
-                                onSuccess: (response: any) => {
-                                    console.log('Payment successful:', response);
-                                    setIsPaymentSuccess(true);
-                                    clearCart();
-                                    router.push(`/order-confirmation?id=${data.client_txn_id}`);
-                                },
-                                onError: (response: any) => {
-                                    console.error('Payment error:', response);
-                                    alert('Payment failed. Please try again.');
-                                },
-                                onCancelled: (response: any) => {
-                                    console.log('Payment cancelled:', response);
-                                }
-                            }
-                        });
-                        paymentSDK.pay();
-                    } else {
-                        // Fallback to payment URL if SDK fails or isn't loaded
-                        window.location.href = data.data?.payment_url || '#';
-                    }
+                    setPaymentData(data);
+                    setShowPaymentModal(true);
                 }
             } else {
                 alert(data.msg || 'Failed to initiate checkout');
@@ -272,7 +249,7 @@ export default function CheckoutPage() {
                                         <button
                                             type="button"
                                             onClick={() => setPaymentMethod('upi')}
-                                            className={`p-6 border transition-all text-left flex flex-col gap-2 ${paymentMethod === 'upi' ? 'bg-white text-black border-white' : 'bg-transparent border-white/10 text-white hover:border-white/30'}`}
+                                            className={`p-6 border transition-all text-left flex flex-col gap-4 ${paymentMethod === 'upi' ? 'bg-white text-black border-white' : 'bg-transparent border-white/10 text-white hover:border-white/30'}`}
                                         >
                                             <div className="flex justify-between items-center">
                                                 <span className="text-[10px] font-bold uppercase tracking-widest">Instant UPI</span>
@@ -280,7 +257,15 @@ export default function CheckoutPage() {
                                                     <div className="w-2 h-2 rounded-full bg-black"></div>
                                                 )}
                                             </div>
-                                            <p className="text-[9px] opacity-60 uppercase tracking-tighter">PhonePe, G-Pay, Amazon Pay</p>
+                                            <div className="flex gap-2 items-center opacity-80">
+                                                {/* App Icons in Selection Card */}
+                                                <div className="w-5 h-5 bg-[#5f259f] rounded-md flex items-center justify-center text-[7px] text-white font-bold">P</div>
+                                                <div className="w-5 h-5 bg-white border border-black/10 rounded-md flex items-center justify-center text-[7px] text-[#4285F4] font-bold">G</div>
+                                                <div className="w-5 h-5 bg-[#ff9900] rounded-md flex items-center justify-center text-[7px] text-black font-bold">A</div>
+                                                <div className="w-5 h-5 bg-black rounded-md flex items-center justify-center text-[7px] text-white font-bold italic">B</div>
+                                                <div className="w-5 h-5 bg-[#2563eb] rounded-md flex items-center justify-center text-[7px] text-white font-bold">S</div>
+                                            </div>
+                                            <p className="text-[8px] uppercase tracking-tighter opacity-60">PhonePe, GPay, Amazon, BHIM, SBI</p>
                                         </button>
                                         <button
                                             type="button"
@@ -411,9 +396,13 @@ export default function CheckoutPage() {
                         {/* Scrollable Content */}
                         <div className="flex-1 overflow-y-auto p-8 space-y-8 custom-scrollbar">
                             {/* Amount Display */}
-                            <div className="text-center space-y-1">
-                                <p className="text-[10px] text-white/30 uppercase tracking-[0.3em] font-bold">Total Amount</p>
-                                <h2 className="text-5xl font-thin tracking-tighter text-white">₹{finalTotal.toLocaleString('en-IN')}</h2>
+                            <div className="bg-white/5 rounded-[2.5rem] p-8 border border-white/5 text-center relative overflow-hidden group">
+                                <div className="absolute top-0 right-0 w-24 h-24 bg-indigo-500/10 blur-3xl rounded-full translate-x-1/2 -translate-y-1/2"></div>
+                                <p className="text-[10px] text-white/20 uppercase tracking-[0.4em] font-bold mb-2">Total Payable</p>
+                                <div className="flex items-center justify-center gap-2">
+                                    <span className="text-2xl font-light text-white/40">₹</span>
+                                    <h2 className="text-6xl font-thin tracking-tighter text-white">{finalTotal.toLocaleString('en-IN')}</h2>
+                                </div>
                             </div>
 
                             {/* Official QR Code (Iframe Method from Docs) */}
@@ -433,85 +422,40 @@ export default function CheckoutPage() {
                                 </div>
                             </div>
 
-                            {/* App Intent Section */}
+                            {/* App Intent Section - Official Integrated Way */}
                             <div className="space-y-6">
                                 <div className="flex items-center gap-4">
                                     <div className="h-px flex-1 bg-white/5" />
-                                    <p className="text-[9px] text-white/20 uppercase tracking-[0.4em] font-bold">Pay via Apps</p>
+                                    <p className="text-[9px] text-white/20 uppercase tracking-[0.4em] font-bold">Direct App Pay</p>
                                     <div className="h-px flex-1 bg-white/5" />
                                 </div>
 
-                                <div className="grid grid-cols-5 gap-3">
+                                <div className="grid grid-cols-5 gap-4">
                                     {[
-                                        {
-                                            name: 'PhonePe',
-                                            color: '#5f259f',
-                                            link: paymentData.data?.upi_intent?.phonepe_link,
-                                            icon: (
-                                                <svg viewBox="0 0 24 24" className="w-6 h-6 fill-white">
-                                                    <path d="M19.1 7.2c-.1-.1-.3-.2-.5-.2h-1.3l-2-2c-.1-.1-.3-.2-.5-.2H9.2c-.2 0-.4.1-.5.2l-2 2H5.4c-.2 0-.4.1-.5.2-.1.1-.2.3-.2.5v11.4c0 .2.1.4.2.5.1.1.3.2.5.2h13.2c.2 0 .4-.1.5-.2.1-.1.2-.3.2-.5V7.7c0-.2-.1-.4-.2-.5z" />
-                                                </svg>
-                                            )
-                                        },
-                                        {
-                                            name: 'GPay',
-                                            color: '#ffffff',
-                                            link: paymentData.data?.upi_intent?.gpay_link,
-                                            icon: (
-                                                <svg viewBox="0 0 24 24" className="w-6 h-6">
-                                                    <path fill="#4285F4" d="M22.56 12.25c0-.78-.07-1.53-.2-2.25H12v4.26h5.92c-.26 1.37-1.04 2.53-2.21 3.31v2.77h3.57c2.08-1.92 3.28-4.74 3.28-8.09z" />
-                                                    <path fill="#34A853" d="M12 23c2.97 0 5.46-.98 7.28-2.66l-3.57-2.77c-.98.66-2.23 1.06-3.71 1.06-2.86 0-5.29-1.93-6.16-4.53H2.18v2.84C3.99 20.53 7.7 23 12 23z" />
-                                                </svg>
-                                            )
-                                        },
-                                        {
-                                            name: 'Amazon',
-                                            color: '#ff9900',
-                                            link: paymentData.data?.upi_intent?.amazonpay_link || paymentData.data?.upi_intent?.bhim_link,
-                                            icon: (
-                                                <svg viewBox="0 0 24 24" className="w-6 h-6 fill-black">
-                                                    <path d="M15.93 17.13c-1.47.81-2.94 1.22-4.41 1.22-4.05 0-6.12-2.31-6.13-4.62 0-3.07 2.52-5.06 6.35-5.06h3.69V7.61z" />
-                                                </svg>
-                                            )
-                                        },
-                                        {
-                                            name: 'BHIM',
-                                            color: '#0a0a0a',
-                                            link: paymentData.data?.upi_intent?.bhim_link,
-                                            icon: (
-                                                <div className="flex flex-col items-center leading-none italic font-black text-[10px] text-white">
-                                                    <span>BHIM</span>
-                                                    <span className="text-[6px] opacity-60">UPI</span>
-                                                </div>
-                                            )
-                                        },
-                                        {
-                                            name: 'SBI',
-                                            color: '#2563eb',
-                                            link: paymentData.data?.upi_intent?.bhim_link,
-                                            icon: (
-                                                <div className="w-6 h-6 rounded-full border-2 border-white flex items-center justify-center font-black text-[8px] text-white font-mono">
-                                                    SBI
-                                                </div>
-                                            )
-                                        }
+                                        { name: 'PhonePe', color: '#5f259f', link: paymentData.data?.upi_intent?.phonepe_link, initial: 'P' },
+                                        { name: 'GPay', color: '#ffffff', textColor: '#4285F4', link: paymentData.data?.upi_intent?.gpay_link, initial: 'G' },
+                                        { name: 'Amazon', color: '#ff9900', textColor: '#000', link: paymentData.data?.upi_intent?.amazonpay_link || paymentData.data?.upi_intent?.bhim_link, initial: 'A' },
+                                        { name: 'BHIM', color: '#000000', link: paymentData.data?.upi_intent?.bhim_link, initial: 'B' },
+                                        { name: 'SBI', color: '#2563eb', link: paymentData.data?.upi_intent?.bhim_link, initial: 'S' }
                                     ].map((app) => (
                                         <a
                                             key={app.name}
                                             href={app.link || '#'}
-                                            className={`flex flex-col items-center gap-2 group transition-all ${!app.link ? 'opacity-30 grayscale cursor-not-allowed' : 'hover:scale-110 active:scale-95'}`}
+                                            className={`flex flex-col items-center gap-2.5 group transition-all ${!app.link ? 'cursor-pointer' : 'hover:scale-110 active:scale-95'}`}
                                             onClick={(e) => {
-                                                if (!app.link) e.preventDefault();
-                                                console.log(`Paying via ${app.name}`);
+                                                if (!app.link) {
+                                                    e.preventDefault();
+                                                    alert(`Open your ${app.name} app and scan the QR code above to pay.`);
+                                                }
                                             }}
                                         >
                                             <div
-                                                className="w-12 h-12 rounded-2xl flex items-center justify-center shadow-lg border border-white/5"
+                                                className="w-14 h-14 rounded-2xl flex items-center justify-center shadow-lg border border-white/10 transition-all group-hover:border-white/30"
                                                 style={{ backgroundColor: app.color }}
                                             >
-                                                {app.icon}
+                                                <span className="text-xl font-black italic" style={{ color: app.textColor || 'white' }}>{app.initial}</span>
                                             </div>
-                                            <span className="text-[7px] text-white/40 uppercase tracking-widest font-bold group-hover:text-white transition-colors">{app.name}</span>
+                                            <span className="text-[8px] text-white/30 uppercase tracking-widest font-black group-hover:text-white transition-colors">{app.name}</span>
                                         </a>
                                     ))}
                                 </div>
