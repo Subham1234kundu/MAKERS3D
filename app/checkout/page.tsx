@@ -376,101 +376,190 @@ export default function CheckoutPage() {
                 onLoad={() => console.log('EKQR SDK Loaded')}
             />
 
-            {/* Payment Options Overlay/Section */}
+            {/* UPIGateway Unified Payment Modal */}
             {paymentData && showPaymentModal && (
                 <div className="fixed inset-0 z-[10001] flex items-center justify-center p-4">
-                    <div className="absolute inset-0 bg-black/95 backdrop-blur-xl animate-fadeIn" onClick={() => setShowPaymentModal(false)} />
-                    <div className="relative bg-[#0a0a0a] border border-white/10 w-full max-w-[450px] rounded-[2.5rem] shadow-[0_0_100px_rgba(0,0,0,0.9)] animate-modalEntrance mx-auto p-8 overflow-hidden">
-                        <div className="flex justify-between items-center mb-8">
-                            <div>
-                                <p className="text-[10px] text-white/40 uppercase tracking-[0.2em] font-bold">Secure Payment</p>
-                                <p className="text-sm text-white font-medium tracking-tight">Order #{paymentData.data?.order_id || '...'}</p>
+                    {/* Backdrop */}
+                    <div
+                        className="absolute inset-0 bg-black/98 backdrop-blur-2xl animate-fadeIn"
+                        onClick={() => setShowPaymentModal(false)}
+                    />
+
+                    {/* Modal Content */}
+                    <div className="relative bg-[#0a0a0a] border border-white/10 w-full max-w-[460px] rounded-[3rem] shadow-[0_0_120px_rgba(0,0,0,1)] animate-modalEntrance mx-auto overflow-hidden flex flex-col max-h-[90vh]">
+                        {/* Header */}
+                        <div className="bg-[#111] p-6 border-b border-white/5 flex justify-between items-center shrink-0">
+                            <div className="flex items-center gap-4">
+                                <div className="w-10 h-10 rounded-2xl bg-gradient-to-br from-indigo-500 via-purple-500 to-pink-500 flex items-center justify-center shadow-lg transform rotate-3">
+                                    <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="white" strokeWidth="2.5">
+                                        <path d="M12 22s8-4 8-10V5l-8-3-8 3v7c0 6 8 10 8 10z" />
+                                        <path d="M9 12l2 2 4-4" strokeLinecap="round" strokeLinejoin="round" />
+                                    </svg>
+                                </div>
+                                <div>
+                                    <p className="text-[10px] text-white/40 uppercase tracking-[0.2em] font-bold">Secure Checkout</p>
+                                    <p className="text-sm text-white font-medium tracking-tight">Order #{paymentData.data?.order_id || '...'}</p>
+                                </div>
                             </div>
                             <button onClick={() => setShowPaymentModal(false)} className="text-white/30 hover:text-white transition-colors p-2 hover:bg-white/5 rounded-xl">
-                                <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2"><path d="M18 6L6 18M6 6l12 12" /></svg>
+                                <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2">
+                                    <path d="M18 6L6 18M6 6l12 12" />
+                                </svg>
                             </button>
                         </div>
 
-                        <div className="text-center mb-10">
-                            <p className="text-[10px] text-white/30 uppercase tracking-[0.3em] font-bold mb-1">Amount to Pay</p>
-                            <h2 className="text-5xl font-thin tracking-tighter text-white">₹{finalTotal.toLocaleString('en-IN')}</h2>
-                        </div>
+                        {/* Scrollable Content */}
+                        <div className="flex-1 overflow-y-auto p-8 space-y-8 custom-scrollbar">
+                            {/* Amount Display */}
+                            <div className="text-center space-y-1">
+                                <p className="text-[10px] text-white/30 uppercase tracking-[0.3em] font-bold">Total Amount</p>
+                                <h2 className="text-5xl font-thin tracking-tighter text-white">₹{finalTotal.toLocaleString('en-IN')}</h2>
+                            </div>
 
-                        <div className="space-y-6">
-                            {/* Official QR Code Option */}
-                            <button
-                                onClick={() => {
-                                    if (window.EKQR && paymentData.data?.session_id) {
-                                        const paymentSDK = new window.EKQR({
-                                            sessionId: paymentData.data.session_id,
-                                            callbacks: {
-                                                onSuccess: (response: any) => {
-                                                    setIsPaymentSuccess(true);
-                                                    clearCart();
-                                                    router.push(`/order-confirmation?id=${paymentData.client_txn_id}`);
-                                                },
-                                                onError: (response: any) => alert('Payment failed. Please try again.')
-                                            }
-                                        });
-                                        paymentSDK.pay();
-                                        setShowPaymentModal(false);
-                                    }
-                                }}
-                                className="w-full bg-white text-black py-6 rounded-3xl flex flex-col items-center gap-2 hover:scale-[1.02] active:scale-[0.98] transition-all group"
-                            >
-                                <div className="flex items-center gap-3">
-                                    <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2"><path d="M3 7V5a2 2 0 0 1 2-2h2m10 0h2a2 2 0 0 1 2 2v2m0 10v2a2 2 0 0 1-2 2h-2M7 21H5a2 2 0 0 1-2-2v-2" /><rect x="7" y="7" width="3" height="3" /><rect x="14" y="7" width="3" height="3" /><rect x="7" y="14" width="3" height="3" /><rect x="14" y="14" width="3" height="3" /></svg>
-                                    <span className="text-[11px] font-black uppercase tracking-[0.2em]">Show Payment QR Code</span>
+                            {/* Official QR Code (Iframe Method from Docs) */}
+                            <div className="relative flex flex-col items-center">
+                                <div className="bg-white p-5 rounded-[2.5rem] shadow-2xl relative group">
+                                    <div className="w-[240px] h-[240px] overflow-hidden rounded-2xl">
+                                        <iframe
+                                            src={`https://qrstuff.me/gateway/iframe_pay/${paymentData.data.session_id}`}
+                                            className="w-full h-full border-0"
+                                            scrolling="no"
+                                            title="Official UPI QR"
+                                        />
+                                    </div>
+                                    <div className="absolute -bottom-3 left-1/2 -translate-x-1/2 bg-black text-white text-[8px] font-black uppercase tracking-[0.25em] px-4 py-1.5 rounded-full shadow-xl border border-white/10">
+                                        Scan with any UPI App
+                                    </div>
                                 </div>
-                                <p className="text-[8px] opacity-40 uppercase font-bold tracking-widest">Recommended for Desktop</p>
-                            </button>
-
-                            <div className="flex items-center gap-4">
-                                <div className="h-px flex-1 bg-white/5" />
-                                <p className="text-[9px] text-white/20 uppercase tracking-[0.4em] font-bold">Direct App Pay</p>
-                                <div className="h-px flex-1 bg-white/5" />
                             </div>
 
-                            {/* Direct App Buttons */}
-                            <div className="grid grid-cols-4 gap-4">
-                                {[
-                                    { name: 'PhonePe', color: '#5f259f', link: paymentData.data?.upi_intent?.phonepe_link },
-                                    { name: 'GPay', color: '#ffffff', iconColor: '#4285F4', link: paymentData.data?.upi_intent?.gpay_link },
-                                    { name: 'BHIM', color: '#000000', link: paymentData.data?.upi_intent?.bhim_link },
-                                    { name: 'SBI', color: '#2563eb', link: paymentData.data?.upi_intent?.bhim_link } // Using generic for SBI if specific not available
-                                ].map((app) => (
-                                    <a
-                                        key={app.name}
-                                        href={app.link || '#'}
-                                        className={`flex flex-col items-center gap-2 group ${!app.link ? 'opacity-30 grayscale cursor-not-allowed' : 'cursor-pointer'}`}
-                                        onClick={(e) => { if (!app.link) e.preventDefault(); }}
-                                    >
-                                        <div className="w-14 h-14 rounded-2xl flex items-center justify-center transition-all group-hover:scale-110 shadow-lg" style={{ backgroundColor: app.color }}>
-                                            <span className="text-[10px] font-black text-white" style={{ color: app.iconColor || 'white' }}>{app.name[0]}</span>
-                                        </div>
-                                        <span className="text-[8px] text-white/40 uppercase tracking-widest font-bold">{app.name}</span>
-                                    </a>
-                                ))}
+                            {/* App Intent Section */}
+                            <div className="space-y-6">
+                                <div className="flex items-center gap-4">
+                                    <div className="h-px flex-1 bg-white/5" />
+                                    <p className="text-[9px] text-white/20 uppercase tracking-[0.4em] font-bold">Pay via Apps</p>
+                                    <div className="h-px flex-1 bg-white/5" />
+                                </div>
+
+                                <div className="grid grid-cols-5 gap-3">
+                                    {[
+                                        {
+                                            name: 'PhonePe',
+                                            color: '#5f259f',
+                                            link: paymentData.data?.upi_intent?.phonepe_link,
+                                            icon: (
+                                                <svg viewBox="0 0 24 24" className="w-6 h-6 fill-white">
+                                                    <path d="M19.1 7.2c-.1-.1-.3-.2-.5-.2h-1.3l-2-2c-.1-.1-.3-.2-.5-.2H9.2c-.2 0-.4.1-.5.2l-2 2H5.4c-.2 0-.4.1-.5.2-.1.1-.2.3-.2.5v11.4c0 .2.1.4.2.5.1.1.3.2.5.2h13.2c.2 0 .4-.1.5-.2.1-.1.2-.3.2-.5V7.7c0-.2-.1-.4-.2-.5z" />
+                                                </svg>
+                                            )
+                                        },
+                                        {
+                                            name: 'GPay',
+                                            color: '#ffffff',
+                                            link: paymentData.data?.upi_intent?.gpay_link,
+                                            icon: (
+                                                <svg viewBox="0 0 24 24" className="w-6 h-6">
+                                                    <path fill="#4285F4" d="M22.56 12.25c0-.78-.07-1.53-.2-2.25H12v4.26h5.92c-.26 1.37-1.04 2.53-2.21 3.31v2.77h3.57c2.08-1.92 3.28-4.74 3.28-8.09z" />
+                                                    <path fill="#34A853" d="M12 23c2.97 0 5.46-.98 7.28-2.66l-3.57-2.77c-.98.66-2.23 1.06-3.71 1.06-2.86 0-5.29-1.93-6.16-4.53H2.18v2.84C3.99 20.53 7.7 23 12 23z" />
+                                                </svg>
+                                            )
+                                        },
+                                        {
+                                            name: 'Amazon',
+                                            color: '#ff9900',
+                                            link: paymentData.data?.upi_intent?.amazonpay_link || paymentData.data?.upi_intent?.bhim_link,
+                                            icon: (
+                                                <svg viewBox="0 0 24 24" className="w-6 h-6 fill-black">
+                                                    <path d="M15.93 17.13c-1.47.81-2.94 1.22-4.41 1.22-4.05 0-6.12-2.31-6.13-4.62 0-3.07 2.52-5.06 6.35-5.06h3.69V7.61z" />
+                                                </svg>
+                                            )
+                                        },
+                                        {
+                                            name: 'BHIM',
+                                            color: '#0a0a0a',
+                                            link: paymentData.data?.upi_intent?.bhim_link,
+                                            icon: (
+                                                <div className="flex flex-col items-center leading-none italic font-black text-[10px] text-white">
+                                                    <span>BHIM</span>
+                                                    <span className="text-[6px] opacity-60">UPI</span>
+                                                </div>
+                                            )
+                                        },
+                                        {
+                                            name: 'SBI',
+                                            color: '#2563eb',
+                                            link: paymentData.data?.upi_intent?.bhim_link,
+                                            icon: (
+                                                <div className="w-6 h-6 rounded-full border-2 border-white flex items-center justify-center font-black text-[8px] text-white font-mono">
+                                                    SBI
+                                                </div>
+                                            )
+                                        }
+                                    ].map((app) => (
+                                        <a
+                                            key={app.name}
+                                            href={app.link || '#'}
+                                            className={`flex flex-col items-center gap-2 group transition-all ${!app.link ? 'opacity-30 grayscale cursor-not-allowed' : 'hover:scale-110 active:scale-95'}`}
+                                            onClick={(e) => {
+                                                if (!app.link) e.preventDefault();
+                                                console.log(`Paying via ${app.name}`);
+                                            }}
+                                        >
+                                            <div
+                                                className="w-12 h-12 rounded-2xl flex items-center justify-center shadow-lg border border-white/5"
+                                                style={{ backgroundColor: app.color }}
+                                            >
+                                                {app.icon}
+                                            </div>
+                                            <span className="text-[7px] text-white/40 uppercase tracking-widest font-bold group-hover:text-white transition-colors">{app.name}</span>
+                                        </a>
+                                    ))}
+                                </div>
                             </div>
                         </div>
 
-                        <div className="mt-10 pt-6 border-t border-white/5 text-center">
-                            <p className="text-[9px] text-white/20 uppercase tracking-widest leading-relaxed">
-                                Officially Supported by UPIGateway<br />
-                                Secured with 256-bit Encryption
+                        {/* Footer Notification */}
+                        <div className="bg-white/5 p-6 border-t border-white/5 text-center shrink-0">
+                            <p className="text-[9px] text-white/30 uppercase tracking-[0.2em] leading-relaxed">
+                                Use official apps for secure payment<br />
+                                <span className="text-white/10 mt-1 block">Managed by UPIGateway • 256-bit SSL</span>
                             </p>
                         </div>
                     </div>
                 </div>
             )}
 
+            {/* Initialize SDK Callbacks (Hidden) */}
+            {paymentData && showPaymentModal && (
+                <Script id="ekqr-init" strategy="afterInteractive">
+                    {`
+                        if (window.EKQR) {
+                            new window.EKQR({
+                                sessionId: "${paymentData.data.session_id}",
+                                callbacks: {
+                                    onSuccess: function(res) {
+                                        window.location.href = "/order-confirmation?id=${paymentData.client_txn_id}";
+                                    },
+                                    onError: function(err) {
+                                        console.error("Payment SDK Error:", err);
+                                    }
+                                }
+                            });
+                        }
+                    `}
+                </Script>
+            )}
+
             <Footer />
 
             <style jsx>{`
                 @keyframes fadeIn { from { opacity: 0; } to { opacity: 1; } }
-                @keyframes modalEntrance { from { opacity: 0; transform: scale(0.95) translateY(30px); } to { opacity: 1; transform: scale(1) translateY(0); } }
+                @keyframes modalEntrance { from { opacity: 0; transform: scale(0.95) translateY(40px); } to { opacity: 1; transform: scale(1) translateY(0); } }
                 .animate-fadeIn { animation: fadeIn 0.4s cubic-bezier(0.16, 1, 0.3, 1) forwards; }
                 .animate-modalEntrance { animation: modalEntrance 0.6s cubic-bezier(0.34, 1.56, 0.64, 1) forwards; }
+                .custom-scrollbar::-webkit-scrollbar { width: 4px; }
+                .custom-scrollbar::-webkit-scrollbar-track { background: transparent; }
+                .custom-scrollbar::-webkit-scrollbar-thumb { background: rgba(255, 255, 255, 0.1); border-radius: 10px; }
             `}</style>
         </div>
 
