@@ -39,27 +39,48 @@ export async function POST(request: NextRequest) {
         // Hash password
         const hashedPassword = await bcrypt.hash(password, 12);
 
-        // Create user
+        // Generate 6-digit OTP
+        const otp = Math.floor(100000 + Math.random() * 900000).toString();
+        const otpExpiry = new Date(Date.now() + 10 * 60 * 1000); // 10 minutes from now
+
+        // Create user (unverified)
         const result = await usersCollection.insertOne({
             name,
             email,
             phone: phone || '',
             password: hashedPassword,
             provider: 'credentials',
+            isVerified: false,
             createdAt: new Date(),
         });
 
-        // Send welcome email (non-blocking)
-        const { sendWelcomeEmail } = await import('@/lib/email-service');
-        sendWelcomeEmail({
+        // Store OTP
+        const otpsCollection = db.collection('otps');
+        await otpsCollection.updateOne(
+            { email },
+            {
+                $set: {
+                    otp,
+                    expiry: otpExpiry,
+                    createdAt: new Date()
+                }
+            },
+            { upsert: true }
+        );
+
+        // Send OTP email (non-blocking)
+        const { sendOTPEmail } = await import('@/lib/email-service');
+        sendOTPEmail({
             customerName: name,
             customerEmail: email,
-        }).catch(err => console.error('Welcome email error:', err));
+            otp: otp
+        }).catch(err => console.error('OTP email error:', err));
 
         return NextResponse.json(
             {
-                message: 'User created successfully',
+                message: 'User created. Please verify OTP.',
                 userId: result.insertedId,
+                email: email
             },
             { status: 201 }
         );

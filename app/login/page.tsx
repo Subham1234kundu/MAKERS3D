@@ -1,10 +1,10 @@
 'use client';
 
-import { useState, useEffect, useRef } from 'react';
+import { useState, useEffect, useRef, Suspense } from 'react';
 import { signIn } from 'next-auth/react';
 import Link from 'next/link';
 import dynamic from 'next/dynamic';
-import { useRouter } from 'next/navigation';
+import { useRouter, useSearchParams } from 'next/navigation';
 import { gsap } from 'gsap';
 
 const ParticleCubeLogo = dynamic(() => import('../components/ParticleCubeLogo'), {
@@ -12,13 +12,15 @@ const ParticleCubeLogo = dynamic(() => import('../components/ParticleCubeLogo'),
     loading: () => <div style={{ width: '60px', height: '60px' }} />
 });
 
-export default function LoginPage() {
+function LoginForm() {
     const [email, setEmail] = useState('');
     const [password, setPassword] = useState('');
     const [showPassword, setShowPassword] = useState(false);
     const [isLoading, setIsLoading] = useState(false);
     const [error, setError] = useState('');
     const router = useRouter();
+    const searchParams = useSearchParams();
+    const callbackUrl = searchParams.get('callbackUrl') || '/';
     const containerRef = useRef<HTMLDivElement>(null);
     const formRef = useRef<HTMLDivElement>(null);
 
@@ -54,7 +56,7 @@ export default function LoginPage() {
                 if (email === 'subhamkundu999@gmail.com' || email === 'admin@makers3d.com') {
                     router.push('/dashboard');
                 } else {
-                    router.push('/');
+                    router.push(callbackUrl);
                 }
             }
         } catch (err) {
@@ -65,7 +67,7 @@ export default function LoginPage() {
     };
 
     const handleGoogleLogin = () => {
-        signIn('google', { callbackUrl: '/' });
+        signIn('google', { callbackUrl: callbackUrl });
     };
 
     return (
@@ -188,7 +190,7 @@ export default function LoginPage() {
 
                 {/* Signup Link */}
                 <div className="mt-12 text-center">
-                    <Link href="/signup" className="text-[10px] tracking-[0.2em] text-white/40 hover:text-white uppercase transition-colors">
+                    <Link href={`/signup${callbackUrl !== '/' ? `?callbackUrl=${encodeURIComponent(callbackUrl)}` : ''}`} className="text-[10px] tracking-[0.2em] text-white/40 hover:text-white uppercase transition-colors">
                         NEW HERE? <span className="text-white border-b border-white/30 ml-1">CREATE ACCOUNT</span>
                     </Link>
                 </div>
@@ -198,6 +200,14 @@ export default function LoginPage() {
             <div className="absolute top-0 right-0 w-[500px] h-[500px] bg-white/[0.02] rounded-full blur-[120px] -translate-y-1/2 translate-x-1/2"></div>
             <div className="absolute bottom-0 left-0 w-[500px] h-[500px] bg-white/[0.02] rounded-full blur-[120px] translate-y-1/2 -translate-x-1/2"></div>
         </div>
+    );
+}
+
+export default function LoginPage() {
+    return (
+        <Suspense fallback={<div className="min-h-screen bg-black flex items-center justify-center"><div className="w-10 h-10 border-2 border-white/10 border-t-white rounded-full animate-spin" /></div>}>
+            <LoginForm />
+        </Suspense>
     );
 }
 

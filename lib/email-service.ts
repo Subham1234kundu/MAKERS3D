@@ -6,7 +6,24 @@ import {
     getOrderShippedContent,
     getOrderDeliveredContent,
     getReturnConfirmedContent,
+    getOTPEmailContent,
 } from './email-templates';
+
+// Send OTP Email
+export async function sendOTPEmail(params: {
+    customerName: string;
+    customerEmail: string;
+    otp: string;
+}) {
+    const content = getOTPEmailContent(params.customerName, params.otp);
+    const html = getEmailTemplate(content);
+
+    return await sendEmail({
+        to: params.customerEmail,
+        subject: `${params.otp} is your verification code for MAKERS3D`,
+        html,
+    });
+}
 
 // Send Welcome Email
 export async function sendWelcomeEmail(params: {

@@ -109,27 +109,13 @@ export default function ProductCard({ id, image, alt, secondImage, secondAlt, ti
                     lg:opacity-0 lg:-translate-x-4 
                     group-hover:opacity-100 group-hover:translate-x-0 
                     hover:translate-y-2 active:scale-90 
-                    z-20 touch-manipulation
+                    z-30 touch-manipulation
                     ${isPlusHovered ? 'bg-gray-100' : ''}
                     `}
                 onMouseEnter={() => setIsPlusHovered(true)}
                 onMouseLeave={() => setIsPlusHovered(false)}
                 onClick={(e) => {
                     handleAddToCart(e);
-                    const icon = e.currentTarget.querySelector('.plus-icon');
-                    if (icon) {
-                        icon.animate([
-                            { transform: 'rotate(0deg)' },
-                            { transform: 'rotate(360deg)' }
-                        ], {
-                            duration: 700,
-                            easing: 'cubic-bezier(0.23, 1, 0.32, 1)'
-                        });
-                    }
-                }}
-                onTouchEnd={(e) => {
-                    e.preventDefault();
-                    handleAddToCart(e as any);
                     const icon = e.currentTarget.querySelector('.plus-icon');
                     if (icon) {
                         icon.animate([

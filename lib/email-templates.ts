@@ -166,6 +166,42 @@ export const getWelcomeEmailContent = (name: string) => `
     </div>
 `;
 
+// OTP Email Template
+export const getOTPEmailContent = (name: string, otp: string) => `
+    <div style="text-align: center; margin-bottom: 40px;">
+        <h1 style="font-size: 42px; font-weight: 100; letter-spacing: -0.02em; margin-bottom: 15px; color: #ffffff;">
+            Verification Code
+        </h1>
+        <p style="font-size: 10px; letter-spacing: 0.3em; text-transform: uppercase; color: rgba(255, 255, 255, 0.4);">
+            Complete Your Registration
+        </p>
+    </div>
+
+    <div style="background: rgba(255, 255, 255, 0.02); border: 1px solid rgba(255, 255, 255, 0.05); padding: 35px; margin-bottom: 30px;">
+        <p style="font-size: 16px; color: rgba(255, 255, 255, 0.9); margin-bottom: 20px; font-weight: 300;">
+            Hello <strong style="color: #ffffff;">${name}</strong>,
+        </p>
+        <p style="font-size: 14px; color: rgba(255, 255, 255, 0.7); line-height: 1.8; margin-bottom: 25px;">
+            Welcome to MAKERS3D! To complete your signup and start your architectural journey, please use the following verification code:
+        </p>
+        
+        <div style="text-align: center; padding: 30px; background: rgba(255, 255, 255, 0.03); border: 1px dashed rgba(255, 255, 255, 0.2); margin: 20px 0;">
+            <span style="font-size: 48px; font-weight: 100; letter-spacing: 0.2em; color: #ffffff;">${otp}</span>
+        </div>
+        
+        <p style="font-size: 12px; color: rgba(255, 255, 255, 0.4); text-align: center; margin-top: 20px;">
+            This code will expire in 10 minutes.
+        </p>
+    </div>
+
+    <div style="margin-top: 40px; padding-top: 30px; border-top: 1px solid rgba(255, 255, 255, 0.05);">
+        <p style="font-size: 11px; color: rgba(255, 255, 255, 0.4); text-align: center; line-height: 1.6;">
+            If you didn't request this code, you can safely ignore this email.<br/>
+            Contact us at <a href="mailto:support@makers3d.com" style="color: rgba(255, 255, 255, 0.6); text-decoration: none;">support@makers3d.com</a>
+        </p>
+    </div>
+`;
+
 // Order Confirmation Email Template
 export const getOrderConfirmationContent = (orderDetails: {
     orderId: string;

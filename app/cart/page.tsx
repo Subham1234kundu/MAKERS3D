@@ -8,9 +8,11 @@ import Navbar from '../components/Navbar';
 import Footer from '../components/Footer';
 
 // Use same product images for consistency
+import { useSession } from 'next-auth/react';
 import { useCart } from '../providers/CartProvider';
 
 export default function CartPage() {
+  const { data: session, status } = useSession();
   const { cartItems: items, updateQuantity, removeFromCart, cartTotal: subtotal } = useCart();
   const summaryRef = useRef<HTMLDivElement>(null);
   const checkoutBtnRef = useRef<HTMLButtonElement>(null);
@@ -219,7 +221,7 @@ export default function CartPage() {
 
                 <div className="space-y-4">
                   <Link
-                    href="/checkout"
+                    href={status === 'unauthenticated' ? '/login?callbackUrl=/checkout' : '/checkout'}
                     className="w-full border border-white/20 text-white py-4 sm:py-5 text-[11px] sm:text-xs font-bold uppercase tracking-[0.3em] relative overflow-hidden transition-all duration-300 hover:bg-white hover:text-black hover:border-white hover:shadow-[0_0_20px_rgba(255,255,255,0.3)] flex items-center justify-center"
                   >
                     Secure Checkout

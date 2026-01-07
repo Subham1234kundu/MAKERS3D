@@ -16,8 +16,14 @@ declare global {
 
 export default function CheckoutPage() {
     const { cartItems, cartTotal, clearCart } = useCart();
-    const { data: session } = useSession();
+    const { data: session, status } = useSession();
     const router = useRouter();
+
+    useEffect(() => {
+        if (status === 'unauthenticated') {
+            router.push('/login?callbackUrl=/checkout');
+        }
+    }, [status, router]);
     const [isProcessing, setIsProcessing] = useState(false);
     const [paymentMethod, setPaymentMethod] = useState<'upi' | 'cod'>('upi');
     const [isPaymentSuccess, setIsPaymentSuccess] = useState(false);

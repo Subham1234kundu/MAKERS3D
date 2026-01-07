@@ -1,10 +1,10 @@
 'use client';
 
-import { useState, useEffect, useRef } from 'react';
+import { useState, useEffect, useRef, Suspense } from 'react';
 import { signIn } from 'next-auth/react';
 import Link from 'next/link';
 import dynamic from 'next/dynamic';
-import { useRouter } from 'next/navigation';
+import { useRouter, useSearchParams } from 'next/navigation';
 import { gsap } from 'gsap';
 
 const ParticleCubeLogo = dynamic(() => import('../components/ParticleCubeLogo'), {
@@ -12,7 +12,7 @@ const ParticleCubeLogo = dynamic(() => import('../components/ParticleCubeLogo'),
   loading: () => <div style={{ width: '60px', height: '60px' }} />
 });
 
-export default function SignupPage() {
+function SignupForm() {
   const [name, setName] = useState('');
   const [email, setEmail] = useState('');
   const [phone, setPhone] = useState('');
@@ -23,7 +23,13 @@ export default function SignupPage() {
   const [isLoading, setIsLoading] = useState(false);
   const [error, setError] = useState('');
   const [success, setSuccess] = useState(false);
+  const [showOTP, setShowOTP] = useState(false);
+  const [otp, setOtp] = useState(['', '', '', '', '', '']);
+  const otpInputs = useRef<(HTMLInputElement | null)[]>([]);
+
   const router = useRouter();
+  const searchParams = useSearchParams();
+  const callbackUrl = searchParams.get('callbackUrl') || '/';
   const containerRef = useRef<HTMLDivElement>(null);
   const formRef = useRef<HTMLDivElement>(null);
 
@@ -61,7 +67,7 @@ export default function SignupPage() {
       const response = await fetch('/api/auth/signup', {
         method: 'POST',
         headers: { 'Content-Type': 'application/json' },
-        body: JSON.stringify({ name, email, password }),
+        body: JSON.stringify({ name, email, phone, password }),
       });
 
       const data = await response.json();
@@ -70,9 +76,68 @@ export default function SignupPage() {
         throw new Error(data.message || 'FAILED TO CREATE ACCOUNT');
       }
 
+      // Instead of immediate success, show OTP field
+      setShowOTP(true);
+      gsap.fromTo(formRef.current,
+        { opacity: 0, scale: 0.95 },
+        { opacity: 1, scale: 1, duration: 0.5, ease: 'power2.out' }
+      );
+    } catch (err: any) {
+      setError(err.message.toUpperCase());
+      gsap.to(formRef.current, { x: 10, duration: 0.1, yoyo: true, repeat: 5, ease: 'power2.inOut' });
+    } finally {
+      setIsLoading(false);
+    }
+  };
+
+  const handleOTPChange = (index: number, value: string) => {
+    if (value.length > 1) value = value.slice(-1);
+    if (!/^\d*$/.test(value)) return;
+
+    const newOtp = [...otp];
+    newOtp[index] = value;
+    setOtp(newOtp);
+
+    // Auto-focus next input
+    if (value && index < 5) {
+      otpInputs.current[index + 1]?.focus();
+    }
+  };
+
+  const handleKeyDown = (index: number, e: React.KeyboardEvent) => {
+    if (e.key === 'Backspace' && !otp[index] && index > 0) {
+      otpInputs.current[index - 1]?.focus();
+    }
+  };
+
+  const handleVerifyOTP = async (e: React.FormEvent) => {
+    e.preventDefault();
+    setError('');
+    setIsLoading(true);
+
+    const otpString = otp.join('');
+    if (otpString.length < 6) {
+      setError('PLEASE ENTER COMPLETE CODE');
+      setIsLoading(false);
+      return;
+    }
+
+    try {
+      const response = await fetch('/api/auth/verify-otp', {
+        method: 'POST',
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify({ email, otp: otpString }),
+      });
+
+      const data = await response.json();
+
+      if (!response.ok) {
+        throw new Error(data.message || 'VERIFICATION FAILED');
+      }
+
       setSuccess(true);
 
-      // Auto login after signup
+      // Auto login after verification
       setTimeout(async () => {
         const result = await signIn('credentials', {
           redirect: false,
@@ -81,7 +146,7 @@ export default function SignupPage() {
         });
 
         if (!result?.error) {
-          router.push('/');
+          router.push(callbackUrl);
         }
       }, 1500);
     } catch (err: any) {
@@ -93,7 +158,7 @@ export default function SignupPage() {
   };
 
   const handleGoogleSignup = () => {
-    signIn('google', { callbackUrl: '/' });
+    signIn('google', { callbackUrl: callbackUrl });
   };
 
   if (success) {
@@ -108,6 +173,78 @@ export default function SignupPage() {
           <h2 className="text-2xl font-thin tracking-[0.3em] text-white uppercase mb-4">WELCOME TO THE FUTURE</h2>
           <p className="text-[10px] tracking-[0.2em] text-white/40 uppercase">Diving into MAKERS 3D...</p>
         </div>
+      </div>
+    );
+  }
+
+  if (showOTP) {
+    return (
+      <div ref={containerRef} className="min-h-screen bg-black flex items-center justify-center relative overflow-hidden font-['Helvetica_Neue',Arial,sans-serif]">
+        <div
+          className="absolute inset-0 opacity-20 pointer-events-none"
+          style={{
+            backgroundImage: `linear-gradient(rgba(255, 255, 255, 0.015) 1px, transparent 1px), linear-gradient(90deg, rgba(255, 255, 255, 0.015) 1px, transparent 1px)`,
+            backgroundSize: '60px 60px'
+          }}
+        ></div>
+
+        <div ref={formRef} className="relative z-10 w-full max-w-[400px] px-6 py-12">
+          <div className="text-center mb-10">
+            <h1 className="text-3xl font-thin tracking-[0.2em] text-white uppercase mb-3">
+              VERIFY EMAIL
+            </h1>
+            <p className="text-[10px] tracking-[0.3em] text-white/30 uppercase leading-relaxed">
+              We've sent a 6-digit code to<br />
+              <span className="text-white/60">{email}</span>
+            </p>
+          </div>
+
+          {error && (
+            <div className="text-[10px] tracking-widest text-red-500/80 text-center uppercase mb-8 animate-pulse">
+              {error}
+            </div>
+          )}
+
+          <form onSubmit={handleVerifyOTP} className="space-y-10">
+            <div className="flex justify-between gap-2">
+              {otp.map((digit, idx) => (
+                <input
+                  key={idx}
+                  ref={(el) => { otpInputs.current[idx] = el; }}
+                  type="text"
+                  maxLength={1}
+                  value={digit}
+                  onChange={(e) => handleOTPChange(idx, e.target.value)}
+                  onKeyDown={(e) => handleKeyDown(idx, e)}
+                  className="w-12 h-14 bg-white/5 border border-white/10 rounded-sm text-center text-xl text-white font-light focus:border-white/40 outline-none transition-all"
+                  autoFocus={idx === 0}
+                />
+              ))}
+            </div>
+
+            <button
+              type="submit"
+              disabled={isLoading}
+              className="w-full relative py-4 text-[11px] tracking-[0.3em] text-black bg-white uppercase font-normal rounded-sm transition-all hover:bg-gray-200 active:scale-[0.98] disabled:opacity-50"
+            >
+              {isLoading ? 'VERIFYING...' : 'VERIFY & JOIN'}
+            </button>
+
+            <div className="text-center">
+              <button
+                type="button"
+                onClick={() => setShowOTP(false)}
+                className="text-[9px] tracking-[0.2em] text-white/30 hover:text-white uppercase transition-colors"
+              >
+                BACK TO SIGNUP
+              </button>
+            </div>
+          </form>
+        </div>
+
+        {/* Background Decorative Glows */}
+        <div className="absolute top-0 left-0 w-[500px] h-[500px] bg-white/[0.02] rounded-full blur-[120px] -translate-y-1/2 -translate-x-1/2"></div>
+        <div className="absolute bottom-0 right-0 w-[500px] h-[500px] bg-white/[0.02] rounded-full blur-[120px] translate-y-1/2 translate-x-1/2"></div>
       </div>
     );
   }
@@ -295,7 +432,7 @@ export default function SignupPage() {
 
         {/* Login Link */}
         <div className="mt-10 text-center">
-          <Link href="/login" className="text-[10px] tracking-[0.2em] text-white/40 hover:text-white uppercase transition-colors">
+          <Link href={`/login${callbackUrl !== '/' ? `?callbackUrl=${encodeURIComponent(callbackUrl)}` : ''}`} className="text-[10px] tracking-[0.2em] text-white/40 hover:text-white uppercase transition-colors">
             ALREADY JOINED? <span className="text-white border-b border-white/30 ml-1">LOG IN</span>
           </Link>
         </div>
@@ -305,5 +442,13 @@ export default function SignupPage() {
       <div className="absolute top-0 left-0 w-[500px] h-[500px] bg-white/[0.02] rounded-full blur-[120px] -translate-y-1/2 -translate-x-1/2"></div>
       <div className="absolute bottom-0 right-0 w-[500px] h-[500px] bg-white/[0.02] rounded-full blur-[120px] translate-y-1/2 translate-x-1/2"></div>
     </div>
+  );
+}
+
+export default function SignupPage() {
+  return (
+    <Suspense fallback={<div className="min-h-screen bg-black flex items-center justify-center"><div className="w-10 h-10 border-2 border-white/10 border-t-white rounded-full animate-spin" /></div>}>
+      <SignupForm />
+    </Suspense>
   );
 }

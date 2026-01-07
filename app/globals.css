@@ -479,9 +479,4 @@ img {
     scroll-behavior: smooth;
     overscroll-behavior-x: contain;
   }
-
-  /* Ensure last items in horizontal scrolls are accessible */
-  .overflow-x-auto>*:last-child {
-    padding-right: 16px;
-  }
 }

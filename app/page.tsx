@@ -259,10 +259,10 @@ export default function HomePage() {
             </div>
 
             <div
-              className="flex overflow-x-auto no-scrollbar gap-4 sm:gap-6 -mx-4 px-4 sm:mx-0 sm:px-0 pb-4 scroll-smooth"
+              className="flex overflow-x-auto no-scrollbar gap-4 sm:gap-6 -mx-4 px-4 sm:mx-0 sm:px-0 pb-20 sm:pb-8 scroll-smooth"
               style={{
                 WebkitOverflowScrolling: 'touch',
-                scrollPaddingRight: '16px'
+                scrollPaddingRight: '24px'
               }}
               suppressHydrationWarning
             >
@@ -285,7 +285,7 @@ export default function HomePage() {
                 return (
                   <div
                     key={`new-${product.id || product._id}`}
-                    className={`w-[240px] sm:w-[280px] flex-shrink-0 ${isLast ? 'pr-4 sm:pr-0' : ''}`}
+                    className="w-[240px] sm:w-[280px] flex-shrink-0"
                   >
                     <ProductCard
                       id={product.id || product._id}
