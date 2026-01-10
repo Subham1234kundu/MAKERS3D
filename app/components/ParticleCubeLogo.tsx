@@ -69,12 +69,13 @@ function ParticleCube({ isHovered }: ParticleCubeProps) {
                 />
             </bufferGeometry>
             <pointsMaterial
-                size={0.16}
-                color="#ffffff"
+                size={0.17}
+                color="#dcdcdc"
                 sizeAttenuation={true}
                 transparent={true}
-                opacity={1}
+                opacity={0.9}
                 blending={THREE.AdditiveBlending}
+                depthWrite={false}
             />
         </points>
     );

@@ -196,8 +196,8 @@ export default function HomePage() {
           className="absolute inset-0 opacity-40"
           style={{
             backgroundImage: `
-              linear-gradient(rgba(255, 255, 255, 0.05) 1px, transparent 1px), 
-              linear-gradient(90deg, rgba(255, 255, 255, 0.05) 1px, transparent 1px)
+              linear-gradient(rgba(220, 220, 220, 0.18) 1px, transparent 1px), 
+              linear-gradient(90deg, rgba(220, 220, 220, 0.18) 1px, transparent 1px)
             `,
             backgroundSize: '80px 80px',
             maskImage: 'radial-gradient(circle at center, black, transparent 80%)',
@@ -209,8 +209,8 @@ export default function HomePage() {
           className="absolute inset-0 opacity-20"
           style={{
             backgroundImage: `
-              linear-gradient(rgba(255, 255, 255, 0.1) 1px, transparent 1px), 
-              linear-gradient(90deg, rgba(255, 255, 255, 0.1) 1px, transparent 1px)
+              linear-gradient(rgba(220, 220, 220, 0.25) 1px, transparent 1px), 
+              linear-gradient(90deg, rgba(220, 220, 220, 0.25) 1px, transparent 1px)
             `,
             backgroundSize: '400px 400px',
           }}
