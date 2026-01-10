@@ -193,16 +193,34 @@ export default function HomePage() {
 
         {/* Animated background elements */}
         <div
-          className="absolute top-0 left-0 w-full h-full opacity-30"
+          className="absolute inset-0 opacity-40"
           style={{
-            backgroundImage: `linear-gradient(rgba(255, 255, 255, 0.03) 1px, transparent 1px), linear-gradient(90deg, rgba(255, 255, 255, 0.03) 1px, transparent 1px)`,
-            backgroundSize: '40px 40px'
+            backgroundImage: `
+              linear-gradient(rgba(255, 255, 255, 0.05) 1px, transparent 1px), 
+              linear-gradient(90deg, rgba(255, 255, 255, 0.05) 1px, transparent 1px)
+            `,
+            backgroundSize: '80px 80px',
+            maskImage: 'radial-gradient(circle at center, black, transparent 80%)',
+            WebkitMaskImage: 'radial-gradient(circle at center, black, transparent 80%)'
           }}
           suppressHydrationWarning
         ></div>
+        <div
+          className="absolute inset-0 opacity-20"
+          style={{
+            backgroundImage: `
+              linear-gradient(rgba(255, 255, 255, 0.1) 1px, transparent 1px), 
+              linear-gradient(90deg, rgba(255, 255, 255, 0.1) 1px, transparent 1px)
+            `,
+            backgroundSize: '400px 400px',
+          }}
+          suppressHydrationWarning
+        ></div>
+
         {/* Dynamic Floating Orbs */}
-        <div className="hero-orb-1 absolute -top-20 -right-20 w-[400px] h-[400px] rounded-full bg-gradient-to-br from-white/10 to-transparent blur-[100px] pointer-events-none select-none" suppressHydrationWarning></div>
-        <div className="hero-orb-2 absolute -bottom-20 -left-20 w-[500px] h-[500px] rounded-full bg-gradient-to-tr from-white/[0.07] to-transparent blur-[120px] pointer-events-none select-none" suppressHydrationWarning></div>
+        <div className="hero-orb-1 absolute -top-40 -right-40 w-[600px] h-[600px] rounded-full bg-gradient-to-br from-white/10 to-transparent blur-[150px] pointer-events-none select-none" suppressHydrationWarning></div>
+        <div className="hero-orb-2 absolute -bottom-40 -left-40 w-[700px] h-[700px] rounded-full bg-gradient-to-tr from-white/[0.08] to-transparent blur-[180px] pointer-events-none select-none" suppressHydrationWarning></div>
+        <div className="absolute inset-0 bg-radial-gradient from-transparent via-black/40 to-black pointer-events-none"></div>
       </div>
 
       {/* Categories & Featured Content Section */}

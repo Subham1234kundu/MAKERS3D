@@ -69,11 +69,12 @@ function ParticleCube({ isHovered }: ParticleCubeProps) {
                 />
             </bufferGeometry>
             <pointsMaterial
-                size={0.15}
+                size={0.16}
                 color="#ffffff"
                 sizeAttenuation={true}
                 transparent={true}
-                opacity={1.0}
+                opacity={1}
+                blending={THREE.AdditiveBlending}
             />
         </points>
     );
@@ -88,9 +89,10 @@ export default function ParticleCubeLogo() {
             onMouseEnter={() => setIsHovered(true)}
             onMouseLeave={() => setIsHovered(false)}
         >
-            <Canvas camera={{ position: [0, 0, 5], fov: 50 }}>
-                <ambientLight intensity={1.5} />
-                <pointLight position={[10, 10, 10]} intensity={2.5} />
+            <Canvas camera={{ position: [0, 0, 5], fov: 45 }} gl={{ antialias: true }}>
+                <ambientLight intensity={2} />
+                <pointLight position={[10, 10, 10]} intensity={3} />
+                <pointLight position={[-10, -10, -10]} intensity={1} color="#ffffff" />
                 <ParticleCube isHovered={isHovered} />
             </Canvas>
         </div>
