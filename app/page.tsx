@@ -150,35 +150,25 @@ export default function HomePage() {
           <h1 ref={titleRef}
             className="text-[2.6rem] sm:text-6xl md:text-8xl lg:text-[10rem] font-thin leading-[1.1] sm:leading-[0.9] mb-8 md:mb-14 tracking-[-0.04em] font-sans selection:bg-white selection:text-black mt-4 md:mt-16 lg:mt-32 cursor-none"
             data-cursor-size="large">
-            <span className="block opacity-100 text-white/90">CRAFTING THE</span>
-            <span className="block font-black italic text-white relative -mt-1 md:-mt-6">
-              FUTURE
+            <span className="block opacity-100 text-white/90 uppercase">MAKERS 3D</span>
+            <span className="block font-black italic text-white relative -mt-1 md:-mt-6 uppercase">
+              CREATIONS
               <span className="absolute -inset-1 bg-gradient-to-r from-transparent via-white/10 to-transparent skew-x-[-20deg] animate-shimmer pointer-events-none"></span>
             </span>
             <div className="flex items-center justify-center gap-3 mt-6 md:mt-8">
               <div className="h-[1px] w-6 sm:w-16 bg-white/20 hidden sm:block"></div>
-              <span className="text-sm sm:text-xl md:text-2xl italic font-light tracking-normal text-white/60 lowercase">one layer at a time</span>
+              <span className="text-sm sm:text-xl md:text-2xl italic font-light tracking-normal text-white/60 lowercase">premium architectural masterpieces</span>
               <div className="h-[1px] w-6 sm:w-16 bg-white/20 hidden sm:block"></div>
             </div>
           </h1>
 
           {/* Subheading - More readable on mobile */}
           <p ref={subtitleRef} className="text-[10px] sm:text-lg lg:text-xl leading-relaxed text-white/40 max-w-[700px] mx-auto mb-8 md:mb-12 font-medium tracking-[0.3em] px-6 opacity-80 uppercase">
-            Precision-engineered pieces. <br className="sm:hidden" /> Unparalleled craftsmanship.
+            Makers 3D — Premium 3D Creations. <br className="sm:hidden" /> Unparalleled industrial craftsmanship.
           </p>
 
           {/* CTA Buttons - Slick & Aesthetic Mobile Design */}
-          <div ref={ctaRef} className="flex flex-col sm:flex-row gap-4 sm:gap-6 justify-center items-center px-6 mt-12 md:mt-16" suppressHydrationWarning>
-            <Link
-              href="/customorder"
-              className="group relative w-full sm:w-auto inline-flex items-center justify-center gap-3 px-10 py-4 text-xs sm:text-xs font-bold tracking-[0.4em] uppercase rounded-full transition-all duration-500 overflow-hidden bg-white/5 text-white border border-white/20 hover:bg-white/10 hover:border-white/40 hover:scale-[1.02] active:scale-95"
-            >
-              <span className="relative z-10">CUSTOM ORDER</span>
-              <div className="w-2 h-2 rounded-full bg-white/40 animate-pulse"></div>
-              {/* Glass background shimmer */}
-              <div className="absolute inset-0 bg-gradient-to-r from-transparent via-white/[0.05] to-transparent -translate-x-full group-hover:translate-x-full transition-transform duration-1000"></div>
-            </Link>
-
+          <div ref={ctaRef} className="flex flex-col sm:flex-row-reverse gap-4 sm:gap-6 justify-center items-center px-6 mt-12 md:mt-16" suppressHydrationWarning>
             <Link
               href="/products"
               className="group relative w-full sm:w-auto inline-flex items-center justify-center gap-3 px-10 py-4 text-xs sm:text-xs font-black tracking-[0.4em] uppercase rounded-full transition-all duration-500 overflow-hidden bg-white text-black hover:bg-gray-100 hover:scale-[1.02] active:scale-95 shadow-[0_20px_40px_rgba(255,255,255,0.15)]"
@@ -187,6 +177,16 @@ export default function HomePage() {
               <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" className="group-hover:translate-x-1 transition-transform">
                 <path d="M5 12h14m-7-7l7 7-7 7" strokeLinecap="round" strokeLinejoin="round" />
               </svg>
+            </Link>
+
+            <Link
+              href="/customorder"
+              className="group relative w-full sm:w-auto inline-flex items-center justify-center gap-3 px-10 py-4 text-xs sm:text-xs font-bold tracking-[0.4em] uppercase rounded-full transition-all duration-500 overflow-hidden bg-white/5 text-white border border-white/20 hover:bg-white/10 hover:border-white/40 hover:scale-[1.02] active:scale-95"
+            >
+              <span className="relative z-10">CUSTOM ORDER</span>
+              <div className="w-2 h-2 rounded-full bg-white/40 animate-pulse"></div>
+              {/* Glass background shimmer */}
+              <div className="absolute inset-0 bg-gradient-to-r from-transparent via-white/[0.05] to-transparent -translate-x-full group-hover:translate-x-full transition-transform duration-1000"></div>
             </Link>
           </div>
         </div>

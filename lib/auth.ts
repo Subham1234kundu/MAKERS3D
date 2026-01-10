@@ -45,6 +45,7 @@ export const authOptions: AuthOptions = {
                         id: user._id.toString(),
                         email: user.email,
                         name: user.name,
+                        image: user.image || null,
                     };
                 } catch (error: any) {
                     console.error('Auth error:', error);
@@ -92,12 +93,35 @@ export const authOptions: AuthOptions = {
             }
             return true;
         },
+        async jwt({ token, user, trigger, session }) {
+            if (user) {
+                token.id = user.id;
+                token.image = (user as any).image;
+            }
+
+            // Handle updates if session is updated manually
+            if (trigger === "update" && session?.image) {
+                token.image = session.image;
+            }
+
+            return token;
+        },
         async session({ session, token }) {
             if (session.user) {
-                const db = await getDatabase('makers3d_db');
-                const user = await db.collection('users').findOne({ email: session.user.email });
-                if (user) {
-                    (session.user as any).id = user._id.toString();
+                (session.user as any).id = token.id as string;
+                session.user.image = token.image as string;
+
+                // Optional: Fetch fresh data from DB if image is missing but exists in DB
+                if (!session.user.image) {
+                    try {
+                        const db = await getDatabase('makers3d_db');
+                        const dbUser = await db.collection('users').findOne({ email: session.user.email });
+                        if (dbUser?.image) {
+                            session.user.image = dbUser.image;
+                        }
+                    } catch (e) {
+                        console.error("Error fetching user image for session:", e);
+                    }
                 }
             }
             return session;

@@ -11,8 +11,8 @@ if (typeof window !== 'undefined') {
 
 const services = [
     {
-        title: 'Custom Fabrication',
-        description: 'Have a specific STL file or just an idea? We bring bespoke 3D designs to life with industrial precision.',
+        title: 'Premium 3D Creations',
+        description: 'Explore our curated collection of elite 3D objects, from architectural masterpieces to artistic decor, all crafted with industrial-grade precision.',
         icon: (
             <svg width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="1" className="mb-4">
                 <path d="M12 2L2 7l10 5 10-5-10-5zM2 17l10 5 10-5M2 12l10 5 10-5" strokeLinecap="round" strokeLinejoin="round" />
@@ -201,7 +201,7 @@ export default function ExperienceSection() {
                             </h2>
                             <div className="mt-6 sm:mt-10 flex flex-col items-end text-right">
                                 <p className="experience-sub-desc text-white/70 font-light text-[10px] sm:text-xs tracking-[0.25em] uppercase max-w-[280px] sm:max-w-sm leading-relaxed translate-y-2 opacity-0">
-                                    Elevating digital concepts into physical reality. Precision engineered, unparalleled craftsmanship.
+                                    Makers 3D - Premium 3D Creations. Delivering high-end, gallery-quality 3D printed masterpieces to your workspace.
                                 </p>
                                 <div className="h-10 w-[1px] bg-gradient-to-b from-white/40 to-transparent mt-6 mr-4 animate-pulse"></div>
                             </div>
