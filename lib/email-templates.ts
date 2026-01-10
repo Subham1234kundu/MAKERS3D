@@ -482,11 +482,61 @@ export const getReturnConfirmedContent = (returnDetails: {
             VIEW RETURN STATUS
         </a>
     </div>
+`;
+
+// Password Reset Email Template
+export const getPasswordResetContent = (name: string, resetLink: string) => `
+    <div style="text-align: center; margin-bottom: 40px;">
+        <div style="display: inline-block; background: rgba(59, 130, 246, 0.1); border: 1px solid rgba(59, 130, 246, 0.3); 
+                    padding: 12px 25px; margin-bottom: 25px;">
+            <p style="font-size: 10px; letter-spacing: 0.3em; text-transform: uppercase; color: #3b82f6; margin: 0;">
+                🔑 Password Reset
+            </p>
+        </div>
+        <h1 style="font-size: 42px; font-weight: 100; letter-spacing: -0.02em; margin-bottom: 15px; color: #ffffff;">
+            Reset Your Password
+        </h1>
+        <p style="font-size: 10px; letter-spacing: 0.3em; text-transform: uppercase; color: rgba(255, 255, 255, 0.4);">
+            Secure Account Recovery
+        </p>
+    </div>
+
+    <div style="background: rgba(255, 255, 255, 0.02); border: 1px solid rgba(255, 255, 255, 0.05); padding: 35px; margin-bottom: 30px;">
+        <p style="font-size: 16px; color: rgba(255, 255, 255, 0.9); margin-bottom: 20px; font-weight: 300;">
+            Hello <strong style="color: #ffffff;">${name}</strong>,
+        </p>
+        <p style="font-size: 14px; color: rgba(255, 255, 255, 0.7); line-height: 1.8; margin-bottom: 25px;">
+            We received a request to reset the password for your MAKERS3D account. 
+            To proceed with setting a new password, please click the button below:
+        </p>
+        
+        <div style="text-align: center; margin: 40px 0;">
+            <a href="${resetLink}" 
+               style="display: inline-block; background-color: #ffffff; color: #000000; 
+                      padding: 15px 40px; text-decoration: none; font-size: 10px; 
+                      letter-spacing: 0.3em; text-transform: uppercase; font-weight: 700;">
+                RESET PASSWORD
+            </a>
+        </div>
+        
+        <p style="font-size: 12px; color: rgba(255, 255, 255, 0.4); text-align: center; margin-top: 20px;">
+            This link will expire in 1 hour.
+        </p>
+    </div>
+
+    <div style="background: rgba(255, 255, 255, 0.02); padding: 25px; border: 1px solid rgba(255, 255, 255, 0.05);">
+        <p style="font-size: 11px; color: rgba(255, 255, 255, 0.4); line-height: 1.6; margin-bottom: 10px;">
+            If the button above doesn't work, copy and paste this link into your browser:
+        </p>
+        <p style="font-size: 10px; color: #3b82f6; word-break: break-all; font-family: 'Courier New', monospace;">
+            ${resetLink}
+        </p>
+    </div>
 
     <div style="margin-top: 40px; padding-top: 30px; border-top: 1px solid rgba(255, 255, 255, 0.05);">
         <p style="font-size: 11px; color: rgba(255, 255, 255, 0.4); text-align: center; line-height: 1.6;">
-            Questions about your return?<br/>
-            Contact us at <a href="mailto:support@makers3d.com" style="color: rgba(255, 255, 255, 0.6); text-decoration: none;">support@makers3d.com</a>
+            If you didn't request a password reset, you can safely ignore this email.<br/>
+            Your password will remain unchanged.
         </p>
     </div>
 `;

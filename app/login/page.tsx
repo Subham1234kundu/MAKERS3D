@@ -81,6 +81,17 @@ function LoginForm() {
                 }}
             ></div>
 
+            {/* Back to Home Button */}
+            <Link
+                href="/"
+                className="absolute top-8 left-8 z-50 flex items-center gap-2 text-[10px] tracking-[0.3em] text-white/40 hover:text-white transition-all group"
+            >
+                <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="1.5" className="transition-transform group-hover:-translate-x-1">
+                    <path d="M19 12H5M12 19l-7-7 7-7" strokeLinecap="round" strokeLinejoin="round" />
+                </svg>
+                BACK TO HOME
+            </Link>
+
             <div ref={formRef} className="relative z-10 w-full max-w-[400px] px-6 py-12">
                 {/* Minimal Cube Logo */}
                 <div className="flex justify-center mb-10 opacity-80">
@@ -155,6 +166,12 @@ function LoginForm() {
                                 )}
                             </button>
                         </div>
+                    </div>
+
+                    <div className="flex justify-end">
+                        <Link href="/forgot-password" title="Forgot Password" className="text-[9px] tracking-[0.2em] text-white/30 hover:text-white uppercase transition-colors">
+                            Forgot Password?
+                        </Link>
                     </div>
 
                     <button

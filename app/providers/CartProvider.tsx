@@ -167,33 +167,47 @@ export function CartProvider({ children }: { children: React.ReactNode }) {
             {showToast && lastAddedItem && (
                 <>
                     {/* Mobile Toast - Pill shape, Top center middle */}
-                    <div className="sm:hidden fixed top-12 left-0 right-0 z-[10000] flex justify-center pointer-events-none animate-toast-top-in">
-                        <div className="bg-black/80 backdrop-blur-xl text-white px-6 py-2.5 rounded-full border border-white/10 shadow-[0_15px_40px_rgba(0,0,0,0.5)] flex items-center gap-3 pointer-events-auto">
+                    <Link
+                        href="/cart"
+                        onClick={() => setShowToast(false)}
+                        className="sm:hidden fixed top-12 left-0 right-0 z-[10000] flex justify-center pointer-events-auto animate-toast-top-in"
+                    >
+                        <div className="bg-black/80 backdrop-blur-xl text-white px-6 py-2.5 rounded-full border border-white/10 shadow-[0_15px_40px_rgba(0,0,0,0.5)] flex items-center gap-3">
                             <div className="w-1.5 h-1.5 rounded-full bg-green-500 animate-pulse shadow-[0_0_8px_rgba(34,197,94,0.6)]" />
                             <span className="text-[10px] font-bold uppercase tracking-[0.2em] whitespace-nowrap">Cart Added</span>
                         </div>
-                    </div>
+                    </Link>
 
                     {/* Desktop Toast - Detailed, Bottom right */}
                     <div className="hidden sm:block fixed bottom-8 right-8 z-[2000] animate-toast-in w-auto">
-                        <div className="bg-white text-black p-4 pr-12 shadow-[0_20px_50px_rgba(0,0,0,0.3)] flex items-center gap-4 min-w-[320px] border-l-4 border-black relative">
-                            <div className="relative w-12 h-12 bg-gray-100 flex-shrink-0">
-                                <img
-                                    src={typeof lastAddedItem.images?.[0] === 'string' ? lastAddedItem.images[0] : (lastAddedItem.images?.[0]?.url || lastAddedItem.image)}
-                                    alt={typeof lastAddedItem.images?.[0] === 'object' ? lastAddedItem.images[0].alt : (lastAddedItem.name || lastAddedItem.title || 'Product')}
-                                    className="object-cover w-full h-full"
-                                />
-                            </div>
-                            <div className="flex-1 min-w-0">
-                                <p className="text-[9px] uppercase tracking-[0.2em] text-black/40 font-bold mb-0.5">Added to Collection</p>
-                                <p className="text-sm font-light truncate mb-1">{lastAddedItem.name || lastAddedItem.title}</p>
-                                <Link href="/cart" className="text-[10px] font-bold uppercase tracking-widest border-b border-black/20 hover:border-black transition-colors" onClick={() => setShowToast(false)}>
-                                    View Collection
-                                </Link>
-                            </div>
-                            <button
+                        <div className="group relative">
+                            <Link
+                                href="/cart"
                                 onClick={() => setShowToast(false)}
-                                className="absolute top-4 right-4 text-black/20 hover:text-black transition-colors"
+                                className="bg-white text-black p-4 pr-12 shadow-[0_20px_50px_rgba(0,0,0,0.3)] flex items-center gap-4 min-w-[320px] border-l-4 border-black relative block hover:bg-gray-50 transition-colors"
+                            >
+                                <div className="relative w-12 h-12 bg-gray-100 flex-shrink-0">
+                                    <img
+                                        src={typeof lastAddedItem.images?.[0] === 'string' ? lastAddedItem.images[0] : (lastAddedItem.images?.[0]?.url || lastAddedItem.image)}
+                                        alt={typeof lastAddedItem.images?.[0] === 'object' ? lastAddedItem.images[0].alt : (lastAddedItem.name || lastAddedItem.title || 'Product')}
+                                        className="object-cover w-full h-full"
+                                    />
+                                </div>
+                                <div className="flex-1 min-w-0">
+                                    <p className="text-[9px] uppercase tracking-[0.2em] text-black/40 font-bold mb-0.5">Added to Collection</p>
+                                    <p className="text-sm font-light truncate mb-1">{lastAddedItem.name || lastAddedItem.title}</p>
+                                    <span className="text-[10px] font-bold uppercase tracking-widest border-b border-black/20 group-hover:border-black transition-colors">
+                                        View Collection
+                                    </span>
+                                </div>
+                            </Link>
+                            <button
+                                onClick={(e) => {
+                                    e.preventDefault();
+                                    e.stopPropagation();
+                                    setShowToast(false);
+                                }}
+                                className="absolute top-4 right-4 text-black/20 hover:text-black transition-colors z-10"
                             >
                                 <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2.5">
                                     <path d="M6 18L18 6M6 6l12 12" strokeLinecap="round" />

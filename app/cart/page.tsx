@@ -144,7 +144,13 @@ export default function CartPage() {
                     <div className="flex items-center gap-6 mt-4 sm:mt-6">
                       <div className="flex items-center border border-white/10 bg-white/5">
                         <button
-                          onClick={() => updateQuantity(item.id, -1)}
+                          onClick={() => {
+                            if (item.quantity <= 1) {
+                              handleRemove(item.id);
+                            } else {
+                              updateQuantity(item.id, -1);
+                            }
+                          }}
                           className="w-10 h-10 flex items-center justify-center hover:bg-white/10 transition-colors text-white/60"
                         >
                           -
@@ -241,8 +247,9 @@ export default function CartPage() {
               Start Exploring
             </Link>
           </div>
-        )}
-      </main>
+        )
+        }
+      </main >
 
 
 
@@ -258,6 +265,6 @@ export default function CartPage() {
           animation: fadeIn 1s ease forwards;
         }
       `}</style>
-    </div>
+    </div >
   );
 }

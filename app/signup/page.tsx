@@ -188,6 +188,17 @@ function SignupForm() {
           }}
         ></div>
 
+        {/* Back to Home Button */}
+        <Link
+          href="/"
+          className="absolute top-8 left-8 z-50 flex items-center gap-2 text-[10px] tracking-[0.3em] text-white/40 hover:text-white transition-all group"
+        >
+          <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="1.5" className="transition-transform group-hover:-translate-x-1">
+            <path d="M19 12H5M12 19l-7-7 7-7" strokeLinecap="round" strokeLinejoin="round" />
+          </svg>
+          BACK TO HOME
+        </Link>
+
         <div ref={formRef} className="relative z-10 w-full max-w-[400px] px-6 py-12">
           <div className="text-center mb-10">
             <h1 className="text-3xl font-thin tracking-[0.2em] text-white uppercase mb-3">
@@ -259,6 +270,17 @@ function SignupForm() {
           backgroundSize: '60px 60px'
         }}
       ></div>
+
+      {/* Back to Home Button */}
+      <Link
+        href="/"
+        className="absolute top-8 left-8 z-50 flex items-center gap-2 text-[10px] tracking-[0.3em] text-white/40 hover:text-white transition-all group"
+      >
+        <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="1.5" className="transition-transform group-hover:-translate-x-1">
+          <path d="M19 12H5M12 19l-7-7 7-7" strokeLinecap="round" strokeLinejoin="round" />
+        </svg>
+        BACK TO HOME
+      </Link>
 
       <div ref={formRef} className="relative z-10 w-full max-w-[400px] px-6 py-12">
         {/* Minimal Cube Logo */}

@@ -80,7 +80,20 @@ export default function LoadingScreen() {
             );
         }
 
-        return () => clearTimeout(timer);
+        // Safety timeout to ensure loading screen always disappears
+        const safetyTimeout = setTimeout(() => {
+            if (isLoading) {
+                console.log('Safety timeout triggered for LoadingScreen');
+                setIsLoading(false);
+                document.documentElement.style.overflow = '';
+                document.body.style.overflow = '';
+            }
+        }, loadingDuration + 2000);
+
+        return () => {
+            clearTimeout(timer);
+            clearTimeout(safetyTimeout);
+        };
     }, []);
 
     if (!isLoading) return null;

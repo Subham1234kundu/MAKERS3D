@@ -268,7 +268,7 @@ export default function HomePage() {
             >
               {isLoadingProducts ? (
                 [1, 2, 3, 4].map(i => (
-                  <div key={i} className="min-w-[240px] sm:min-w-[280px] aspect-[4/5] bg-white/5 rounded-3xl animate-pulse" />
+                  <div key={i} className="min-w-[240px] sm:min-w-[280px] aspect-[3/4] bg-white/5 rounded-2xl animate-pulse" />
                 ))
               ) : products.slice(0, 5).map((product, index, arr) => {
                 const imageData = product.images?.[0] || product.image;

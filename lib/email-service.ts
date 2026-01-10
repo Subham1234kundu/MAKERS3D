@@ -7,6 +7,7 @@ import {
     getOrderDeliveredContent,
     getReturnConfirmedContent,
     getOTPEmailContent,
+    getPasswordResetContent,
 } from './email-templates';
 
 // Send OTP Email
@@ -233,6 +234,25 @@ export async function sendLoginNotificationEmail(params: {
     return await sendEmail({
         to: params.customerEmail,
         subject: 'New Login to Your MAKERS3D Account',
+        html,
+    });
+}
+
+// Send Password Reset Email
+export async function sendPasswordResetEmail(params: {
+    customerName: string;
+    customerEmail: string;
+    resetToken: string;
+}) {
+    const baseUrl = (process.env.NEXT_PUBLIC_BASE_URL || 'http://localhost:3000').replace(/\/$/, '');
+    const resetLink = `${baseUrl}/reset-password?token=${params.resetToken}`;
+
+    const content = getPasswordResetContent(params.customerName, resetLink);
+    const html = getEmailTemplate(content);
+
+    return await sendEmail({
+        to: params.customerEmail,
+        subject: 'Reset Your MAKERS3D Password',
         html,
     });
 }
