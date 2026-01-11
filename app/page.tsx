@@ -109,7 +109,14 @@ export default function HomePage() {
     };
   }, []);
 
-  const categories = ['ALL', 'MODELS', 'FRAMES', 'LAMP', 'DESK ORGANIZER', 'HOME DECORS'];
+  const categories = [
+    { id: 'ALL', label: 'SHOP', image: '/categories/all.png' },
+    { id: 'DIVINE', label: 'DIVINE', image: '/categories/divine.png' },
+    { id: 'AURA', label: 'AURA', image: '/categories/aura.png' },
+    { id: 'MOTION', label: 'MOTION', image: '/categories/motion.png' },
+    { id: 'BOX', label: 'BOX', image: '/categories/box.png' },
+    { id: 'CUSTOM', label: 'CUSTOM', image: '/categories/custom.png' },
+  ];
 
   const handleCategoryClick = (category: string) => {
     setActiveCategory(category);
@@ -243,22 +250,27 @@ export default function HomePage() {
                 const isLast = index === categories.length - 1;
                 return (
                   <button
-                    key={cat}
-                    onClick={() => handleCategoryClick(cat)}
+                    key={cat.id}
+                    onClick={() => handleCategoryClick(cat.id)}
                     className={`flex-shrink-0 flex flex-col items-center gap-4 transition-all active:scale-95 group/cat ${isLast ? 'pr-4 sm:pr-0' : ''}`}
                   >
-                    <div className={`w-[72px] h-[72px] sm:w-[85px] sm:h-[85px] rounded-full flex items-center justify-center transition-all duration-500 overflow-hidden relative ${activeCategory === cat
-                      ? 'bg-white border-[4px] border-white/20 shadow-[0_0_30px_rgba(255,255,255,0.15)]'
+                    <div className={`w-[72px] h-[72px] sm:w-[85px] sm:h-[85px] rounded-full flex items-center justify-center transition-all duration-500 overflow-hidden relative ${activeCategory === cat.id
+                      ? 'bg-white border-[4px] border-white/20 shadow-[0_0_30px_rgba(255,255,255,0.15)] scale-110'
                       : 'bg-white/5 border border-white/10 hover:border-white/20 hover:bg-white/10'
                       }`} suppressHydrationWarning>
-                      <span className={`text-[10px] sm:text-[11px] font-black tracking-tighter z-10 transition-colors duration-300 ${activeCategory === cat ? 'text-black' : 'text-white/80'}`}>
-                        {cat === 'ALL' ? 'SHOP' : cat.substring(0, 4)}
-                      </span>
-                      <div className="absolute inset-0 bg-gradient-to-tr from-white/10 to-transparent opacity-0 group-hover/cat:opacity-100 transition-opacity"></div>
+                      {/* Category Image with Black and White Shade */}
+                      <img
+                        src={cat.image}
+                        alt={cat.label}
+                        className={`absolute inset-0 w-full h-full object-cover transition-all duration-700 grayscale hover:grayscale-0 ${activeCategory === cat.id ? 'grayscale-0 opacity-100 scale-110' : 'opacity-60 group-hover/cat:opacity-100'
+                          }`}
+                      />
+
+                      <div className="absolute inset-0 bg-gradient-to-tr from-white/10 to-transparent opacity-0 group-hover/cat:opacity-100 transition-opacity pointer-events-none"></div>
                     </div>
-                    <span className={`text-[9px] sm:text-[10px] font-bold tracking-[0.15em] uppercase transition-colors duration-300 ${activeCategory === cat ? 'text-white' : 'text-white/30 group-hover/cat:text-white/60'
+                    <span className={`text-[9px] sm:text-[10px] font-bold tracking-[0.15em] uppercase transition-colors duration-300 ${activeCategory === cat.id ? 'text-white' : 'text-white/30 group-hover/cat:text-white/60'
                       }`}>
-                      {cat.split(' ')[0]}
+                      {cat.id}
                     </span>
                   </button>
                 )

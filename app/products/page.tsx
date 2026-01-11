@@ -10,7 +10,14 @@ export default function ProductsPage() {
     const [activeCategory, setActiveCategory] = useState('ALL');
 
     // Categories aligned with Home Page
-    const categories = ['ALL', 'MODELS', 'FRAMES', 'LAMP', 'DESK ORGANIZER', 'HOME DECORS'];
+    const categoryData = [
+        { id: 'ALL', label: 'SHOP', image: '/categories/all.png' },
+        { id: 'DIVINE', label: 'DIVINE', image: '/categories/divine.png' },
+        { id: 'AURA', label: 'AURA', image: '/categories/aura.png' },
+        { id: 'MOTION', label: 'MOTION', image: '/categories/motion.png' },
+        { id: 'BOX', label: 'BOX', image: '/categories/box.png' },
+        { id: 'CUSTOM', label: 'CUSTOM', image: '/categories/custom.png' },
+    ];
 
     const [products, setProducts] = useState<any[]>([]);
     const [isLoading, setIsLoading] = useState(true);
@@ -49,7 +56,7 @@ export default function ProductsPage() {
     // Filter products
     const filteredProducts = activeCategory === 'ALL'
         ? products
-        : products.filter(p => p.category === activeCategory);
+        : products.filter(p => p.category?.toUpperCase() === activeCategory);
 
     return (
         <>
@@ -68,20 +75,31 @@ export default function ProductsPage() {
                         </p>
                     </div>
 
-                    {/* Sticky Category Filter */}
-                    <div className="sticky top-20 z-40 bg-black/80 backdrop-blur-md py-4 mb-12 category-bar border-b border-white/10">
-                        <div className="flex overflow-x-auto no-scrollbar items-center justify-start sm:justify-center gap-8 px-4">
-                            {categories.map((category) => (
+                    {/* Sticky Category Filter - Circular Style */}
+                    <div className="sticky top-0 z-40 bg-black/80 backdrop-blur-md py-4 mb-12 category-bar border-b border-white/10">
+                        <div className="flex overflow-x-auto overflow-y-visible no-scrollbar items-center justify-start sm:justify-center gap-6 sm:gap-10 px-4 py-10">
+                            {categoryData.map((cat) => (
                                 <button
-                                    key={category}
-                                    onClick={() => setActiveCategory(category)}
-                                    className={`text-xs sm:text-sm font-thin tracking-widest transition-all duration-300 whitespace-nowrap hover:text-white ${activeCategory === category ? 'text-white scale-110 font-normal' : 'text-white/40'
-                                        }`}
+                                    key={cat.id}
+                                    onClick={() => setActiveCategory(cat.id)}
+                                    className="flex-shrink-0 flex flex-col items-center gap-3 transition-all active:scale-95 group/cat"
                                 >
-                                    {category}
-                                    {activeCategory === category && (
-                                        <div className="h-[1px] bg-white w-full mt-1 animate-underline" />
-                                    )}
+                                    <div className={`w-[60px] h-[60px] sm:w-[75px] sm:h-[75px] rounded-full flex items-center justify-center transition-all duration-500 overflow-hidden relative ${activeCategory === cat.id
+                                        ? 'bg-white border-[3px] border-white/20 shadow-[0_0_20px_rgba(255,255,255,0.15)] scale-110'
+                                        : 'bg-white/5 border border-white/10 hover:border-white/20 hover:bg-white/10'
+                                        }`}>
+                                        <img
+                                            src={cat.image}
+                                            alt={cat.label}
+                                            className={`absolute inset-0 w-full h-full object-cover transition-all duration-700 grayscale hover:grayscale-0 ${activeCategory === cat.id ? 'grayscale-0 opacity-100 scale-110' : 'opacity-60 group-hover/cat:opacity-100'
+                                                }`}
+                                        />
+                                        <div className="absolute inset-0 bg-gradient-to-tr from-white/10 to-transparent opacity-0 group-hover/cat:opacity-100 transition-opacity pointer-events-none"></div>
+                                    </div>
+                                    <span className={`text-[9px] sm:text-[10px] font-bold tracking-[0.15em] uppercase transition-colors duration-300 ${activeCategory === cat.id ? 'text-white' : 'text-white/30 group-hover/cat:text-white/60'
+                                        }`}>
+                                        {cat.id}
+                                    </span>
                                 </button>
                             ))}
                         </div>
