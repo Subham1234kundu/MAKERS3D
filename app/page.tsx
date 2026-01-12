@@ -1,9 +1,13 @@
 'use client';
 
+import React from 'react';
+
 import Navbar from './components/Navbar';
 import ProductCard from './components/ProductCard';
 import Footer from './components/Footer';
 import ExperienceSection from './components/ExperienceSection';
+import ShivaHero from './components/ShivaHero';
+import CategoryShowcase from './components/CategoryShowcase';
 import Link from 'next/link';
 import { useState, useRef, useEffect } from 'react';
 import { gsap } from 'gsap';
@@ -21,8 +25,15 @@ export default function HomePage() {
       history.scrollRestoration = 'manual';
     }
 
-    // Tiny delay to ensure DOM is ready
-    const scrollReset = setTimeout(() => window.scrollTo(0, 0), 10);
+    // Tiny delay to ensure DOM is ready and handle potential early jumps
+    const scrollReset = setTimeout(() => {
+      window.scrollTo({ top: 0, left: 0, behavior: 'instant' as any });
+    }, 50);
+
+    // Secondary reset after longer delay safely covers components mounting after animations
+    const lateScrollReset = setTimeout(() => {
+      window.scrollTo({ top: 0, left: 0, behavior: 'instant' as any });
+    }, 1000);
 
     let ctx: any;
 
@@ -132,6 +143,8 @@ export default function HomePage() {
         if (res.ok) {
           const data = await res.json();
           setProducts(data);
+          // Force scroll to top again when products load (prevents jumps from late rendering)
+          window.scrollTo({ top: 0, left: 0, behavior: 'instant' as any });
         }
       } catch (error) {
         console.error('Fetch products error:', error);
@@ -150,212 +163,91 @@ export default function HomePage() {
     <>
       <Navbar />
 
-      {/* Hero Section */}
-      <div ref={heroRef} className="relative min-h-[95vh] sm:min-h-[calc(100vh-70px)] bg-black flex items-center justify-center overflow-hidden px-4 sm:px-8 pt-32 pb-20 sm:py-12 border-b border-white/[0.05] sm:border-none" suppressHydrationWarning>
-        <div className="relative z-10 text-center max-w-[1000px] w-full" suppressHydrationWarning>
-          {/* Main Heading - Highly Aesthetic Editorial Typography */}
-          <h1 ref={titleRef}
-            className="text-[2.6rem] sm:text-6xl md:text-8xl lg:text-[10rem] font-thin leading-[1.1] sm:leading-[0.9] mb-8 md:mb-14 tracking-[-0.04em] font-sans selection:bg-white selection:text-black mt-4 md:mt-16 lg:mt-32 cursor-none"
-            data-cursor-size="large">
-            <span className="block opacity-100 text-white/90 uppercase">MAKERS 3D</span>
-            <span className="block font-black italic text-white relative -mt-1 md:-mt-6 uppercase">
-              CREATIONS
-              <span className="absolute -inset-1 bg-gradient-to-r from-transparent via-white/10 to-transparent skew-x-[-20deg] animate-shimmer pointer-events-none"></span>
-            </span>
-            <div className="flex items-center justify-center gap-3 mt-6 md:mt-8">
-              <div className="h-[1px] w-6 sm:w-16 bg-white/20 hidden sm:block"></div>
-              <span className="text-sm sm:text-xl md:text-2xl italic font-light tracking-normal text-white/60 lowercase">premium architectural masterpieces</span>
-              <div className="h-[1px] w-6 sm:w-16 bg-white/20 hidden sm:block"></div>
-            </div>
-          </h1>
+      <ShivaHero />
 
-          {/* Subheading - More readable on mobile */}
-          <p ref={subtitleRef} className="text-[10px] sm:text-lg lg:text-xl leading-relaxed text-white/40 max-w-[700px] mx-auto mb-8 md:mb-12 font-medium tracking-[0.3em] px-6 opacity-80 uppercase">
-            Makers 3D — Premium 3D Creations. <br className="sm:hidden" /> Unparalleled industrial craftsmanship.
-          </p>
-
-          {/* CTA Buttons - Slick & Aesthetic Mobile Design */}
-          <div ref={ctaRef} className="flex flex-col sm:flex-row-reverse gap-4 sm:gap-6 justify-center items-center px-6 mt-12 md:mt-16" suppressHydrationWarning>
-            <Link
-              href="/products"
-              className="group relative w-full sm:w-auto inline-flex items-center justify-center gap-3 px-10 py-4 text-xs sm:text-xs font-black tracking-[0.4em] uppercase rounded-full transition-all duration-500 overflow-hidden bg-white text-black hover:bg-gray-100 hover:scale-[1.02] active:scale-95 shadow-[0_20px_40px_rgba(255,255,255,0.15)]"
-            >
-              <span className="relative z-10">SHOP NOW</span>
-              <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" className="group-hover:translate-x-1 transition-transform">
-                <path d="M5 12h14m-7-7l7 7-7 7" strokeLinecap="round" strokeLinejoin="round" />
-              </svg>
-            </Link>
-
-            <Link
-              href="/customorder"
-              className="group relative w-full sm:w-auto inline-flex items-center justify-center gap-3 px-10 py-4 text-xs sm:text-xs font-bold tracking-[0.4em] uppercase rounded-full transition-all duration-500 overflow-hidden bg-white/5 text-white border border-white/20 hover:bg-white/10 hover:border-white/40 hover:scale-[1.02] active:scale-95"
-            >
-              <span className="relative z-10">CUSTOM ORDER</span>
-              <div className="w-2 h-2 rounded-full bg-white/40 animate-pulse"></div>
-              {/* Glass background shimmer */}
-              <div className="absolute inset-0 bg-gradient-to-r from-transparent via-white/[0.05] to-transparent -translate-x-full group-hover:translate-x-full transition-transform duration-1000"></div>
-            </Link>
-          </div>
+      {/* Cinematic Brand Ticker - Engaging Layer */}
+      <div className="bg-black py-10 border-y border-white/[0.05] overflow-hidden whitespace-nowrap flex select-none" suppressHydrationWarning>
+        <div className="flex animate-[marquee_30s_linear_infinite] gap-12 sm:gap-24 items-center pr-12 sm:pr-24" suppressHydrationWarning>
+          {[1, 2, 3, 4].map((i) => (
+            <React.Fragment key={i}>
+              <span className="text-[10px] sm:text-xs text-white/40 tracking-[0.8em] uppercase font-thin">Ethereal Aesthetics</span>
+              <div className="w-1.5 h-1.5 rounded-full bg-white/20" />
+              <span className="text-[10px] sm:text-xs text-white tracking-[0.8em] uppercase font-black italic">The Divine Collection</span>
+              <div className="w-1.5 h-1.5 rounded-full bg-white/20" />
+              <span className="text-[10px] sm:text-xs text-white/40 tracking-[0.8em] uppercase font-thin">Crafted in Geometry</span>
+              <div className="w-1.5 h-1.5 rounded-full bg-white/20" />
+              <span className="text-[10px] sm:text-xs text-white tracking-[0.8em] uppercase font-black italic">Makers 3D Elite</span>
+              <div className="w-1.5 h-1.5 rounded-full bg-white/20" />
+            </React.Fragment>
+          ))}
         </div>
-
-        {/* Animated background elements */}
-        <div
-          className="absolute inset-0 opacity-40"
-          style={{
-            backgroundImage: `
-              linear-gradient(rgba(220, 220, 220, 0.18) 1px, transparent 1px), 
-              linear-gradient(90deg, rgba(220, 220, 220, 0.18) 1px, transparent 1px)
-            `,
-            backgroundSize: '80px 80px',
-            maskImage: 'radial-gradient(circle at center, black, transparent 80%)',
-            WebkitMaskImage: 'radial-gradient(circle at center, black, transparent 80%)'
-          }}
-          suppressHydrationWarning
-        ></div>
-        <div
-          className="absolute inset-0 opacity-20"
-          style={{
-            backgroundImage: `
-              linear-gradient(rgba(220, 220, 220, 0.25) 1px, transparent 1px), 
-              linear-gradient(90deg, rgba(220, 220, 220, 0.25) 1px, transparent 1px)
-            `,
-            backgroundSize: '400px 400px',
-          }}
-          suppressHydrationWarning
-        ></div>
-
-        {/* Dynamic Floating Orbs */}
-        <div className="hero-orb-1 absolute -top-40 -right-40 w-[600px] h-[600px] rounded-full bg-gradient-to-br from-white/10 to-transparent blur-[150px] pointer-events-none select-none" suppressHydrationWarning></div>
-        <div className="hero-orb-2 absolute -bottom-40 -left-40 w-[700px] h-[700px] rounded-full bg-gradient-to-tr from-white/[0.08] to-transparent blur-[180px] pointer-events-none select-none" suppressHydrationWarning></div>
-        <div className="absolute inset-0 bg-radial-gradient from-transparent via-black/40 to-black pointer-events-none"></div>
+        <div className="flex animate-[marquee_30s_linear_infinite] gap-12 sm:gap-24 items-center pr-12 sm:pr-24" aria-hidden="true" suppressHydrationWarning>
+          {[1, 2, 3, 4].map((i) => (
+            <React.Fragment key={i}>
+              <span className="text-[10px] sm:text-xs text-white/40 tracking-[0.8em] uppercase font-thin">Ethereal Aesthetics</span>
+              <div className="w-1.5 h-1.5 rounded-full bg-white/20" />
+              <span className="text-[10px] sm:text-xs text-white tracking-[0.8em] uppercase font-black italic">The Divine Collection</span>
+              <div className="w-1.5 h-1.5 rounded-full bg-white/20" />
+              <span className="text-[10px] sm:text-xs text-white/40 tracking-[0.8em] uppercase font-thin">Crafted in Geometry</span>
+              <div className="w-1.5 h-1.5 rounded-full bg-white/20" />
+              <span className="text-[10px] sm:text-xs text-white tracking-[0.8em] uppercase font-black italic">Makers 3D Elite</span>
+              <div className="w-1.5 h-1.5 rounded-full bg-white/20" />
+            </React.Fragment>
+          ))}
+        </div>
       </div>
 
-      {/* Categories & Featured Content Section */}
-      <div className="bg-black pb-12 px-4 sm:px-8" suppressHydrationWarning>
-        <div className="max-w-7xl mx-auto flex flex-col gap-12" suppressHydrationWarning>
-
-          {/* Quick Categories - Pinterest Style (Visual & Productive) */}
-          <div className="flex flex-col gap-6 " suppressHydrationWarning>
-            <div className="flex justify-between items-center px-1" suppressHydrationWarning>
-              <h2 className="text-[10px] sm:text-xs font-bold tracking-[0.3em] text-white/40 uppercase">Featured Categories</h2>
-              <Link href="/products" className="text-[10px] sm:text-xs font-bold tracking-[0.1em] text-white/60 uppercase border-b border-white/20 pb-0.5 transition-colors hover:text-white hover:border-white">View All</Link>
-            </div>
-
-            <div
-              className="flex pt-6 md:pt-10 overflow-x-auto no-scrollbar gap-6 sm:gap-10 pb-4 -mx-4 px-4 sm:mx-0 sm:px-0 md:justify-center scroll-smooth"
-              style={{ WebkitOverflowScrolling: 'touch' }}
-              suppressHydrationWarning
-            >
-              {categories.map((cat, index) => {
-                const isLast = index === categories.length - 1;
-                return (
-                  <button
-                    key={cat.id}
-                    onClick={() => handleCategoryClick(cat.id)}
-                    className={`flex-shrink-0 flex flex-col items-center gap-4 transition-all active:scale-95 group/cat ${isLast ? 'pr-4 sm:pr-0' : ''}`}
-                  >
-                    <div className={`w-[72px] h-[72px] sm:w-[85px] sm:h-[85px] rounded-full flex items-center justify-center transition-all duration-500 overflow-hidden relative ${activeCategory === cat.id
-                      ? 'bg-white border-[4px] border-white/20 shadow-[0_0_30px_rgba(255,255,255,0.15)] scale-110'
-                      : 'bg-white/5 border border-white/10 hover:border-white/20 hover:bg-white/10'
-                      }`} suppressHydrationWarning>
-                      {/* Category Image with Black and White Shade */}
-                      <img
-                        src={cat.image}
-                        alt={cat.label}
-                        className={`absolute inset-0 w-full h-full object-cover transition-all duration-700 grayscale hover:grayscale-0 ${activeCategory === cat.id ? 'grayscale-0 opacity-100 scale-110' : 'opacity-60 group-hover/cat:opacity-100'
-                          }`}
-                      />
-
-                      <div className="absolute inset-0 bg-gradient-to-tr from-white/10 to-transparent opacity-0 group-hover/cat:opacity-100 transition-opacity pointer-events-none"></div>
-                    </div>
-                    <span className={`text-[9px] sm:text-[10px] font-bold tracking-[0.15em] uppercase transition-colors duration-300 ${activeCategory === cat.id ? 'text-white' : 'text-white/30 group-hover/cat:text-white/60'
-                      }`}>
-                      {cat.id}
-                    </span>
-                  </button>
-                )
-              })}
-            </div>
-          </div>
-
-          {/* New Arrivals - Horizontal Scroll */}
-          <div className="flex flex-col gap-6" suppressHydrationWarning>
-            <div className="flex justify-between items-center px-1" suppressHydrationWarning>
-              <h2 className="text-[10px] sm:text-xs font-bold tracking-[0.3em] text-white/40 uppercase">New Arrivals</h2>
-              <div className="flex gap-2">
-                <div className="w-1.5 h-1.5 rounded-full bg-white/40"></div>
-                <div className="w-1.5 h-1.5 rounded-full bg-white/10"></div>
+      <div className="bg-black py-10 lg:py-24 px-6 sm:px-8 border-b border-white/[0.02]" suppressHydrationWarning>
+        <div
+          className="max-w-7xl mx-auto grid grid-cols-1 md:grid-cols-3 gap-12 sm:gap-20"
+          suppressHydrationWarning
+        >
+          {[
+            { title: 'PRECISION', desc: 'Every micron crafted with mathematical perfection.', icon: '01' },
+            { title: 'AESTHETIC', desc: 'Ethereal designs that transcend architectural limits.', icon: '02' },
+            { title: 'VISION', desc: 'Future-proof concepts for the modern collector.', icon: '03' }
+          ].map((feature, i) => (
+            <div key={i} className="group relative flex flex-col items-center text-center" suppressHydrationWarning>
+              <div className="flex flex-col items-center gap-3 lg:gap-4 mb-3 lg:mb-6" suppressHydrationWarning>
+                <span className="text-white/10 text-[7px] sm:text-xs font-mono group-hover:text-white/40 transition-colors" suppressHydrationWarning>[{feature.icon}]</span>
+                <h4 className="text-white text-[9px] sm:text-2xl font-thin tracking-[0.4em] uppercase transition-all duration-700 group-hover:tracking-[0.6em]" suppressHydrationWarning>
+                  {feature.title}
+                </h4>
               </div>
+              <p className="text-white/20 text-[7px] sm:text-xs tracking-[0.2em] uppercase leading-relaxed font-light max-w-[240px] md:max-w-[320px]" suppressHydrationWarning>
+                {feature.desc}
+              </p>
+              <div className="absolute -bottom-6 left-1/2 -translate-x-1/2 w-0 h-[1px] bg-white/10 group-hover:w-full transition-all duration-1000" suppressHydrationWarning></div>
             </div>
-
-            <div
-              className="flex overflow-x-auto no-scrollbar gap-4 sm:gap-6 -mx-4 px-4 sm:mx-0 sm:px-0 pb-20 sm:pb-8 scroll-smooth"
-              style={{
-                WebkitOverflowScrolling: 'touch',
-                scrollPaddingRight: '24px'
-              }}
-              suppressHydrationWarning
-            >
-              {isLoadingProducts ? (
-                [1, 2, 3, 4].map(i => (
-                  <div key={i} className="min-w-[240px] sm:min-w-[280px] aspect-[3/4] bg-white/5 rounded-2xl animate-pulse" />
-                ))
-              ) : products.slice(0, 5).map((product, index, arr) => {
-                const imageData = product.images?.[0] || product.image;
-                const imageUrl = typeof imageData === 'object' ? imageData?.url : imageData;
-                const imageAlt = typeof imageData === 'object' ? imageData?.alt : product.name || product.title;
-
-                // Extract second image for hover effect
-                const secondImageData = product.images?.[1];
-                const secondImageUrl = secondImageData ? (typeof secondImageData === 'object' ? secondImageData?.url : secondImageData) : undefined;
-                const secondImageAlt = secondImageData && typeof secondImageData === 'object' ? secondImageData?.alt : `${product.name || product.title} - view 2`;
-
-                const isLast = index === arr.length - 1;
-
-                return (
-                  <div
-                    key={`new-${product.id || product._id}`}
-                    className="w-[240px] sm:w-[280px] flex-shrink-0"
-                  >
-                    <ProductCard
-                      id={product.id || product._id}
-                      image={imageUrl}
-                      alt={imageAlt}
-                      secondImage={secondImageUrl}
-                      secondAlt={secondImageAlt}
-                      title={product.name || product.title}
-                      price={product.price}
-                      originalPrice={product.originalPrice}
-                      fixedMobileHeight={true}
-                    />
-                  </div>
-                );
-              })}
-            </div>
-          </div>
+          ))}
         </div>
       </div>
+
+      {/* Dynamic Category Showcase */}
+      {!isLoadingProducts && products.length > 0 && (
+        <CategoryShowcase products={products} />
+      )}
 
       {/* Products Section */}
-      <section className="bg-black px-4 sm:px-8 py-12 md:py-32" suppressHydrationWarning>
+      <section className="bg-black px-4 sm:px-8 pt-8 pb-20 md:py-32" suppressHydrationWarning>
         <div className="max-w-7xl mx-auto" suppressHydrationWarning>
           {/* Section Header */}
-          <div className="flex flex-col gap-2 mb-12 px-1">
-            <h3 className="text-2xl sm:text-4xl font-thin tracking-tighter text-white uppercase">
-              {activeCategory === 'ALL' ? 'Collection' : activeCategory}
-              <span className="text-white/30 ml-4 font-light text-sm sm:text-lg tracking-widest">[{filteredProducts.length}]</span>
+          <div className="flex flex-col gap-2 mb-12 px-1" suppressHydrationWarning>
+            <h3 className="text-xl sm:text-4xl font-thin tracking-tighter text-white uppercase" suppressHydrationWarning>
+              {activeCategory === 'ALL' ? 'New Arrival' : activeCategory}
+              <span className="text-white/30 ml-4 font-light text-xs sm:text-lg tracking-widest" suppressHydrationWarning>[{filteredProducts.length}]</span>
             </h3>
-            <div className="w-16 h-[1px] bg-white/20"></div>
+            <div className="w-16 h-[1px] bg-white/20" suppressHydrationWarning></div>
           </div>
 
           {/* Product Grid */}
           <div className="grid grid-cols-2 lg:grid-cols-4 gap-x-2.5 gap-y-6 sm:gap-6 children-appear" suppressHydrationWarning>
             {isLoadingProducts ? (
-              [1, 2, 3, 4, 5, 6].map((i) => (
+              [1, 2, 3, 4].map((i) => (
                 <div key={i} className="aspect-[3/4] bg-white/5 animate-pulse rounded-2xl" suppressHydrationWarning />
               ))
             ) : filteredProducts.length > 0 ? (
-              filteredProducts.map((product) => {
+              filteredProducts.slice(0, 4).map((product) => {
                 const imageData = product.images?.[0] || product.image;
                 const imageUrl = typeof imageData === 'object' ? imageData?.url : imageData;
                 const imageAlt = typeof imageData === 'object' ? imageData?.alt : product.name || product.title;
@@ -385,6 +277,20 @@ export default function HomePage() {
               </div>
             )}
           </div>
+
+          {/* View All Button */}
+          {!isLoadingProducts && products.length > 0 && (
+            <div className="mt-16 flex justify-center" suppressHydrationWarning>
+              <Link
+                href="/products"
+                className="group relative px-10 py-4 bg-white/5 border border-white/10 text-white text-[10px] font-bold tracking-[0.4em] uppercase rounded-full overflow-hidden transition-all hover:bg-white hover:text-black hover:scale-105"
+                suppressHydrationWarning
+              >
+                <span className="relative z-10" suppressHydrationWarning>View All Masterpieces</span>
+                <div className="absolute inset-0 bg-white scale-x-0 group-hover:scale-x-100 transition-transform origin-left duration-500" suppressHydrationWarning />
+              </Link>
+            </div>
+          )}
         </div>
       </section>
 

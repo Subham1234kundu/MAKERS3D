@@ -151,7 +151,7 @@ export default function ExperienceSection() {
         <section ref={sectionRef} className="bg-black py-20 sm:py-32 border-t border-white/5 overflow-hidden relative" suppressHydrationWarning>
             {/* Decorative background blueprint grid - specific to this section */}
             <div className="absolute inset-0 opacity-[0.03] pointer-events-none"
-                style={{ backgroundImage: 'radial-gradient(circle, white 1px, transparent 1px)', backgroundSize: '40px 40px' }}></div>
+                style={{ backgroundImage: 'radial-gradient(circle, white 1px, transparent 1px)', backgroundSize: '40px 40px' }} suppressHydrationWarning></div>
 
             <div className="max-w-7xl mx-auto px-4 sm:px-8 relative z-10" suppressHydrationWarning>
 
@@ -186,24 +186,24 @@ export default function ExperienceSection() {
                         </div>
 
                         {/* Overlapping Text - Content that 'touches' and layers over image */}
-                        <div className="experience-text-layer relative lg:absolute lg:right-0 lg:bottom-0 w-full lg:w-[48%] mt-[-30px] sm:mt-[-50px] lg:mt-0 px-4 sm:px-0 z-20 pointer-events-none">
-                            <h2 className="experience-main-title text-6xl sm:text-7xl lg:text-9xl font-thin tracking-tighter text-white uppercase leading-[0.8] mb-2 cursor-none pointer-events-auto"
-                                data-cursor-size="large">
-                                <span className="block overflow-hidden">
-                                    <span className="title-line block">THE</span>
+                        <div className="experience-text-layer relative lg:absolute lg:right-[4%] lg:bottom-0 w-full lg:w-[50%] mt-[-30px] sm:mt-[-50px] lg:mt-0 px-4 sm:px-0 z-20 pointer-events-none" suppressHydrationWarning>
+                            <h2 className="experience-main-title text-5xl sm:text-6xl lg:text-8xl font-thin tracking-tighter text-white uppercase leading-[0.85] mb-2 cursor-none pointer-events-auto"
+                                data-cursor-size="large" suppressHydrationWarning>
+                                <span className="block overflow-hidden" suppressHydrationWarning>
+                                    <span className="title-line block px-2" suppressHydrationWarning>THE</span>
                                 </span>
-                                <span className="block overflow-hidden">
-                                    <span className="title-line italic block ml-4 sm:ml-8 font-light text-white/90">MAKERS</span>
+                                <span className="block overflow-hidden" suppressHydrationWarning>
+                                    <span className="title-line italic block ml-4 sm:ml-8 font-light text-white/90 px-4" suppressHydrationWarning>MAKERS</span>
                                 </span>
-                                <span className="block overflow-hidden">
-                                    <span className="title-line block text-right -mt-1 sm:-mt-3 mr-4 sm:mr-8 font-extrabold text-white">EXPERIENCE</span>
+                                <span className="block overflow-visible" suppressHydrationWarning>
+                                    <span className="title-line block text-right -mt-1 sm:-mt-3 mr-6 sm:mr-10 font-extrabold text-white px-4" suppressHydrationWarning>EXPERIENCE</span>
                                 </span>
                             </h2>
-                            <div className="mt-6 sm:mt-10 flex flex-col items-end text-right">
-                                <p className="experience-sub-desc text-white/70 font-light text-[10px] sm:text-xs tracking-[0.25em] uppercase max-w-[280px] sm:max-w-sm leading-relaxed translate-y-2 opacity-0">
+                            <div className="mt-6 sm:mt-10 flex flex-col items-end text-right" suppressHydrationWarning>
+                                <p className="experience-sub-desc text-white/70 font-light text-[10px] sm:text-xs tracking-[0.25em] uppercase max-w-[280px] sm:max-w-sm leading-relaxed translate-y-2 opacity-0" suppressHydrationWarning>
                                     Makers 3D - Premium 3D Creations. Delivering high-end, gallery-quality 3D printed masterpieces to your workspace.
                                 </p>
-                                <div className="h-10 w-[1px] bg-gradient-to-b from-white/40 to-transparent mt-6 mr-4 animate-pulse"></div>
+                                <div className="h-10 w-[1px] bg-gradient-to-b from-white/40 to-transparent mt-6 mr-4 animate-pulse" suppressHydrationWarning></div>
                             </div>
                         </div>
                     </div>
@@ -213,24 +213,23 @@ export default function ExperienceSection() {
                 <div className="services-container grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-4 sm:gap-6 relative z-30 mb-12 sm:mb-16" suppressHydrationWarning>
                     {services.map((service, index) => (
                         <div key={index}
-                            className="feature-card group relative p-6 sm:p-10 bg-white/[0.03] border border-white/10 hover:border-white/30 transition-[border-color,background-color,transform] duration-500 rounded-[2.5rem] overflow-hidden"
-                            suppressHydrationWarning>
-                            <div className="absolute -right-2 -top-2 text-6xl font-black text-white/[0.03] select-none">
+                            className="feature-card group relative p-6 sm:p-10 bg-white/[0.03] border border-white/10 hover:border-white/30 transition-[border-color,background-color,transform] duration-500 rounded-[2.5rem] overflow-hidden" suppressHydrationWarning>
+                            <div className="absolute -right-2 -top-2 text-6xl font-black text-white/[0.03] select-none" suppressHydrationWarning>
                                 0{index + 1}
                             </div>
-                            <div className="relative z-10">
-                                <div className="text-white/60 group-hover:text-white transition-colors duration-500 mb-6 group-hover:scale-110 origin-left inline-block">
+                            <div className="relative z-10" suppressHydrationWarning>
+                                <div className="text-white/60 group-hover:text-white transition-colors duration-500 mb-6 group-hover:scale-110 origin-left inline-block" suppressHydrationWarning>
                                     {service.icon}
                                 </div>
-                                <h3 className="text-white text-base sm:text-lg font-bold tracking-tight uppercase mb-3">{service.title}</h3>
-                                <p className="text-white/60 font-light text-[11px] sm:text-xs leading-relaxed tracking-wide group-hover:text-white/90 transition-colors duration-500">
+                                <h3 className="text-white text-base sm:text-lg font-bold tracking-tight uppercase mb-3" suppressHydrationWarning>{service.title}</h3>
+                                <p className="text-white/60 font-light text-[11px] sm:text-xs leading-relaxed tracking-wide group-hover:text-white/90 transition-colors duration-500" suppressHydrationWarning>
                                     {service.description}
                                 </p>
                             </div>
 
                             {/* Decorative corner accent */}
-                            <div className="absolute bottom-0 left-0 w-8 h-[1px] bg-white/20"></div>
-                            <div className="absolute bottom-0 left-0 w-[1px] h-8 bg-white/20"></div>
+                            <div className="absolute bottom-0 left-0 w-8 h-[1px] bg-white/20" suppressHydrationWarning></div>
+                            <div className="absolute bottom-0 left-0 w-[1px] h-8 bg-white/20" suppressHydrationWarning></div>
                         </div>
                     ))}
                 </div>
@@ -243,19 +242,20 @@ export default function ExperienceSection() {
                         { label: 'Production', value: '24/7', detail: 'Rapid Delivery' },
                         { label: 'Finish', value: 'PRO', detail: 'Post-Processed' }
                     ].map((stat, i) => (
-                        <div key={i} className="stat-box flex flex-col items-center justify-center p-8 bg-white/[0.02] border border-white/[0.05] rounded-3xl text-center group hover:bg-white/[0.04] transition-all duration-500">
-                            <span className="text-white/30 text-[9px] font-bold tracking-[0.3em] uppercase mb-2">{stat.label}</span>
-                            <span className="text-white text-3xl font-black mb-1 tracking-tighter">{stat.value}</span>
-                            <span className="text-white/50 text-[10px] uppercase tracking-widest">{stat.detail}</span>
+                        <div key={i} className="stat-box flex flex-col items-center justify-center p-8 bg-white/[0.02] border border-white/[0.05] rounded-3xl text-center group hover:bg-white/[0.04] transition-all duration-500" suppressHydrationWarning>
+                            <span className="text-white/30 text-[9px] font-bold tracking-[0.3em] uppercase mb-2" suppressHydrationWarning>{stat.label}</span>
+                            <span className="text-white text-3xl font-black mb-1 tracking-tighter" suppressHydrationWarning>{stat.value}</span>
+                            <span className="text-white/50 text-[10px] uppercase tracking-widest" suppressHydrationWarning>{stat.detail}</span>
                         </div>
                     ))}
                 </div>
 
                 {/* Final Call to Action with enhanced micro-interaction */}
-                <div className="mt-20 sm:mt-32 text-center" suppressHydrationWarning>
+                <div className="mt-20 sm:mt-32 text-center">
                     <a
                         href="/customorder"
                         className="experience-cta inline-flex items-center gap-6 text-[10px] sm:text-xs font-black tracking-[0.5em] text-white/60 hover:text-white uppercase transition-all duration-500 group"
+                        suppressHydrationWarning
                     >
                         <span className="relative">
                             Start Your Creation

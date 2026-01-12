@@ -36,9 +36,10 @@ export default function ProductCard({ id, image, alt, secondImage, secondAlt, ti
             onMouseLeave={() => setIsHovered(false)}
             onTouchStart={() => setIsHovered(true)}
             onTouchEnd={() => setTimeout(() => setIsHovered(false), 300)}
+            suppressHydrationWarning
         >
             <Link href={`/products/${id}`}>
-                <div className="cursor-pointer">
+                <div className="cursor-pointer" suppressHydrationWarning>
                     {/* Image Container */}
                     <div className={`relative ${fixedMobileHeight ? 'h-[320px] sm:h-auto sm:aspect-[3/4]' : 'aspect-[3/4]'} mb-3 sm:mb-4 overflow-hidden transition-all duration-300 bg-black`}>
                         {/* First Image */}
@@ -80,15 +81,15 @@ export default function ProductCard({ id, image, alt, secondImage, secondAlt, ti
                     </div>
 
                     {/* Text Content - Centered with padding */}
-                    <div className="px-2">
+                    <div className="px-2" suppressHydrationWarning>
                         {/* Product Title */}
-                        <h3 className="text-white font-thin text-base mb-2 tracking-wide text-center">
+                        <h3 className="text-white font-thin text-base mb-2 tracking-wide text-center" suppressHydrationWarning>
                             {title}
                         </h3>
 
                         {/* Price Section */}
-                        <div className="flex items-center gap-3 justify-center">
-                            <span className="text-white font-normal text-sm">
+                        <div className="flex items-center gap-3 justify-center" suppressHydrationWarning>
+                            <span className="text-white font-normal text-sm" suppressHydrationWarning>
                                 ₹{price.toLocaleString('en-IN')}
                             </span>
                             <span className="text-gray-500 font-normal text-sm line-through">
@@ -114,6 +115,7 @@ export default function ProductCard({ id, image, alt, secondImage, secondAlt, ti
                     `}
                 onMouseEnter={() => setIsPlusHovered(true)}
                 onMouseLeave={() => setIsPlusHovered(false)}
+                suppressHydrationWarning
                 onClick={(e) => {
                     handleAddToCart(e);
                     const icon = e.currentTarget.querySelector('.plus-icon');

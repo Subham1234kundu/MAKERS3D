@@ -57,6 +57,7 @@ export default function CustomCursor() {
         ref={cursorRef}
         className={`custom-cursor ${isHoveringText ? 'hover-text' : ''} ${isLargeCursor ? 'large-cursor' : ''}`}
         style={{ opacity: hasMoved ? 1 : 0 }}
+        suppressHydrationWarning
       >
         <svg viewBox="0 0 100 100" xmlns="http://www.w3.org/2000/svg">
           <path d="M50 10 L90 30 L90 70 L50 90 L10 70 L10 30 Z" fill="white" />

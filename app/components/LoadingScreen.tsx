@@ -6,18 +6,7 @@ import { gsap } from 'gsap';
 
 const ParticleCubeLogo = dynamic(() => import('./ParticleCubeLogo'), {
     ssr: false,
-    loading: () => (
-        <div style={{ width: '80px', height: '80px', display: 'flex', alignItems: 'center', justifyContent: 'center' }}>
-            <div style={{
-                width: '40px',
-                height: '40px',
-                border: '2px solid rgba(255,255,255,0.1)',
-                borderTop: '2px solid white',
-                borderRadius: '50%',
-                animation: 'spin 0.8s linear infinite'
-            }} />
-        </div>
-    )
+    loading: () => <div style={{ width: '80px', height: '80px' }} suppressHydrationWarning />
 });
 
 export default function LoadingScreen() {
@@ -27,7 +16,10 @@ export default function LoadingScreen() {
     const progressRef = useRef<HTMLDivElement>(null);
     const cubeContainerRef = useRef<HTMLDivElement>(null);
 
+    const [mounted, setMounted] = useState(false);
+
     useEffect(() => {
+        setMounted(true);
         // Check if mobile
         const checkMobile = window.innerWidth < 768;
         setIsMobile(checkMobile);
@@ -104,23 +96,25 @@ export default function LoadingScreen() {
             className="fixed inset-0 z-[99999] bg-black flex flex-col items-center justify-center"
             suppressHydrationWarning
         >
-            <div className="flex flex-col items-center translate-y-12" suppressHydrationWarning>
-                <div ref={cubeContainerRef} className="mb-4" suppressHydrationWarning>
-                    <ParticleCubeLogo />
-                </div>
+            {mounted && (
+                <div className="flex flex-col items-center translate-y-12" suppressHydrationWarning>
+                    <div ref={cubeContainerRef} className="mb-4" suppressHydrationWarning>
+                        <ParticleCubeLogo />
+                    </div>
 
-                <div className="w-24 h-[1px] bg-white/10 relative overflow-hidden" suppressHydrationWarning>
-                    <div
-                        ref={progressRef}
-                        className="absolute inset-0 bg-white origin-left"
-                        suppressHydrationWarning
-                    />
-                </div>
+                    <div className="w-24 h-[1px] bg-white/10 relative overflow-hidden" suppressHydrationWarning>
+                        <div
+                            ref={progressRef}
+                            className="absolute inset-0 bg-white origin-left"
+                            suppressHydrationWarning
+                        />
+                    </div>
 
-                <p className="mt-6 text-[10px] uppercase tracking-[0.6em] text-white/30 animate-pulse">
-                    Initializing Studio
-                </p>
-            </div>
+                    <p className="mt-6 text-[10px] uppercase tracking-[0.6em] text-white/30 animate-pulse" suppressHydrationWarning>
+                        Initializing Studio
+                    </p>
+                </div>
+            )}
 
             <style jsx>{`
                 @keyframes pulse {

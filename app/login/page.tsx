@@ -9,7 +9,7 @@ import { gsap } from 'gsap';
 
 const ParticleCubeLogo = dynamic(() => import('../components/ParticleCubeLogo'), {
     ssr: false,
-    loading: () => <div style={{ width: '60px', height: '60px' }} />
+    loading: () => <div style={{ width: '60px', height: '60px' }} suppressHydrationWarning />
 });
 
 function LoginForm() {
@@ -222,7 +222,7 @@ function LoginForm() {
 
 export default function LoginPage() {
     return (
-        <Suspense fallback={<div className="min-h-screen bg-black flex items-center justify-center"><div className="w-10 h-10 border-2 border-white/10 border-t-white rounded-full animate-spin" /></div>}>
+        <Suspense fallback={<div className="min-h-screen bg-black flex items-center justify-center" suppressHydrationWarning><div className="w-10 h-10 border-2 border-white/10 border-t-white rounded-full animate-spin" suppressHydrationWarning /></div>}>
             <LoginForm />
         </Suspense>
     );

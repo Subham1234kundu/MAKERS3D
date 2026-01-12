@@ -11,6 +11,39 @@
   --color-foreground: var(--foreground);
   --font-sans: var(--font-geist-sans);
   --font-mono: var(--font-geist-mono);
+  --animate-heartbeat: heartbeat 2s infinite ease-in-out;
+
+  @keyframes heartbeat {
+    0% {
+      transform: scale(1);
+    }
+
+    14% {
+      transform: scale(1.08);
+    }
+
+    28% {
+      transform: scale(1);
+    }
+
+    42% {
+      transform: scale(1.08);
+    }
+
+    70% {
+      transform: scale(1);
+    }
+  }
+
+  @keyframes marquee {
+    0% {
+      transform: translateX(0);
+    }
+
+    100% {
+      transform: translateX(-100%);
+    }
+  }
 }
 
 /* Class-based dark mode to prevent hydration errors */
@@ -189,23 +222,23 @@ body {
 .mobile-nav-container {
   /* Ultra-Transparent Liquid Glass - Enhanced Refraction */
   background: linear-gradient(135deg,
-      rgba(255, 255, 255, 0.12) 0%,
-      rgba(255, 255, 255, 0.05) 100%);
-  backdrop-filter: blur(50px) saturate(220%) brightness(1.2);
-  -webkit-backdrop-filter: blur(50px) saturate(220%) brightness(1.2);
-  border: 1px solid rgba(255, 255, 255, 0.35);
+      rgba(255, 255, 255, 0.08) 0%,
+      rgba(255, 255, 255, 0.03) 100%);
+  backdrop-filter: blur(40px) saturate(200%) brightness(1.1);
+  -webkit-backdrop-filter: blur(40px) saturate(200%) brightness(1.1);
+  border: 0.5px solid rgba(255, 255, 255, 0.25);
   border-radius: 4rem;
-  padding: 0.5rem;
+  padding: 0.4rem;
   display: flex;
   align-items: center;
   position: relative;
   width: 100%;
   overflow: hidden;
   box-shadow:
-    0 4px 20px rgba(0, 0, 0, 0.08),
-    0 10px 40px rgba(0, 0, 0, 0.12),
-    inset 0 0 0 1px rgba(255, 255, 255, 0.3),
-    inset 0 8px 16px rgba(255, 255, 255, 0.2);
+    0 10px 30px rgba(0, 0, 0, 0.1),
+    0 20px 60px rgba(0, 0, 0, 0.15),
+    inset 0 0 0 0.5px rgba(255, 255, 255, 0.2),
+    inset 0 8px 20px rgba(255, 255, 255, 0.1);
 }
 
 /* Internal Inner Border for more "Liquid" look */
@@ -256,15 +289,15 @@ body {
 
 .dark .mobile-nav-container {
   background: linear-gradient(135deg,
-      rgba(20, 20, 20, 0.5) 0%,
-      rgba(10, 10, 10, 0.3) 100%);
-  backdrop-filter: blur(60px) saturate(200%) brightness(0.9);
-  -webkit-backdrop-filter: blur(60px) saturate(200%) brightness(0.9);
-  border: 1px solid rgba(255, 255, 255, 0.1);
+      rgba(15, 15, 15, 0.6) 0%,
+      rgba(5, 5, 5, 0.4) 100%);
+  backdrop-filter: blur(60px) saturate(180%) brightness(0.9);
+  -webkit-backdrop-filter: blur(60px) saturate(180%) brightness(0.9);
+  border: 0.5px solid rgba(255, 255, 255, 0.08);
   box-shadow:
-    0 25px 50px rgba(0, 0, 0, 0.7),
-    inset 0 1px 0 rgba(255, 255, 255, 0.1),
-    inset 0 10px 20px rgba(0, 0, 0, 0.3);
+    0 25px 60px rgba(0, 0, 0, 0.8),
+    inset 0 0.5px 0 rgba(255, 255, 255, 0.05),
+    inset 0 10px 30px rgba(0, 0, 0, 0.4);
 }
 
 .mobile-nav .nav-icon {
@@ -425,10 +458,11 @@ a:active:not(:disabled),
 }
 
 .user-avatar {
-  width: 26px;
-  height: 26px;
+  width: 24px;
+  height: 24px;
   border-radius: 50%;
-  border: 1px solid rgba(255, 255, 255, 0.2);
+  border: 0.5px solid rgba(255, 255, 255, 0.15);
+  box-shadow: 0 4px 12px rgba(0, 0, 0, 0.3);
 }
 
 /* No Scrollbar Utility */

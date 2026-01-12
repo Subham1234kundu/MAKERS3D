@@ -77,7 +77,7 @@ export default function RootLayout({
 }>) {
   return (
     <html lang="en" suppressHydrationWarning>
-      <head>
+      <head suppressHydrationWarning>
         <link rel="canonical" href="https://makers3d.in" />
         <script
           dangerouslySetInnerHTML={{
@@ -96,10 +96,9 @@ export default function RootLayout({
             `,
           }}
         />
-        <Script
+        <script
           id="structured-data"
           type="application/ld+json"
-          strategy="afterInteractive"
           dangerouslySetInnerHTML={{
             __html: JSON.stringify({
               "@context": "https://schema.org",
@@ -127,14 +126,16 @@ export default function RootLayout({
       >
         <LoadingScreen />
         <CustomCursor />
-        <SessionProvider>
-          <ThemeProvider>
-            <CartProvider>
-              {children}
-              <ChatButton />
-            </CartProvider>
-          </ThemeProvider>
-        </SessionProvider>
+        <div suppressHydrationWarning>
+          <SessionProvider>
+            <ThemeProvider>
+              <CartProvider>
+                {children}
+                <ChatButton />
+              </CartProvider>
+            </ThemeProvider>
+          </SessionProvider>
+        </div>
       </body>
     </html>
   );

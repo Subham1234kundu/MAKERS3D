@@ -23,6 +23,7 @@ export default function ChatButton() {
                         target="_blank"
                         rel="noopener noreferrer"
                         className="flex items-center gap-3 sm:gap-4 group/item"
+                        suppressHydrationWarning
                     >
                         <div className="w-8 h-8 sm:w-10 sm:h-10 rounded-full bg-[#25D366]/10 flex items-center justify-center transition-all duration-300 group-hover/item:bg-[#25D366]/20" suppressHydrationWarning>
                             <svg width="18" height="18" viewBox="0 0 24 24" fill="#25D366" xmlns="http://www.w3.org/2000/svg" className="sm:w-5 sm:h-5">
@@ -30,7 +31,7 @@ export default function ChatButton() {
                             </svg>
                         </div>
                         <div className="flex flex-col" suppressHydrationWarning>
-                            <span className="text-white text-[13px] sm:text-sm font-light tracking-wide transition-colors">WhatsApp</span>
+                            <span className="text-white text-[13px] sm:text-sm font-light tracking-wide transition-colors" suppressHydrationWarning>WhatsApp</span>
                         </div>
                     </a>
 
@@ -40,6 +41,7 @@ export default function ChatButton() {
                         target="_blank"
                         rel="noopener noreferrer"
                         className="flex items-center gap-3 sm:gap-4 group/item"
+                        suppressHydrationWarning
                     >
                         <div className="w-8 h-8 sm:w-10 sm:h-10 rounded-full bg-white/5 flex items-center justify-center transition-all duration-300 group-hover/item:bg-white/10 overflow-hidden relative" suppressHydrationWarning>
                             <div className="absolute inset-0 bg-gradient-to-tr from-[#f9ce34] via-[#ee2a7b] to-[#6228d7] opacity-20 group-hover/item:opacity-40 transition-opacity" suppressHydrationWarning />
@@ -48,7 +50,7 @@ export default function ChatButton() {
                             </svg>
                         </div>
                         <div className="flex flex-col" suppressHydrationWarning>
-                            <span className="text-white text-[13px] sm:text-sm font-light tracking-wide transition-colors">Instagram</span>
+                            <span className="text-white text-[13px] sm:text-sm font-light tracking-wide transition-colors" suppressHydrationWarning>Instagram</span>
                         </div>
                     </a>
                 </div>
@@ -58,17 +60,17 @@ export default function ChatButton() {
                 onClick={() => setIsOpen(!isOpen)}
                 onMouseEnter={() => setIsHovered(true)}
                 onMouseLeave={() => setIsHovered(false)}
-                className={`relative group p-3 sm:p-4 rounded-full transition-all duration-500 hover:scale-110 active:scale-95 heartbeat-animation ${isOpen ? 'bg-black border border-white/20' : 'bg-white'
+                className={`relative group p-3 sm:p-4 rounded-full transition-all duration-500 hover:scale-110 active:scale-95 ${isOpen ? 'bg-black border border-white/20' : 'bg-white animate-[heartbeat_2s_infinite_ease-in-out]'
                     } shadow-[0_10px_40px_rgba(255,255,255,0.15)]`}
                 aria-label="Contact Support"
                 suppressHydrationWarning
             >
                 {/* Glow Effect */}
                 <div className={`absolute inset-0 rounded-full blur-xl transition-opacity duration-500 ${isOpen ? 'bg-white/5 opacity-40' : (isHovered ? 'bg-white/20 opacity-100' : 'opacity-0')
-                    }`} suppressHydrationWarning />
+                    }`} />
 
                 {/* Icon */}
-                <div className="relative z-10 transition-transform duration-500" style={{ transform: isOpen ? 'rotate(90deg)' : 'rotate(0)' }} suppressHydrationWarning>
+                <div className="relative z-10 transition-transform duration-500" style={{ transform: isOpen ? 'rotate(90deg)' : 'rotate(0)' }}>
                     {isOpen ? (
                         <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="white" strokeWidth="1.5" strokeLinecap="round" strokeLinejoin="round" className="sm:w-6 sm:h-6">
                             <line x1="18" y1="6" x2="6" y2="18"></line>
@@ -102,23 +104,9 @@ export default function ChatButton() {
                 </div>
 
                 {!isOpen && (
-                    <div className="absolute inset-0 rounded-full border border-white/50 animate-ping opacity-20 pointer-events-none" suppressHydrationWarning />
+                    <div className="absolute inset-0 rounded-full border border-white/50 animate-ping opacity-20 pointer-events-none" />
                 )}
             </button>
-
-            {/* Tooltip removed as per request */}
-            <style jsx>{`
-                @keyframes heartbeat {
-                    0% { transform: scale(1); }
-                    14% { transform: scale(1.08); }
-                    28% { transform: scale(1); }
-                    42% { transform: scale(1.08); }
-                    70% { transform: scale(1); }
-                }
-                .heartbeat-animation {
-                    animation: ${isOpen ? 'none' : 'heartbeat 2s infinite ease-in-out'};
-                }
-            `}</style>
         </div>
     );
 }

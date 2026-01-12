@@ -83,19 +83,27 @@ function ParticleCube({ isHovered }: ParticleCubeProps) {
 
 export default function ParticleCubeLogo() {
     const [isHovered, setIsHovered] = useState(false);
+    const [mounted, setMounted] = useState(false);
+
+    useMemo(() => {
+        if (typeof window !== 'undefined') setMounted(true);
+    }, []);
 
     return (
         <div
             style={{ width: '60px', height: '60px' }}
             onMouseEnter={() => setIsHovered(true)}
             onMouseLeave={() => setIsHovered(false)}
+            suppressHydrationWarning
         >
-            <Canvas camera={{ position: [0, 0, 5], fov: 45 }} gl={{ antialias: true }}>
-                <ambientLight intensity={2} />
-                <pointLight position={[10, 10, 10]} intensity={3} />
-                <pointLight position={[-10, -10, -10]} intensity={1} color="#ffffff" />
-                <ParticleCube isHovered={isHovered} />
-            </Canvas>
+            {mounted && (
+                <Canvas camera={{ position: [0, 0, 5], fov: 45 }} gl={{ antialias: true }} suppressHydrationWarning>
+                    <ambientLight intensity={2} />
+                    <pointLight position={[10, 10, 10]} intensity={3} />
+                    <pointLight position={[-10, -10, -10]} intensity={1} color="#ffffff" />
+                    <ParticleCube isHovered={isHovered} />
+                </Canvas>
+            )}
         </div>
     );
 }

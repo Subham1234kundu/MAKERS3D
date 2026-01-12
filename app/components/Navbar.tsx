@@ -42,17 +42,17 @@ const NavIcons = ({
   const isCartActive = pathname === '/cart';
 
   return (
-    <div className={`nav-icons flex items-center ${isMobileNav ? 'justify-between w-full px-1' : 'gap-4 sm:gap-6'}`} suppressHydrationWarning>
+    <div className={`nav-icons flex items-center ${isMobileNav ? 'justify-between w-full px-2' : 'gap-3 sm:gap-5'}`} suppressHydrationWarning>
       {/* Home Icon - Mobile Only */}
       {isMobileNav && (
         <Link href="/" className={`nav-icon ${isHomeActive ? 'active' : ''}`} aria-label="Home" suppressHydrationWarning>
-          <svg fill="none" stroke="currentColor" viewBox="0 0 24 24" className="w-[18px] h-[18px]">
-            <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={1.5} d="M3 12l2-2m0 0l7-7 7 7M5 10v10a1 1 0 001 1h3m10-11l2 2m-2-2v10a1 1 0 01-1 1h-3m-6 0a1 1 0 001-1v-4a1 1 0 011-1h2a1 1 0 011 1v4a1 1 0 001 1m-6 0h6" />
+          <svg fill="none" stroke="currentColor" viewBox="0 0 24 24" className="w-[19px] h-[19px]">
+            <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={1.2} d="M3 12l2-2m0 0l7-7 7 7M5 10v10a1 1 0 001 1h3m10-11l2 2m-2-2v10a1 1 0 01-1 1h-3m-6 0a1 1 0 001-1v-4a1 1 0 011-1h2a1 1 0 011 1v4a1 1 0 001 1m-6 0h6" />
           </svg>
         </Link>
       )}
 
-      <div className={`search-container flex items-center relative h-10 px-3 transition-all duration-500 cursor-pointer ${isMobileNav ? '' : 'bg-white/5 border border-white/10 rounded-full'}`} suppressHydrationWarning
+      <div className={`search-container flex items-center relative h-9 px-3 transition-all duration-700 cursor-pointer ${isMobileNav ? '' : 'bg-white/[0.03] border border-white/[0.08] rounded-full hover:bg-white/[0.06] hover:border-white/20'}`} suppressHydrationWarning
         onClick={(e) => {
           e.stopPropagation();
           if (!isSearchExpanded) setIsSearchExpanded(true);
@@ -60,29 +60,31 @@ const NavIcons = ({
         }}
       >
         <button
-          className={`nav-icon z-10`}
+          className={`nav-icon z-10 p-0`}
           aria-label="Search"
           onClick={(e) => {
             e.stopPropagation();
             setIsSearchExpanded(!isSearchExpanded);
           }}
+          suppressHydrationWarning
         >
-          <svg fill="none" stroke="currentColor" viewBox="0 0 24 24" className="w-[18px] h-[18px]">
+          <svg fill="none" stroke="currentColor" viewBox="0 0 24 24" className="w-[17px] h-[17px] opacity-60" suppressHydrationWarning>
             <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={1.5} d="M21 21l-6-6m2-5a7 7 0 11-14 0 7 7 0 0114 0z" />
           </svg>
         </button>
         <input
           ref={searchInputRef}
           type="text"
-          placeholder="SEARCH..."
-          className={`bg-transparent border-none outline-none text-[10px] uppercase tracking-[0.2em] font-light w-0 opacity-0 overflow-hidden transition-all duration-500 ease-in-out`}
+          placeholder="SEARCH masterpieces..."
+          className={`bg-transparent border-none outline-none text-[9px] uppercase tracking-[0.3em] font-medium w-0 opacity-0 overflow-hidden transition-all duration-700 ease-expo`}
           style={{ paddingLeft: isSearchExpanded ? '12px' : '0' }}
+          suppressHydrationWarning
         />
       </div>
 
       <div className="user-menu-container flex items-center" suppressHydrationWarning>
         <button
-          className={`nav-icon user-button ${isMobileNav && isProfileActive ? 'active' : ''}`}
+          className={`nav-icon user-button ${isMobileNav && isProfileActive ? 'active' : ''} p-0`}
           aria-label="User Account"
           onClick={() => {
             if (session) router.push('/profile');
@@ -91,27 +93,27 @@ const NavIcons = ({
           suppressHydrationWarning
         >
           {session?.user?.image ? (
-            <img src={session.user.image} alt={session.user.name || 'User'} className={`user-avatar ${isMobileNav && isProfileActive ? 'border-white' : ''}`} />
+            <img src={session.user.image} alt={session.user.name || 'User'} className={`user-avatar ${isMobileNav && isProfileActive ? 'border-white' : ''} w-[22px] h-[22px]`} />
           ) : (
-            <svg fill="none" stroke="currentColor" viewBox="0 0 24 24" className="w-[18px] h-[18px]">
-              <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={1.5} d="M16 7a4 4 0 11-8 0 4 4 0 018 0zM12 14a7 7 0 00-7 7h14a7 7 0 00-7-7z" />
+            <svg fill="none" stroke="currentColor" viewBox="0 0 24 24" className="w-[19px] h-[19px] opacity-60 hover:opacity-100 transition-opacity">
+              <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={1.2} d="M16 7a4 4 0 11-8 0 4 4 0 018 0zM12 14a7 7 0 00-7 7h14a7 7 0 00-7-7z" />
             </svg>
           )}
         </button>
       </div>
 
-      <Link href="/likes" className={`nav-icon ${!isMobileNav ? 'always-visible' : ''} ${isMobileNav && isLikesActive ? 'active' : ''}`} aria-label="Favorites" suppressHydrationWarning>
-        <svg fill="none" stroke="currentColor" viewBox="0 0 24 24" className="w-[18px] h-[18px]">
-          <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={1.5} d="M4.318 6.318a4.5 4.5 0 000 6.364L12 20.364l7.682-7.682a4.5 4.5 0 00-6.364-6.364L12 7.636l-1.318-1.318a4.5 4.5 0 00-6.364 0z" />
+      <Link href="/likes" className={`nav-icon ${!isMobileNav ? 'always-visible' : ''} ${isMobileNav && isLikesActive ? 'active' : ''} p-0`} aria-label="Favorites" suppressHydrationWarning>
+        <svg fill="none" stroke="currentColor" viewBox="0 0 24 24" className="w-[19px] h-[19px] opacity-60 hover:opacity-100 transition-opacity">
+          <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={1.2} d="M4.318 6.318a4.5 4.5 0 000 6.364L12 20.364l7.682-7.682a4.5 4.5 0 00-6.364-6.364L12 7.636l-1.318-1.318a4.5 4.5 0 00-6.364 0z" />
         </svg>
       </Link>
 
-      <Link href="/cart" className={`nav-icon ${!isMobileNav ? 'always-visible' : ''} ${isMobileNav && isCartActive ? 'active' : ''}`} aria-label="Cart" suppressHydrationWarning>
+      <Link href="/cart" className={`nav-icon ${!isMobileNav ? 'always-visible' : ''} ${isMobileNav && isCartActive ? 'active' : ''} p-0`} aria-label="Cart" suppressHydrationWarning>
         <div className="cart-icon-wrapper" suppressHydrationWarning>
-          <svg fill="none" stroke="currentColor" viewBox="0 0 24 24" className="cart-svg w-[18px] h-[18px]">
-            <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={1.5} d="M3 3h2l.4 2M7 13h10l4-8H5.4M7 13L5.4 5M7 13l-2.293 2.293c-.63.63-.184 1.707.707 1.707H17m0 0a2 2 0 100 4 2 2 0 000-4zm-8 2a2 2 0 11-4 0 2 2 0 014 0z" />
+          <svg fill="none" stroke="currentColor" viewBox="0 0 24 24" className="cart-svg w-[19px] h-[19px] opacity-60 hover:opacity-100 transition-opacity">
+            <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={1.2} d="M3 3h2l.4 2M7 13h10l4-8H5.4M7 13L5.4 5M7 13l-2.293 2.293c-.63.63-.184 1.707.707 1.707H17m0 0a2 2 0 100 4 2 2 0 000-4zm-8 2a2 2 0 11-4 0 2 2 0 014 0z" />
           </svg>
-          {cartCount > 0 && <span className="cart-badge">{cartCount}</span>}
+          {cartCount > 0 && <span className="cart-badge bg-white text-black border-none ring-2 ring-black">{cartCount}</span>}
         </div>
       </Link>
     </div>
@@ -203,25 +205,24 @@ export default function Navbar() {
   return (
     <>
       <nav
-        className={`fixed top-0 left-0 w-full z-[9999] bg-black/80 backdrop-blur-2xl border-b border-white/10 py-2 transition-all duration-500 ease-in-out ${isScrolled ? '-translate-y-full opacity-0 invisible pointer-events-none' : ''
+        className={`fixed top-0 left-0 w-full z-[9999] bg-black/60 backdrop-blur-3xl border-b border-white/[0.05] py-1.5 transition-all duration-700 ease-expo ${isScrolled ? '-translate-y-full opacity-0 invisible pointer-events-none' : ''
           }`}
         suppressHydrationWarning
       >
-        <div className="max-w-[1400px] mx-auto px-8 flex justify-between items-center" suppressHydrationWarning>
+        <div className="max-w-[1400px] mx-auto px-6 sm:px-10 flex justify-between items-center" suppressHydrationWarning>
           <Link href="/" suppressHydrationWarning>
             <div
-              className="flex items-center gap-6 lg:gap-6"
+              className="flex items-center gap-4 lg:gap-5 group"
               onMouseEnter={handleLogoMouseEnter}
               onMouseLeave={handleLogoMouseLeave}
               suppressHydrationWarning
             >
-              <div className="w-[70px] h-[70px] lg:w-[70px] lg:h-[70px] max-lg:w-[55px] max-lg:h-[55px]" suppressHydrationWarning>
+              <div className="w-[60px] h-[60px] lg:w-[65px] lg:h-[65px] max-lg:w-[50px] max-lg:h-[50px] transition-transform duration-700 group-hover:scale-105" suppressHydrationWarning>
                 <ParticleCubeLogo />
               </div>
-              <div ref={logoTextRef} className="flex flex-col whitespace-nowrap max-lg:mt-1" suppressHydrationWarning>
-                <span className="text-[1.4rem] max-lg:text-[1rem] font-extrabold text-white leading-[0.9]">MAKERS</span>
-                <span className="text-[1.4rem] max-lg:text-[1rem] font-extrabold text-white leading-[0.9]">3D</span>
-                <span ref={studioRef} className="text-[0.7rem] max-lg:text-[0.6rem] font-bold tracking-[0.25em] max-lg:tracking-[0.2em] text-white mt-[0.15rem]">STUDIO</span>
+              <div ref={logoTextRef} className="flex flex-col whitespace-nowrap max-lg:mt-0.5" suppressHydrationWarning>
+                <span className="text-[1.2rem] lg:text-[1.3rem] max-lg:text-[0.95rem] font-black text-white leading-[0.85] tracking-tight" suppressHydrationWarning>MAKERS<span className="text-white/40" suppressHydrationWarning>3D</span></span>
+                <span ref={studioRef} className="text-[0.55rem] lg:text-[0.6rem] max-lg:text-[0.5rem] font-bold tracking-[0.4em] text-white opacity-40 mt-[0.25rem]" suppressHydrationWarning>STUDIO_CORE</span>
               </div>
             </div>
           </Link>
