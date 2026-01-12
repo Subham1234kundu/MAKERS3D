@@ -42,9 +42,7 @@ function FlowingWire({ color = "white", speed = 1, index = 0 }) {
             <bufferGeometry>
                 <bufferAttribute
                     attach="attributes-position"
-                    count={points.length}
-                    array={new Float32Array(points.length * 3)}
-                    itemSize={3}
+                    args={[new Float32Array(points.length * 3), 3]}
                 />
             </bufferGeometry>
             <lineBasicMaterial attach="material" color={color} transparent opacity={0.3} linewidth={2} />
