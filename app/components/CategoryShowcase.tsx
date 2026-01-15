@@ -119,8 +119,11 @@ export default function CategoryShowcase({ products }: CategoryShowcaseProps) {
                                             alt={cat.label}
                                             fill
                                             className="object-cover"
+                                            sizes="(max-width: 640px) 80px, 120px"
+                                            quality={60}
                                             suppressHydrationWarning
                                         />
+
                                     </div>
 
                                     <div className="flex flex-col items-center lg:items-start" suppressHydrationWarning>

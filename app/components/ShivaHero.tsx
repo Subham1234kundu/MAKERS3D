@@ -5,7 +5,9 @@ import { Canvas, useFrame } from '@react-three/fiber';
 import { Float, PerspectiveCamera, Sparkles, Stars, Float as FloatDrei } from '@react-three/drei';
 import * as THREE from 'three';
 import Link from 'next/link';
+import Image from 'next/image';
 import { gsap } from 'gsap';
+
 
 function FlowingWire({ color = "white", speed = 1, index = 0 }) {
     const lineRef = useRef<any>(null);
@@ -56,11 +58,10 @@ function EtherealStrings() {
             <FlowingWire speed={0.2} index={0} />
             <FlowingWire speed={0.15} index={Math.PI} color="#f0f0f0" />
             <FlowingWire speed={0.1} index={Math.PI / 2} />
-            <Sparkles count={150} scale={20} size={0.8} speed={0.4} opacity={0.15} color="white" />
-            <Stars radius={100} depth={50} count={6000} factor={6} saturation={0} fade speed={1.5} />
         </group>
     );
 }
+
 
 export default function ShivaHero() {
     const containerRef = useRef<HTMLDivElement>(null);
@@ -172,7 +173,11 @@ export default function ShivaHero() {
             {/* 3D Atmosphere Layer */}
             <div ref={atmosphereRef} className="absolute inset-0 z-0 opacity-40" suppressHydrationWarning>
                 {mounted && (
-                    <Canvas dpr={[1, 2]} suppressHydrationWarning>
+                    <Canvas
+                        dpr={[1, 1.5]}
+                        gl={{ powerPreference: "high-performance", antialias: false }}
+                        suppressHydrationWarning
+                    >
                         <PerspectiveCamera makeDefault position={[0, 0, 12]} />
                         <ambientLight intensity={0.1} />
                         <FloatDrei speed={1.5} rotationIntensity={0.2} floatIntensity={0.2}>
@@ -180,16 +185,26 @@ export default function ShivaHero() {
                         </FloatDrei>
                     </Canvas>
                 )}
+
             </div>
 
             {/* Hero Image - Optimized for 'Perfect Top' */}
             <div className="absolute inset-0 z-10 w-full h-full overflow-hidden" suppressHydrationWarning>
-                <img
-                    ref={imageRef}
-                    src="/shiva_mandir_hero.png"
-                    alt="Shiva Mandir Architectural Masterpiece"
-                    className="w-full h-full object-cover object-top sm:object-contain transition-transform duration-700"
-                />
+                <div className="relative w-full h-full" ref={imageRef} suppressHydrationWarning>
+                    <Image
+                        src="/shiva_mandir_hero.png"
+                        alt="Shiva Mandir Architectural Masterpiece"
+                        fill
+                        className="object-cover object-top sm:object-contain grayscale contrast-[1.1] brightness-[0.4] transition-transform duration-700 hover:grayscale-0 hover:scale-105"
+                        priority
+                        sizes="100vw"
+                        quality={90}
+                    />
+
+                </div>
+
+
+
 
                 {/* Advanced Lighting & Vignette */}
                 <div className="absolute inset-0 bg-gradient-to-b from-black/80 via-transparent to-black z-11 pointer-events-none" suppressHydrationWarning />

@@ -476,18 +476,21 @@ a:active:not(:disabled),
 }
 
 /* Image Optimization for Faster Loading */
-img {
+img,
+canvas {
   content-visibility: auto;
-  will-change: transform;
+  image-rendering: -webkit-optimize-contrast;
 }
 
-/* GPU Acceleration for Images */
+/* GPU Acceleration for Images & Components */
 .group img,
-[class*="Image"] {
+img[src*="next"],
+[class*="Container"] {
   transform: translateZ(0);
   backface-visibility: hidden;
-  -webkit-backface-visibility: hidden;
+  will-change: transform, opacity;
 }
+
 
 /* Improve Touch Targets on Mobile */
 @media (max-width: 1024px) {

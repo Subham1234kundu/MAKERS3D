@@ -80,6 +80,7 @@ export default function RootLayout({
       <head suppressHydrationWarning>
         <link rel="canonical" href="https://makers3d.in" />
         <script
+          suppressHydrationWarning
           dangerouslySetInnerHTML={{
             __html: `
               (function() {
@@ -99,6 +100,7 @@ export default function RootLayout({
         <script
           id="structured-data"
           type="application/ld+json"
+          suppressHydrationWarning
           dangerouslySetInnerHTML={{
             __html: JSON.stringify({
               "@context": "https://schema.org",
@@ -136,7 +138,9 @@ export default function RootLayout({
             </ThemeProvider>
           </SessionProvider>
         </div>
+
       </body>
     </html>
+
   );
 }

@@ -14,10 +14,6 @@ import { gsap } from 'gsap';
 
 export default function HomePage() {
   const [activeCategory, setActiveCategory] = useState('ALL');
-  const heroRef = useRef<HTMLDivElement>(null);
-  const titleRef = useRef<HTMLHeadingElement>(null);
-  const subtitleRef = useRef<HTMLParagraphElement>(null);
-  const ctaRef = useRef<HTMLDivElement>(null);
 
   useEffect(() => {
     // Force scroll to top on refresh
@@ -37,86 +33,12 @@ export default function HomePage() {
 
     let ctx: any;
 
-    const setupAnimations = async () => {
-      const { ScrollTrigger } = await import('gsap/ScrollTrigger');
-      gsap.registerPlugin(ScrollTrigger);
 
-      if (!titleRef.current || !subtitleRef.current || !ctaRef.current || !heroRef.current) return;
-
-      // Create a context for easy cleanup
-      ctx = gsap.context(() => {
-        // Initial Styles
-        gsap.set([titleRef.current, subtitleRef.current, ctaRef.current], {
-          force3D: true,
-          willChange: 'transform, opacity'
-        });
-
-        // 1. Initial Entry Animation
-        const entryTl = gsap.timeline({ defaults: { ease: 'power3.out' } });
-
-        entryTl.fromTo(titleRef.current,
-          { opacity: 0, y: 30, filter: 'blur(8px)' },
-          { opacity: 1, y: 0, filter: 'blur(0px)', duration: 1, delay: 0.3 }
-        )
-          .fromTo(subtitleRef.current,
-            { opacity: 0, y: 15, filter: 'blur(4px)' },
-            { opacity: 1, y: 0, filter: 'blur(0px)', duration: 0.8 },
-            '-=0.7'
-          )
-          .fromTo(ctaRef.current,
-            { opacity: 0, y: 10 },
-            { opacity: 1, y: 0, duration: 0.8 },
-            '-=0.6'
-          );
-
-        // 2. Scroll Animation - EXPLICIT fromTo to guarantee appearance on scroll up
-        const scrollTl = gsap.timeline({
-          scrollTrigger: {
-            trigger: heroRef.current,
-            start: 'top top',
-            end: 'bottom 40%',
-            scrub: 1,
-            invalidateOnRefresh: true,
-          }
-        });
-
-        scrollTl.fromTo([titleRef.current, subtitleRef.current, ctaRef.current],
-          { opacity: 1, y: 0, visibility: 'visible' },
-          {
-            opacity: 0,
-            y: -120,
-            stagger: 0.05,
-            ease: 'none',
-            immediateRender: false
-          }
-        );
-
-        // 4. Floating Orbs Animation
-        gsap.to('.hero-orb-1', {
-          x: '15%',
-          y: '10%',
-          duration: 8,
-          repeat: -1,
-          yoyo: true,
-          ease: 'sine.inOut'
-        });
-        gsap.to('.hero-orb-2', {
-          x: '-10%',
-          y: '-15%',
-          duration: 10,
-          repeat: -1,
-          yoyo: true,
-          ease: 'sine.inOut',
-          delay: 1
-        });
-      }, heroRef);
-    };
-
-    setupAnimations();
 
     return () => {
       clearTimeout(scrollReset);
       if (ctx) ctx.revert();
+
     };
   }, []);
 
