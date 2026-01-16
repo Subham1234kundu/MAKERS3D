@@ -110,6 +110,9 @@ export default function Footer() {
                             <Link href="/policies" className="text-white/70 font-thin text-sm tracking-wide hover:text-white transition-colors hover:translate-x-1 inline-block" suppressHydrationWarning>
                                 Policies
                             </Link>
+                            <Link href="/privacy-policy" className="text-white/70 font-thin text-sm tracking-wide hover:text-white transition-colors hover:translate-x-1 inline-block" suppressHydrationWarning>
+                                Privacy Policy
+                            </Link>
                         </div>
                     </div>
 
