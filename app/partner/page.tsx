@@ -96,10 +96,10 @@ export default function PartnerWithUs() {
                                 <div className="absolute -inset-4 bg-white/[0.02] border border-white/10 rounded-[40px] -z-10 blur-xl group-hover:bg-white/[0.04] transition-all duration-700" />
                                 <form
                                     onSubmit={handleSubmit}
-                                    className="bg-black/40 backdrop-blur-3xl border border-white/10 p-8 sm:p-10 rounded-2xl space-y-6"
+                                    className="bg-black/40 backdrop-blur-3xl border border-white/10 p-8 sm:p-10 rounded-[40px] space-y-6"
                                 >
                                     <div className="space-y-1">
-                                        <label className="text-[10px] text-white/30 tracking-[0.2em] uppercase font-mono ml-1">Name</label>
+                                        <label className="text-[10px] text-white/30 tracking-[0.2em] uppercase font-mono ml-1">Identity</label>
                                         <input
                                             required
                                             type="text"
@@ -107,13 +107,13 @@ export default function PartnerWithUs() {
                                             value={formData.name}
                                             onChange={handleChange}
                                             placeholder="Your Name"
-                                            className="w-full bg-transparent border-b border-white/20 px-0 py-3 text-sm focus:outline-none focus:border-white transition-all font-light tracking-wide placeholder:text-white/10"
+                                            className="w-full bg-white/5 border border-white/10 rounded-2xl px-6 py-4 text-sm focus:outline-none focus:border-white/30 transition-all font-light tracking-wide placeholder:text-white/10"
                                         />
                                     </div>
 
                                     <div className="grid grid-cols-2 gap-4">
                                         <div className="space-y-1">
-                                            <label className="text-[10px] text-white/30 tracking-[0.2em] uppercase font-mono ml-1">Email</label>
+                                            <label className="text-[10px] text-white/30 tracking-[0.2em] uppercase font-mono ml-1">Contact</label>
                                             <input
                                                 required
                                                 type="email"
@@ -121,58 +121,63 @@ export default function PartnerWithUs() {
                                                 value={formData.email}
                                                 onChange={handleChange}
                                                 placeholder="Email"
-                                                className="w-full bg-transparent border-b border-white/20 px-0 py-3 text-sm focus:outline-none focus:border-white transition-all font-light tracking-wide placeholder:text-white/10"
+                                                className="w-full bg-white/5 border border-white/10 rounded-2xl px-6 py-4 text-sm focus:outline-none focus:border-white/30 transition-all font-light tracking-wide placeholder:text-white/10"
                                             />
                                         </div>
                                         <div className="space-y-1">
-                                            <label className="text-[10px] text-white/30 tracking-[0.2em] uppercase font-mono ml-1">Company</label>
+                                            <label className="text-[10px] text-white/30 tracking-[0.2em] uppercase font-mono ml-1">Organization</label>
                                             <input
                                                 type="text"
                                                 name="company"
                                                 value={formData.company}
                                                 onChange={handleChange}
                                                 placeholder="Company"
-                                                className="w-full bg-transparent border-b border-white/20 px-0 py-3 text-sm focus:outline-none focus:border-white transition-all font-light tracking-wide placeholder:text-white/10"
+                                                className="w-full bg-white/5 border border-white/10 rounded-2xl px-6 py-4 text-sm focus:outline-none focus:border-white/30 transition-all font-light tracking-wide placeholder:text-white/10"
                                             />
                                         </div>
                                     </div>
 
                                     <div className="space-y-1">
-                                        <label className="text-[10px] text-white/30 tracking-[0.2em] uppercase font-mono ml-1">Partnership Type</label>
+                                        <label className="text-[10px] text-white/30 tracking-[0.2em] uppercase font-mono ml-1">Synthesis Type</label>
                                         <div className="relative">
                                             <select
                                                 name="partnershipType"
                                                 value={formData.partnershipType}
                                                 onChange={handleChange}
-                                                className="w-full bg-transparent border-b border-white/20 px-0 py-3 text-sm focus:outline-none focus:border-white transition-all font-light tracking-wide appearance-none"
+                                                className="w-full bg-white/5 border border-white/10 rounded-2xl px-6 py-4 text-sm focus:outline-none focus:border-white/30 transition-all font-light tracking-wide appearance-none"
                                             >
                                                 <option value="Collaboration" className="bg-zinc-900">Collaboration</option>
                                                 <option value="Reseller" className="bg-zinc-900">Reseller</option>
                                                 <option value="Bulk Order" className="bg-zinc-900">Bulk Order</option>
                                                 <option value="Creative Studio" className="bg-zinc-900">Creative Studio</option>
                                             </select>
+                                            <div className="absolute right-6 top-1/2 -translate-y-1/2 pointer-events-none opacity-20">
+                                                <svg width="12" height="12" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2">
+                                                    <polyline points="6 9 12 15 18 9"></polyline>
+                                                </svg>
+                                            </div>
                                         </div>
                                     </div>
 
                                     <div className="space-y-1">
-                                        <label className="text-[10px] text-white/30 tracking-[0.2em] uppercase font-mono ml-1">Message</label>
+                                        <label className="text-[10px] text-white/30 tracking-[0.2em] uppercase font-mono ml-1">Brief</label>
                                         <textarea
                                             required
                                             name="message"
                                             value={formData.message}
                                             onChange={handleChange}
-                                            rows={2}
-                                            placeholder="Briefly describe your vision..."
-                                            className="w-full bg-transparent border-b border-white/20 px-0 py-3 text-sm focus:outline-none focus:border-white transition-all font-light tracking-wide placeholder:text-white/10 resize-none"
+                                            rows={4}
+                                            placeholder="Tell us about your vision..."
+                                            className="w-full bg-white/5 border border-white/10 rounded-2xl px-6 py-4 text-sm focus:outline-none focus:border-white/30 transition-all font-light tracking-wide placeholder:text-white/10 resize-none"
                                         />
                                     </div>
 
                                     <button
                                         disabled={status === 'submitting'}
-                                        className={`w-full py-5 rounded-xl text-[10px] font-bold tracking-[0.4em] uppercase transition-all duration-500 overflow-hidden relative group
-                                            ${status === 'success' ? 'bg-emerald-500 text-white' :
+                                        className={`w-full py-5 rounded-2xl text-[10px] font-bold tracking-[0.4em] uppercase transition-all duration-500 overflow-hidden relative group
+                      ${status === 'success' ? 'bg-emerald-500 text-white' :
                                                 status === 'error' ? 'bg-red-500 text-white' :
-                                                    'bg-white text-black hover:opacity-90 active:scale-95'}`}
+                                                    'bg-white text-black hover:scale-[1.02] active:scale-95'}`}
                                     >
                                         <span className="relative z-10">
                                             {status === 'idle' && 'Initialize Sync'}
@@ -207,6 +212,6 @@ export default function PartnerWithUs() {
             </main>
 
             <Footer />
-        </div >
+        </div>
     );
 }
