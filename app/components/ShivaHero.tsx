@@ -9,31 +9,44 @@ import Image from 'next/image';
 import { gsap } from 'gsap';
 
 
-function FlowingWire({ color = "white", speed = 1, index = 0 }) {
+function FlowingWire({ color = "white", speed = 0.4, index = 0 }) {
     const lineRef = useRef<any>(null);
+    const count = 120; // Increased for extra smoothness and full-width span
     const points = useMemo(() => {
         const p = [];
-        const count = 30;
         for (let i = 0; i < count; i++) {
-            p.push(new THREE.Vector3(
-                (i - count / 2) * 1.2,
-                Math.sin(i * 0.3) * 2,
-                Math.cos(i * 0.2) * 1
-            ));
+            p.push(new THREE.Vector3(0, 0, 0));
         }
         return p;
-    }, []);
+    }, [count]);
 
     useFrame((state) => {
         if (!lineRef.current) return;
         const time = state.clock.getElapsedTime() * speed;
         const positions = lineRef.current.geometry.attributes.position;
+        const mouseX = state.mouse.x * 4;
+        const mouseY = state.mouse.y * 4;
 
-        for (let i = 0; i < points.length; i++) {
-            const offset = i * 0.2 + index;
-            const y = Math.sin(time + offset) * 2;
-            const x = (i - points.length / 2) * 1 + Math.cos(time * 0.4 + offset) * 0.3;
-            const z = Math.cos(time * 0.6 + offset) * 1.5;
+        for (let i = 0; i < count; i++) {
+            const offset = i * 0.08 + index; // Slower frequency for elegant flow at full width
+
+            // Base wave motion - WIDENED TO FULL SPAN
+            let x = (i - count / 2) * 0.45;
+            let y = Math.sin(time + offset) * 2.5;
+            let z = Math.cos(time * 0.6 + offset) * 2;
+
+            // Add organic secondary motion for "nice flow"
+            y += Math.sin(time * 0.4 + i * 0.03) * 1.2;
+            z += Math.cos(time * 0.2 + i * 0.06) * 1.2;
+
+            // Interactive "Moveable" part: React to mouse with smoother falloff
+            const distFromMouse = Math.sqrt(Math.pow(state.mouse.x * 12 - x, 2) + Math.pow(state.mouse.y * 12 - y, 2));
+            const mouseEffect = Math.max(0, 1 - distFromMouse / 15);
+
+            y += mouseY * mouseEffect * 2.5;
+            x += mouseX * mouseEffect * 1.5;
+            z += (mouseX + mouseY) * mouseEffect * 1.5;
+
             positions.setXYZ(i, x, y, z);
         }
         positions.needsUpdate = true;
@@ -44,10 +57,17 @@ function FlowingWire({ color = "white", speed = 1, index = 0 }) {
             <bufferGeometry>
                 <bufferAttribute
                     attach="attributes-position"
-                    args={[new Float32Array(points.length * 3), 3]}
+                    args={[new Float32Array(count * 3), 3]}
                 />
             </bufferGeometry>
-            <lineBasicMaterial attach="material" color={color} transparent opacity={0.3} linewidth={2} />
+            <lineBasicMaterial
+                attach="material"
+                color={color}
+                transparent
+                opacity={1}
+                linewidth={3.5}
+                blending={THREE.AdditiveBlending}
+            />
         </line>
     );
 }
@@ -55,9 +75,14 @@ function FlowingWire({ color = "white", speed = 1, index = 0 }) {
 function EtherealStrings() {
     return (
         <group>
-            <FlowingWire speed={0.2} index={0} />
-            <FlowingWire speed={0.15} index={Math.PI} color="#f0f0f0" />
-            <FlowingWire speed={0.1} index={Math.PI / 2} />
+            {[...Array(3)].map((_, i) => (
+                <FlowingWire
+                    key={i}
+                    speed={0.15 + i * 0.05}
+                    index={i * (Math.PI / 1.5)}
+                    color="#ffffff"
+                />
+            ))}
         </group>
     );
 }
@@ -171,7 +196,7 @@ export default function ShivaHero() {
     return (
         <section ref={containerRef} className="relative w-full h-[105vh] bg-black overflow-hidden flex flex-col items-center justify-center select-none" suppressHydrationWarning>
             {/* 3D Atmosphere Layer */}
-            <div ref={atmosphereRef} className="absolute inset-0 z-0 opacity-40" suppressHydrationWarning>
+            <div ref={atmosphereRef} className="absolute inset-0 z-0 opacity-100" suppressHydrationWarning>
                 {mounted && (
                     <Canvas
                         dpr={[1, 1.5]}
