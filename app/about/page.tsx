@@ -68,7 +68,7 @@ export default function AboutPage() {
             <Navbar />
 
             {/* Hero Section */}
-            <section ref={heroRef} className="relative h-[80vh] lg:h-[110vh] flex flex-col justify-center items-center overflow-hidden px-6 pt-24 lg:pt-32 pb-40 lg:pb-24">
+            <section ref={heroRef} className="relative h-[90vh] lg:h-[110vh] flex flex-col justify-center items-center overflow-hidden px-6 pt-24 lg:pt-32 pb-40 lg:pb-24">
                 <div className="absolute inset-0 z-0 opacity-40">
                     <div className="absolute inset-0 bg-gradient-to-b from-black via-transparent to-black z-10" />
                     {/* Placeholder for cinematic image - recommending a high-end 3D render */}
