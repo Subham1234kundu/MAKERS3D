@@ -21,7 +21,7 @@ export default function Footer() {
                         <svg width="40" height="40" viewBox="0 0 24 24" fill="none" xmlns="http://www.w3.org/2000/svg">
                             <path d="M4 12H20M20 12L16 8M20 12L16 16M4 12L8 8M4 12L8 16" stroke="white" strokeWidth="1.5" strokeLinecap="round" strokeLinejoin="round" />
                         </svg>
-                        <p className="text-white/70 font-thin text-sm tracking-wide">Hassle-Free Exchange<br />Within 72-Hour Resolution</p>
+                        <p className="text-white/70 font-thin text-sm tracking-wide">Exchange Protocol<br />24-Hour Request Window</p>
                     </div>
 
                     {/* Customer Support */}
@@ -100,9 +100,6 @@ export default function Footer() {
                         <div className="flex flex-col gap-4" suppressHydrationWarning>
                             <Link href="/shipping-policy#tracking" className="text-white/70 font-thin text-sm tracking-wide hover:text-white transition-colors hover:translate-x-1 inline-block" suppressHydrationWarning>
                                 Track My Order
-                            </Link>
-                            <Link href="/exchange" className="text-white/70 font-thin text-sm tracking-wide hover:text-white transition-colors hover:translate-x-1 inline-block" suppressHydrationWarning>
-                                Exchange Portal
                             </Link>
                             <Link href="/return-policy" className="text-white/70 font-thin text-sm tracking-wide hover:text-white transition-colors hover:translate-x-1 inline-block" suppressHydrationWarning>
                                 Return Policies

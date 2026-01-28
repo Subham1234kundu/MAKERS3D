@@ -41,96 +41,67 @@ export default function ReturnPolicy() {
                 <section className="pb-32 px-6 sm:px-8">
                     <div className="max-w-4xl mx-auto flex flex-col gap-24">
 
-                        {/* 00. Refund Protocol - The Critical Statement */}
+                        {/* 00. Policy Core - Final Acquisition */}
                         <div className="relative group animate-fadeInUp" style={{ animationDelay: '200ms' }}>
                             <div className="absolute -inset-8 bg-white/[0.01] border border-white/5 rounded-[40px] -z-10 transition-all duration-700 group-hover:bg-white/[0.02] group-hover:border-white/10" />
                             <div className="space-y-8">
                                 <div className="flex items-baseline gap-4">
                                     <span className="text-white/10 font-mono text-4xl">00</span>
-                                    <h2 className="text-2xl sm:text-3xl font-thin tracking-[0.3em] uppercase">Refund Protocol</h2>
+                                    <h2 className="text-2xl sm:text-3xl font-thin tracking-[0.3em] uppercase">Policy Protocol</h2>
                                 </div>
                                 <div className="bg-white/5 border border-white/10 p-8 sm:p-10 rounded-2xl backdrop-blur-sm">
                                     <p className="text-white/70 font-thin text-sm sm:text-lg leading-relaxed tracking-wide">
-                                        At <span className="text-white font-medium uppercase tracking-widest">MAKERS3D</span>, we deliver industrial-grade precision and bespoke craftsmanship.
+                                        At <span className="text-white font-medium uppercase tracking-widest">MAKERS3D</span>, our creations are industrial-grade and custom-manufactured.
                                         <br /><br />
-                                        <span className="inline-block border border-white/20 px-4 py-2 rounded-full text-white text-xs font-bold tracking-[0.2em] uppercase mb-4">Crucial Notice</span>
+                                        <span className="inline-block border border-white/20 px-4 py-2 rounded-full text-white text-xs font-bold tracking-[0.2em] uppercase mb-4">Final Acquisition Notice</span>
                                         <br />
-                                        We <span className="text-white font-bold underline decoration-white/40 underline-offset-8">do not issue refunds</span> for any purchases. All acquisitions are final. We advise our clients to ensure their technical and aesthetic specifications are met before committing to a purchase.
+                                        We uphold a strict <span className="text-white font-bold underline decoration-white/40 underline-offset-8">No-Return and No-Refund Policy</span>. We do not accept returns or provide refunds. Once an order is confirmed, the transaction is definitive.
                                     </p>
                                 </div>
                             </div>
                         </div>
 
-                        {/* 01. Exchange window */}
+                        {/* 01. Exchange Protocol */}
                         <div className="grid grid-cols-1 md:grid-cols-12 gap-12 animate-fadeInUp" style={{ animationDelay: '400ms' }}>
                             <div className="md:col-span-4">
                                 <div className="sticky top-32 flex flex-col gap-2">
-                                    <span className="text-white/20 font-mono text-sm tracking-widest">01 / WINDOW</span>
-                                    <h3 className="text-white font-thin tracking-[0.2em] uppercase border-l-2 border-white/10 pl-4 py-1">Exchange Period</h3>
+                                    <span className="text-white/20 font-mono text-sm tracking-widest">01 / EXCHANGE</span>
+                                    <h3 className="text-white font-thin tracking-[0.2em] uppercase border-l-2 border-white/10 pl-4 py-1">Exchange Only</h3>
                                 </div>
                             </div>
                             <div className="md:col-span-8">
                                 <p className="text-white/60 font-thin text-sm sm:text-base leading-relaxed tracking-wide">
-                                    While refunds are restricted, we facilitate an <span className="text-white">Exchange Protocol</span> valid within <span className="text-white font-normal underline underline-offset-4 decoration-white/20">4-5 days</span> of the acquisition date. Beyond this micro-period, no return, exchange, or modification will be entertained.
+                                    While we do not accept returns, we facilitate an <span className="text-white font-medium">Exchange Protocol</span> exclusively for products that meet our quality standards but require a shift in specification or have faced transit discrepancies.
                                 </p>
                             </div>
                         </div>
 
-                        {/* 02. Eligibility criteria */}
+                        {/* 02. Request Window */}
                         <div className="grid grid-cols-1 md:grid-cols-12 gap-12 animate-fadeInUp" style={{ animationDelay: '600ms' }}>
                             <div className="md:col-span-4">
                                 <div className="sticky top-32 flex flex-col gap-2">
-                                    <span className="text-white/20 font-mono text-sm tracking-widest">02 / STATUS</span>
-                                    <h3 className="text-white font-thin tracking-[0.2em] uppercase border-l-2 border-white/10 pl-4 py-1">Eligibility</h3>
+                                    <span className="text-white/20 font-mono text-sm tracking-widest">02 / WINDOW</span>
+                                    <h3 className="text-white font-thin tracking-[0.2em] uppercase border-l-2 border-white/10 pl-4 py-1">24-Hour Window</h3>
                                 </div>
                             </div>
                             <div className="md:col-span-8 space-y-8">
                                 <p className="text-white/60 font-thin text-sm sm:text-base leading-relaxed tracking-wide">
-                                    To qualify for an exchange, the item must maintain its original structural integrity:
+                                    To maintain our production rhythm, any request for exchange or replacement must be raised within <span className="text-white font-bold">24 hours</span> from the moment of delivery. Beyond this period, the acquisition is considered absolute.
                                 </p>
-                                <div className="space-y-4">
-                                    {[
-                                        "Item must be entirely unused and in pristine condition.",
-                                        "Must retain original internal and external packaging.",
-                                        "Items acquired during promotional or 'Sale' events are generally ineligible."
-                                    ].map((item, i) => (
-                                        <div key={i} className="flex gap-6 group">
-                                            <span className="text-white/10 font-mono text-xs pt-1">[{i + 1}]</span>
-                                            <p className="text-white/40 font-thin text-sm tracking-wide group-hover:text-white/70 transition-colors">
-                                                {item}
-                                            </p>
-                                        </div>
-                                    ))}
-                                </div>
                             </div>
                         </div>
 
-                        {/* 03. Damage & Defect */}
+                        {/* 03. Resolution Timeline */}
                         <div className="grid grid-cols-1 md:grid-cols-12 gap-12 animate-fadeInUp" style={{ animationDelay: '800ms' }}>
                             <div className="md:col-span-4">
                                 <div className="sticky top-32 flex flex-col gap-2">
-                                    <span className="text-white/20 font-mono text-sm tracking-widest">03 / PRECISION</span>
-                                    <h3 className="text-white font-thin tracking-[0.2em] uppercase border-l-2 border-white/10 pl-4 py-1">Defects</h3>
+                                    <span className="text-white/20 font-mono text-sm tracking-widest">03 / TIMELINE</span>
+                                    <h3 className="text-white font-thin tracking-[0.2em] uppercase border-l-2 border-white/10 pl-4 py-1">Fulfillment</h3>
                                 </div>
                             </div>
                             <div className="md:col-span-8">
                                 <p className="text-white/60 font-thin text-sm sm:text-base leading-relaxed tracking-wide">
-                                    Replacements are strictly reserved for instances of <span className="text-white italic">material defect</span> or <span className="text-white italic">transit damage</span>. Any such discrepancies must be reported immediately via our exchange portal.
-                                </p>
-                            </div>
-                        </div>
-
-                        {/* 04. Procedure */}
-                        <div className="grid grid-cols-1 md:grid-cols-12 gap-12 animate-fadeInUp" style={{ animationDelay: '1000ms' }}>
-                            <div className="md:col-span-4">
-                                <div className="sticky top-32 flex flex-col gap-2">
-                                    <span className="text-white/20 font-mono text-sm tracking-widest">04 / FLOW</span>
-                                    <h3 className="text-white font-thin tracking-[0.2em] uppercase border-l-2 border-white/10 pl-4 py-1">The Process</h3>
-                                </div>
-                            </div>
-                            <div className="md:col-span-8">
-                                <p className="text-white/60 font-thin text-sm sm:text-base leading-relaxed tracking-wide">
-                                    Upon receipt and rigorous quality assessment of your returned item, an electronic notification will be dispatched. If approved, the exchange will be synchronized with our production queue and inventory availability.
+                                    Once an exchange is approved, we prioritize your new unit in our production queue. We will deliver the replaced or exchanged products within <span className="text-white font-bold">4-5 days</span>.
                                 </p>
                             </div>
                         </div>

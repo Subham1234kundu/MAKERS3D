@@ -164,7 +164,7 @@ export default function HomePage() {
 
           {/* Product Grid */}
           <div className="grid grid-cols-2 lg:grid-cols-4 gap-x-2.5 gap-y-6 sm:gap-6 children-appear" suppressHydrationWarning>
-            {/* Featured Sample Product */}
+            {/* Featured Sample Products */}
             <ProductCard
               id="featured-1"
               image="/images/product-1.jpg"
@@ -172,6 +172,22 @@ export default function HomePage() {
               title="Ethereal Geometry"
               price={2499}
               originalPrice={4999}
+            />
+            <ProductCard
+              id="featured-2"
+              image="/images/product-2.jpg"
+              alt="Parametric Core"
+              title="Parametric Core"
+              price={3299}
+              originalPrice={5999}
+            />
+            <ProductCard
+              id="featured-3"
+              image="/images/product-3.jpg"
+              alt="Vortex Vessel"
+              title="Vortex Vessel"
+              price={1899}
+              originalPrice={3499}
             />
 
             {isLoadingProducts ? (
