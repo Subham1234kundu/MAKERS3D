@@ -149,6 +149,7 @@ export default function ReturnPolicy() {
                                     >
                                         support@makers3d.in
                                     </a>
+                                    <p className="text-white/20 text-[10px] uppercase tracking-[0.2em] mt-2">Proprietor: Subham Kundu</p>
                                 </div>
                                 <div className="flex gap-4">
                                     <button

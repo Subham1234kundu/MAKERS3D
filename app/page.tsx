@@ -146,9 +146,9 @@ export default function HomePage() {
       </div>
 
       {/* Dynamic Category Showcase */}
-      {!isLoadingProducts && products.length > 0 && (
+      {/* {!isLoadingProducts && products.length > 0 && (
         <CategoryShowcase products={products} />
-      )}
+      )} */}
 
       {/* Products Section */}
       <section className="bg-black px-4 sm:px-8 pt-8 pb-20 md:py-32" suppressHydrationWarning>
@@ -164,6 +164,16 @@ export default function HomePage() {
 
           {/* Product Grid */}
           <div className="grid grid-cols-2 lg:grid-cols-4 gap-x-2.5 gap-y-6 sm:gap-6 children-appear" suppressHydrationWarning>
+            {/* Featured Sample Product */}
+            <ProductCard
+              id="featured-1"
+              image="/images/product-1.jpg"
+              alt="Ethereal Geometry"
+              title="Ethereal Geometry"
+              price={2499}
+              originalPrice={4999}
+            />
+
             {isLoadingProducts ? (
               [1, 2, 3, 4].map((i) => (
                 <div key={i} className="aspect-[3/4] bg-white/5 animate-pulse rounded-2xl" suppressHydrationWarning />
@@ -201,7 +211,7 @@ export default function HomePage() {
           </div>
 
           {/* View All Button */}
-          {!isLoadingProducts && products.length > 0 && (
+          {!isLoadingProducts && (
             <div className="mt-16 flex justify-center" suppressHydrationWarning>
               <Link
                 href="/products"

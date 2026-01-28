@@ -31,7 +31,7 @@ export default function PrivacyPolicy() {
                                 <span className="text-white/20 italic font-light">Protocol</span>
                             </h1>
                             <p className="text-white/40 font-thin text-xs sm:text-sm tracking-[0.2em] uppercase max-w-xl leading-relaxed">
-                                This legal architecture governs how <span className="text-white">7863983914</span> processes your information through our platform: <span className="text-white">makers3d.in</span>.
+                                This legal architecture governs how <span className="text-white">Subham Kundu</span> processes your information through our platform: <span className="text-white">makers3d.in</span>.
                             </p>
                         </div>
                     </div>
@@ -50,7 +50,7 @@ export default function PrivacyPolicy() {
                                     <h2 className="text-2xl sm:text-3xl font-thin tracking-[0.3em] uppercase">Introduction</h2>
                                 </div>
                                 <p className="text-white/70 font-thin text-sm sm:text-base leading-relaxed tracking-wide">
-                                    This Privacy Policy describes how <span className="text-white">7863983914</span> and its affiliates (collectively "7863983914, we, our, us") collect, use, share, protect or otherwise process your information/personal data through our website <span className="text-white italic">https://makers3d.in/</span> (hereinafter referred to as Platform).
+                                    This Privacy Policy describes how <span className="text-white">Subham Kundu</span> and its affiliates (collectively "Subham Kundu, we, our, us") collect, use, share, protect or otherwise process your information/personal data through our website <span className="text-white italic">https://makers3d.in/</span> (hereinafter referred to as Platform).
                                     <br /><br />
                                     We do not offer any product/service under this Platform outside India and your personal data will primarily be stored and processed in India. By visiting this Platform, you expressly agree to be bound by the terms of this policy and the laws of India.
                                 </p>
@@ -188,7 +188,7 @@ export default function PrivacyPolicy() {
                                             </div>
                                             <div className="space-y-1">
                                                 <span className="text-white/20 text-[10px] uppercase tracking-tighter">Entity Address</span>
-                                                <p className="text-white font-thin text-xl tracking-wide leading-relaxed">7863983914, India</p>
+                                                <p className="text-white font-thin text-xl tracking-wide leading-relaxed">Subham Kundu, India</p>
                                             </div>
                                         </div>
 

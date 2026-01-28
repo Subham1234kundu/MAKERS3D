@@ -67,7 +67,7 @@ export default function TermsAndConditions() {
                             </div>
                             <div className="md:col-span-8 space-y-6">
                                 <p className="text-white/60 font-thin text-sm sm:text-base leading-relaxed tracking-wide">
-                                    The Platform is owned by <span className="text-white font-medium uppercase tracking-widest">7863983914</span>, with its registered office located at:
+                                    The Platform is owned by <span className="text-white font-medium uppercase tracking-widest">Subham Kundu</span>, with its registered office located at:
                                 </p>
                                 <div className="p-6 border border-white/10 bg-white/[0.02] rounded-2xl">
                                     <p className="text-white font-thin text-lg tracking-wider">
@@ -152,11 +152,12 @@ export default function TermsAndConditions() {
                                         Legal Communication
                                     </h3>
                                     <a
-                                        href="mailto:legal@makers3d.in"
+                                        href="mailto:support@makers3d.in"
                                         className="text-white text-xl sm:text-3xl font-thin tracking-widest hover:text-white/60 transition-colors"
                                     >
                                         support@makers3d.in
                                     </a>
+                                    <p className="text-white/20 text-[10px] uppercase tracking-[0.2em] mt-2">Proprietor: Subham Kundu</p>
                                 </div>
                                 <div className="flex gap-4">
                                     <button

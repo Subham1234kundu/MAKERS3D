@@ -150,6 +150,18 @@ export default function ShippingPolicy() {
                         <div className="pt-24 animate-fadeInUp" style={{ animationDelay: '1200ms' }}>
                             <div className="flex flex-col items-center text-center gap-8">
                                 <div className="w-px h-24 bg-gradient-to-b from-white/20 to-transparent" />
+                                <div className="space-y-4">
+                                    <h3 className="text-white/40 font-thin text-[10px] sm:text-xs tracking-[0.4em] uppercase">
+                                        Protocol Assistance
+                                    </h3>
+                                    <a
+                                        href="mailto:support@makers3d.in"
+                                        className="text-white text-xl sm:text-3xl font-thin tracking-widest hover:text-white/60 transition-colors"
+                                    >
+                                        support@makers3d.in
+                                    </a>
+                                    <p className="text-white/20 text-[10px] uppercase tracking-[0.2em] mt-2">Proprietor: Subham Kundu</p>
+                                </div>
                                 <div className="flex gap-4">
                                     <button
                                         onClick={() => window.history.back()}
@@ -160,12 +172,11 @@ export default function ShippingPolicy() {
                                 </div>
                             </div>
                         </div>
-
                     </div>
                 </section>
             </main>
 
             <Footer />
-        </div>
+        </div >
     );
 }
