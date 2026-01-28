@@ -107,8 +107,47 @@ export default function ShippingPolicy() {
                             </div>
                         </div>
 
+                        {/* 05. Order Progression */}
+                        <div id="tracking" className="grid grid-cols-1 md:grid-cols-12 gap-12 animate-fadeInUp" style={{ animationDelay: '1000ms' }}>
+                            <div className="md:col-span-4">
+                                <div className="sticky top-32 flex flex-col gap-2">
+                                    <span className="text-white/20 font-mono text-sm tracking-widest">05 / JOURNEY</span>
+                                    <h3 className="text-white font-thin tracking-[0.2em] uppercase border-l-2 border-white/10 pl-4 py-1">Order Status</h3>
+                                </div>
+                            </div>
+                            <div className="md:col-span-8 space-y-8">
+                                <p className="text-white/60 font-thin text-sm sm:text-base leading-relaxed tracking-wide">
+                                    Our production pipeline is transparent and meticulous. You can track your masterpiece through these distinct phases:
+                                </p>
+                                <div className="space-y-6">
+                                    {[
+                                        { title: "Order Confirmed", desc: "Payment successfully received and verified." },
+                                        { title: "Design Approved", desc: "For personalized orders, specifications are locked and verified." },
+                                        { title: "Printing Started", desc: "The additive manufacturing process has commenced." },
+                                        { title: "Quality Check", desc: "Rigorous assessment for structural and aesthetic excellence." },
+                                        { title: "Packed & Ready", desc: "Securely encased for transit and awaiting courier dispatch." },
+                                        { title: "Shipped", desc: "Handover to logistics partner with active tracking credentials." },
+                                        { title: "Delivered", desc: "Final handover to client. Acquisition complete." }
+                                    ].map((step, i) => (
+                                        <div key={i} className="flex gap-6 group">
+                                            <div className="flex flex-col items-center gap-2">
+                                                <div className="w-2 h-2 rounded-full bg-white/40 group-hover:bg-white transition-colors" />
+                                                {i !== 6 && <div className="w-px h-full bg-white/10" />}
+                                            </div>
+                                            <div className="space-y-1 pb-4">
+                                                <h4 className="text-white font-thin text-sm tracking-[0.2em] uppercase">{step.title}</h4>
+                                                <p className="text-white/40 font-thin text-xs tracking-wide group-hover:text-white/70 transition-colors">
+                                                    {step.desc}
+                                                </p>
+                                            </div>
+                                        </div>
+                                    ))}
+                                </div>
+                            </div>
+                        </div>
+
                         {/* Support Footer */}
-                        <div className="pt-24 animate-fadeInUp" style={{ animationDelay: '1000ms' }}>
+                        <div className="pt-24 animate-fadeInUp" style={{ animationDelay: '1200ms' }}>
                             <div className="flex flex-col items-center text-center gap-8">
                                 <div className="w-px h-24 bg-gradient-to-b from-white/20 to-transparent" />
                                 <div className="flex gap-4">

@@ -71,7 +71,7 @@ export default function ReturnPolicy() {
                             </div>
                             <div className="md:col-span-8">
                                 <p className="text-white/60 font-thin text-sm sm:text-base leading-relaxed tracking-wide">
-                                    While refunds are restricted, we facilitate an <span className="text-white">Exchange Protocol</span> valid within <span className="text-white font-normal underline underline-offset-4 decoration-white/20">4 days</span> of the acquisition date. Beyond this micro-period, no return, exchange, or modification will be entertained.
+                                    While refunds are restricted, we facilitate an <span className="text-white">Exchange Protocol</span> valid within <span className="text-white font-normal underline underline-offset-4 decoration-white/20">4-5 days</span> of the acquisition date. Beyond this micro-period, no return, exchange, or modification will be entertained.
                                 </p>
                             </div>
                         </div>

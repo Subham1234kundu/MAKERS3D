@@ -98,7 +98,7 @@ export default function Footer() {
                     <div className="text-center md:text-left" suppressHydrationWarning>
                         <h3 className="text-white/40 font-thin text-xs uppercase tracking-[0.2em] mb-6">Customer Service</h3>
                         <div className="flex flex-col gap-4" suppressHydrationWarning>
-                            <Link href="/track-order" className="text-white/70 font-thin text-sm tracking-wide hover:text-white transition-colors hover:translate-x-1 inline-block" suppressHydrationWarning>
+                            <Link href="/shipping-policy#tracking" className="text-white/70 font-thin text-sm tracking-wide hover:text-white transition-colors hover:translate-x-1 inline-block" suppressHydrationWarning>
                                 Track My Order
                             </Link>
                             <Link href="/exchange" className="text-white/70 font-thin text-sm tracking-wide hover:text-white transition-colors hover:translate-x-1 inline-block" suppressHydrationWarning>
