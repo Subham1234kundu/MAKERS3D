@@ -257,9 +257,8 @@ export default function ShivaHero() {
                         Uncompromising Precision <span className="text-white/10 mx-4" suppressHydrationWarning>/</span> Ethereal Aesthetics <span className="text-white/10 mx-4" suppressHydrationWarning>/</span> Timeless Design
                     </p>
 
-                    <Link
-                        href="/products"
-                        className="group relative px-14 py-5 bg-white text-black text-[9px] font-black tracking-[0.8em] uppercase rounded-full overflow-hidden transition-all duration-700 hover:scale-[1.03] active:scale-95 shadow-[0_0_0_0_rgba(255,255,255,0)] hover:shadow-[0_20px_80px_-10px_rgba(255,255,255,0.4)]"
+                    <div
+                        className="group relative px-14 py-5 bg-white text-black text-[9px] font-black tracking-[0.8em] uppercase rounded-full overflow-hidden transition-all duration-700 hover:scale-[1.03] active:scale-95 shadow-[0_0_0_0_rgba(255,255,255,0)] hover:shadow-[0_20px_80px_-10px_rgba(255,255,255,0.4)] cursor-not-allowed"
                         suppressHydrationWarning
                     >
                         <span className="relative z-10 transition-transform duration-700 block group-hover:translate-x-1">
@@ -271,7 +270,7 @@ export default function ShivaHero() {
 
                         {/* Liquid Shine Effect */}
                         <div className="absolute top-0 -left-[100%] w-[50%] h-full bg-gradient-to-r from-transparent via-white/80 to-transparent skew-x-[-25deg] transition-all duration-1000 group-hover:left-[150%] pointer-events-none" suppressHydrationWarning />
-                    </Link>
+                    </div>
                 </div>
             </div>
 

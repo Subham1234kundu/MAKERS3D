@@ -229,14 +229,13 @@ export default function HomePage() {
           {/* View All Button */}
           {!isLoadingProducts && (
             <div className="mt-16 flex justify-center" suppressHydrationWarning>
-              <Link
-                href="/products"
-                className="group relative px-10 py-4 bg-white/5 border border-white/10 text-white text-[10px] font-bold tracking-[0.4em] uppercase rounded-full overflow-hidden transition-all hover:bg-white hover:text-black hover:scale-105"
+              <div
+                className="group relative px-10 py-4 bg-white/5 border border-white/10 text-white text-[10px] font-bold tracking-[0.4em] uppercase rounded-full overflow-hidden transition-all hover:bg-white hover:text-black hover:scale-105 cursor-not-allowed"
                 suppressHydrationWarning
               >
                 <span className="relative z-10" suppressHydrationWarning>View All Masterpieces</span>
                 <div className="absolute inset-0 bg-white scale-x-0 group-hover:scale-x-100 transition-transform origin-left duration-500" suppressHydrationWarning />
-              </Link>
+              </div>
             </div>
           )}
         </div>
