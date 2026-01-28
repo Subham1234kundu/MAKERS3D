@@ -54,8 +54,7 @@ export default function ShippingPolicy() {
                                 <div className="md:col-span-8 space-y-6">
                                     <p className="text-white/70 font-thin text-sm sm:text-base leading-relaxed tracking-wide">
                                         The orders for the user are shipped through registered domestic courier companies and/or speed post only.
-                                        Orders are shipped within 10 days from the date of the order and/or payment or as per the delivery date
-                                        agreed at the time of order confirmation and delivering of the shipment, subject to courier company / post office norms.
+                                        Products are <span className="text-white font-medium">shipped and delivered within 10 days</span> from the date of the order and/or payment confirmation, subject to courier company / post office norms.
                                     </p>
                                 </div>
                             </div>
