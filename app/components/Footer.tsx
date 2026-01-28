@@ -110,6 +110,14 @@ export default function Footer() {
                             <Link href="/privacy-policy" className="text-white/70 font-thin text-sm tracking-wide hover:text-white transition-colors hover:translate-x-1 inline-block" suppressHydrationWarning>
                                 Privacy Policy
                             </Link>
+                            <div className="pt-4 border-t border-white/5 flex flex-col gap-2">
+                                <a href="mailto:support@makers3d.in" className="text-white/40 font-thin text-[10px] tracking-widest hover:text-white transition-colors">
+                                    SUPPORT@MAKERS3D.IN
+                                </a>
+                                <a href="tel:+917863983914" className="text-white/40 font-thin text-[10px] tracking-widest hover:text-white transition-colors">
+                                    +91 7863983914
+                                </a>
+                            </div>
                         </div>
                     </div>
 
