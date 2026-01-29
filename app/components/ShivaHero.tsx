@@ -257,6 +257,7 @@ export default function ShivaHero() {
                         Uncompromising Precision <span className="text-white/10 mx-4" suppressHydrationWarning>/</span> Ethereal Aesthetics <span className="text-white/10 mx-4" suppressHydrationWarning>/</span> Timeless Design
                     </p>
 
+                    {/* 
                     <div
                         className="group relative px-14 py-5 bg-white text-black text-[9px] font-black tracking-[0.8em] uppercase rounded-full overflow-hidden transition-all duration-700 hover:scale-[1.03] active:scale-95 shadow-[0_0_0_0_rgba(255,255,255,0)] hover:shadow-[0_20px_80px_-10px_rgba(255,255,255,0.4)] cursor-not-allowed"
                         suppressHydrationWarning
@@ -265,23 +266,21 @@ export default function ShivaHero() {
                             EXPLORE COLLECTION
                         </span>
 
-                        {/* Slick Liquid Background */}
                         <div className="absolute inset-0 bg-[#f8f8f8] translate-y-full group-hover:translate-y-0 transition-transform duration-700 ease-[0.23,1,0.32,1]" suppressHydrationWarning />
 
-                        {/* Liquid Shine Effect */}
                         <div className="absolute top-0 -left-[100%] w-[50%] h-full bg-gradient-to-r from-transparent via-white/80 to-transparent skew-x-[-25deg] transition-all duration-1000 group-hover:left-[150%] pointer-events-none" suppressHydrationWarning />
-                    </div>
+                    </div> 
+                    */}
                 </div>
-            </div>
 
-            {/* Micro Details: Film Grain & Scanlines */}
-            <div className="absolute inset-0 z-30 pointer-events-none mix-blend-overlay opacity-[0.08] bg-[url('https://grainy-gradients.vercel.app/noise.svg')]" suppressHydrationWarning />
-            <div className="absolute inset-0 z-40 pointer-events-none opacity-[0.02] bg-[linear-gradient(rgba(255,255,255,0)_50%,rgba(0,0,0,0.5)_50%)] bg-[length:100%_4px]" suppressHydrationWarning />
+                {/* Micro Details: Film Grain & Scanlines */}
+                <div className="absolute inset-0 z-30 pointer-events-none mix-blend-overlay opacity-[0.08] bg-[url('https://grainy-gradients.vercel.app/noise.svg')]" suppressHydrationWarning />
+                <div className="absolute inset-0 z-40 pointer-events-none opacity-[0.02] bg-[linear-gradient(rgba(255,255,255,0)_50%,rgba(0,0,0,0.5)_50%)] bg-[length:100%_4px]" suppressHydrationWarning />
 
-            {/* Scroll Cue */}
-            <div className="absolute bottom-8 left-1/2 -translate-x-1/2 z-30 flex flex-col items-center gap-3 opacity-30" suppressHydrationWarning>
-                <div className="w-[1px] h-16 bg-gradient-to-b from-white via-white/50 to-transparent" suppressHydrationWarning />
-                <span className="text-[7px] text-white tracking-[0.6em] uppercase font-bold" suppressHydrationWarning>Divine Scroll</span>
+                <div className="absolute bottom-8 left-1/2 -translate-x-1/2 z-30 flex flex-col items-center gap-3 opacity-30" suppressHydrationWarning>
+                    <div className="w-[1px] h-16 bg-gradient-to-b from-white via-white/50 to-transparent" suppressHydrationWarning />
+                    <span className="text-[7px] text-white tracking-[0.6em] uppercase font-bold" suppressHydrationWarning>Divine Scroll</span>
+                </div>
             </div>
         </section>
     );
