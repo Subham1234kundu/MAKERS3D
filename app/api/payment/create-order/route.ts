@@ -140,17 +140,13 @@ export async function POST(req: Request) {
 
                 console.log('✅ PhonePe payment order created successfully');
 
-                // Extract redirect URL from response
-                const redirectUrl = paymentResponse.redirectUrl ||
-                    paymentResponse.data?.redirectUrl ||
-                    paymentResponse.data?.instrumentResponse?.redirectInfo?.url;
-
+                // SDK returns redirectUrl directly
                 return NextResponse.json({
                     success: true,
                     payment_method: 'phonepe',
                     client_txn_id,
-                    data: paymentResponse.data || paymentResponse,
-                    redirectUrl: redirectUrl
+                    data: paymentResponse,
+                    redirectUrl: paymentResponse.redirectUrl
                 });
 
             } catch (phonePeError: any) {

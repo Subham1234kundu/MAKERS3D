@@ -1,12 +1,10 @@
-import crypto from 'crypto';
-
-interface PhonePeConfig {
-    clientId: string;
-    clientSecret: string;
-    clientVersion: string;
-    merchantId: string;
-    env: 'sandbox' | 'production';
-}
+import {
+    StandardCheckoutClient,
+    StandardCheckoutPayRequest,
+    RefundRequest,
+    Env,
+    MetaInfo,
+} from 'phonepe-pg-sdk-node';
 
 interface CreatePaymentParams {
     amount: number;
@@ -19,254 +17,143 @@ interface CreatePaymentParams {
 }
 
 class PhonePeSDK {
-    private config: PhonePeConfig;
-    private accessToken: string | null = null;
-    private tokenExpiry: number = 0;
+    private client: StandardCheckoutClient | null = null;
+    private env: 'sandbox' | 'production';
 
-    constructor(config: PhonePeConfig) {
-        this.config = config;
+    constructor() {
+        this.env = (process.env.PHONEPE_ENV as 'sandbox' | 'production') || 'sandbox';
     }
 
-    private getBaseUrl(): string {
-        return this.config.env === 'sandbox'
-            ? 'https://api-preprod.phonepe.com/apis/pg-sandbox'
-            : 'https://api.phonepe.com/apis/pg';
-    }
+    private getClient(): StandardCheckoutClient {
+        if (!this.client) {
+            const clientId = process.env.PHONEPE_CLIENT_ID || '';
+            const clientSecret = process.env.PHONEPE_CLIENT_SECRET || '';
+            const clientVersion = parseInt(process.env.PHONEPE_CLIENT_VERSION || '1');
 
-    private getAuthUrl(): string {
-        // Production uses separate identity-manager endpoint
-        // Sandbox uses pg-sandbox for everything
-        return this.config.env === 'sandbox'
-            ? 'https://api-preprod.phonepe.com/apis/pg-sandbox'
-            : 'https://api.phonepe.com/apis/identity-manager';
+            const environment = this.env === 'production' ? Env.PRODUCTION : Env.SANDBOX;
+
+            this.client = StandardCheckoutClient.getInstance(
+                clientId,
+                clientSecret,
+                clientVersion,
+                environment,
+                false // shouldPublishEvents
+            );
+
+            console.log(`PhonePe SDK initialized in ${this.env} mode`);
+        }
+        return this.client;
     }
 
     /**
-     * Get OAuth access token (Production only - sandbox may not require this)
-     */
-    private async getAccessToken(): Promise<string> {
-        // Return cached token if still valid
-        if (this.accessToken && Date.now() < this.tokenExpiry) {
-            return this.accessToken;
-        }
-
-        const authUrl = `${this.getAuthUrl()}/v1/oauth/token`;
-
-        console.log('PhonePe Auth URL:', authUrl);
-
-        const response = await fetch(authUrl, {
-            method: 'POST',
-            headers: {
-                'Content-Type': 'application/x-www-form-urlencoded',
-            },
-            body: new URLSearchParams({
-                'client_id': this.config.clientId,
-                'client_version': this.config.clientVersion,
-                'client_secret': this.config.clientSecret,
-                'grant_type': 'client_credentials',
-            }).toString(),
-        });
-
-        if (!response.ok) {
-            const error = await response.text();
-            console.error('PhonePe Auth Error Response:', error);
-            throw new Error(`PhonePe Auth failed: ${error}`);
-        }
-
-        const data = await response.json();
-
-        if (!data.access_token) {
-            throw new Error('No access token received from PhonePe');
-        }
-
-        // Cache token (expires in 1 hour, we'll refresh 5 mins early)
-        this.accessToken = data.access_token;
-        this.tokenExpiry = Date.now() + (55 * 60 * 1000); // 55 minutes
-
-        return data.access_token;
-    }
-
-    /**
-     * Generate X-VERIFY header for API requests
-     */
-    private generateChecksum(base64Payload: string, endpoint: string): string {
-        const stringToHash = base64Payload + endpoint + this.config.clientSecret;
-        const hash = crypto
-            .createHash('sha256')
-            .update(stringToHash)
-            .digest('hex');
-        return `${hash}###1`;
-    }
-
-    /**
-     * Create a payment order
+     * Create a payment order using official SDK
      */
     async createPayment(params: CreatePaymentParams) {
-        const token = await this.getAccessToken();
+        const client = this.getClient();
+        const amountInPaise = Math.round(params.amount * 100);
 
-        // PhonePe Standard Checkout v2 payload format
-        const payload = {
-            merchantOrderId: params.merchantOrderId,
-            amount: Math.round(params.amount * 100), // Convert to paise
-            expireAfter: 1200, // 20 minutes in seconds
-            metaInfo: {
-                udf1: params.customerName,
-                udf2: params.customerEmail,
-                udf3: params.customerMobile,
-            },
-            paymentFlow: {
-                type: 'PG_CHECKOUT',
-                message: `Payment for Order ${params.merchantOrderId}`,
-                merchantUrls: {
-                    redirectUrl: params.redirectUrl,
-                },
-            },
-        };
+        // Build MetaInfo using builder pattern
+        const metaInfo = MetaInfo.builder()
+            .udf1(params.customerName)
+            .udf2(params.customerEmail)
+            .udf3(params.customerMobile)
+            .build();
 
-        const endpoint = '/checkout/v2/pay';
+        // Build request using builder pattern
+        const request = StandardCheckoutPayRequest.builder()
+            .merchantOrderId(params.merchantOrderId)
+            .amount(amountInPaise)
+            .redirectUrl(params.redirectUrl)
+            .metaInfo(metaInfo)
+            .expireAfter(1200) // 20 minutes
+            .build();
 
-        console.log('PhonePe Create Payment URL:', `${this.getBaseUrl()}${endpoint}`);
-        console.log('PhonePe Payload:', JSON.stringify(payload, null, 2));
+        console.log('PhonePe Create Payment Request:', JSON.stringify(request, null, 2));
 
-        const response = await fetch(`${this.getBaseUrl()}${endpoint}`, {
-            method: 'POST',
-            headers: {
-                'Content-Type': 'application/json',
-                'Authorization': `O-Bearer ${token}`,
-            },
-            body: JSON.stringify(payload),
-        });
-
-        const responseText = await response.text();
-        console.log('PhonePe Raw Response:', responseText);
-
-        let data;
         try {
-            data = JSON.parse(responseText);
-        } catch {
-            throw new Error(`PhonePe returned invalid JSON: ${responseText}`);
+            const response = await client.pay(request);
+            console.log('PhonePe SDK Response:', JSON.stringify(response, null, 2));
+            return response;
+        } catch (error: any) {
+            console.error('PhonePe SDK Error:', error);
+            throw error;
         }
-
-        console.log('PhonePe Create Payment Response:', JSON.stringify(data, null, 2));
-
-        // Check for error in response
-        if (data.code && data.code !== 'SUCCESS') {
-            throw new Error(data.message || data.code || 'Payment creation failed');
-        }
-
-        return data;
     }
 
     /**
-     * Check payment status
+     * Check payment status using official SDK
      */
     async checkStatus(merchantOrderId: string) {
-        const token = await this.getAccessToken();
+        const client = this.getClient();
+        console.log('PhonePe Check Status for:', merchantOrderId);
 
-        const endpoint = `/checkout/v2/order/${merchantOrderId}/status`;
-        const xVerify = crypto
-            .createHash('sha256')
-            .update(endpoint + this.config.clientSecret)
-            .digest('hex') + '###1';
-
-        const response = await fetch(`${this.getBaseUrl()}${endpoint}`, {
-            method: 'GET',
-            headers: {
-                'Content-Type': 'application/json',
-                'Authorization': `O-Bearer ${token}`,
-                'X-VERIFY': xVerify,
-            },
-        });
-
-        const data = await response.json();
-
-        if (!response.ok) {
-            throw new Error(data.message || 'Status check failed');
+        try {
+            const response = await client.getOrderStatus(merchantOrderId, true);
+            console.log('PhonePe Status Response:', JSON.stringify(response, null, 2));
+            return response;
+        } catch (error: any) {
+            console.error('PhonePe Status Check Error:', error);
+            throw error;
         }
-
-        return data;
     }
 
     /**
-     * Initiate refund
+     * Validate callback from PhonePe
+     */
+    validateCallback(username: string, password: string, authorization: string, responseBody: string) {
+        const client = this.getClient();
+        try {
+            return client.validateCallback(username, password, authorization, responseBody);
+        } catch (error) {
+            console.error('Callback validation error:', error);
+            throw error;
+        }
+    }
+
+    /**
+     * Initiate refund using official SDK
      */
     async refund(params: {
         merchantOrderId: string;
         merchantRefundId: string;
         amount: number;
     }) {
-        const token = await this.getAccessToken();
+        const client = this.getClient();
+        const amountInPaise = Math.round(params.amount * 100);
 
-        const payload = {
-            merchantId: this.config.merchantId,
-            merchantOrderId: params.merchantOrderId,
-            merchantRefundId: params.merchantRefundId,
-            amount: Math.round(params.amount * 100),
-        };
+        const refundRequest = RefundRequest.builder()
+            .merchantRefundId(params.merchantRefundId)
+            .originalMerchantOrderId(params.merchantOrderId)
+            .amount(amountInPaise)
+            .build();
 
-        const base64Payload = Buffer.from(JSON.stringify(payload)).toString('base64');
-        const endpoint = '/payments/v2/refund';
-        const xVerify = this.generateChecksum(base64Payload, endpoint);
-
-        const response = await fetch(`${this.getBaseUrl()}${endpoint}`, {
-            method: 'POST',
-            headers: {
-                'Content-Type': 'application/json',
-                'Authorization': `O-Bearer ${token}`,
-                'X-VERIFY': xVerify,
-            },
-            body: JSON.stringify({
-                request: base64Payload,
-            }),
-        });
-
-        const data = await response.json();
-
-        if (!response.ok || !data.success) {
-            throw new Error(data.message || 'Refund failed');
+        try {
+            const response = await client.refund(refundRequest);
+            console.log('PhonePe Refund Response:', JSON.stringify(response, null, 2));
+            return response;
+        } catch (error: any) {
+            console.error('PhonePe Refund Error:', error);
+            throw error;
         }
-
-        return data;
     }
 
     /**
      * Check refund status
      */
     async checkRefundStatus(merchantRefundId: string) {
-        const token = await this.getAccessToken();
-
-        const endpoint = `/payments/v2/refund/${merchantRefundId}/status`;
-        const xVerify = crypto
-            .createHash('sha256')
-            .update(endpoint + this.config.clientSecret)
-            .digest('hex') + '###1';
-
-        const response = await fetch(`${this.getBaseUrl()}${endpoint}`, {
-            method: 'GET',
-            headers: {
-                'Content-Type': 'application/json',
-                'Authorization': `O-Bearer ${token}`,
-                'X-VERIFY': xVerify,
-            },
-        });
-
-        const data = await response.json();
-
-        if (!response.ok) {
-            throw new Error(data.message || 'Refund status check failed');
+        const client = this.getClient();
+        try {
+            const response = await client.getRefundStatus(merchantRefundId);
+            console.log('PhonePe Refund Status:', JSON.stringify(response, null, 2));
+            return response;
+        } catch (error: any) {
+            console.error('PhonePe Refund Status Error:', error);
+            throw error;
         }
-
-        return data;
     }
 }
 
 // Export singleton instance
-export const phonePe = new PhonePeSDK({
-    clientId: process.env.PHONEPE_CLIENT_ID || '',
-    clientSecret: process.env.PHONEPE_CLIENT_SECRET || '',
-    clientVersion: process.env.PHONEPE_CLIENT_VERSION || '1',
-    merchantId: process.env.PHONEPE_MERCHANT_ID || '',
-    env: (process.env.PHONEPE_ENV as 'sandbox' | 'production') || 'sandbox',
-});
+export const phonePe = new PhonePeSDK();
 
 export default PhonePeSDK;

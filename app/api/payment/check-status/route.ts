@@ -24,7 +24,7 @@ export async function GET(req: Request) {
                 console.log('PhonePe Status Check:', statusResponse);
 
                 // PhonePe v2 returns state instead of code
-                const paymentState = statusResponse.state || statusResponse.code;
+                const paymentState = statusResponse.state || (statusResponse as any).code;
                 const isSuccess = paymentState === 'COMPLETED' || paymentState === 'PAYMENT_SUCCESS' || paymentState === 'SUCCESS';
                 const isPending = paymentState === 'PENDING';
 
