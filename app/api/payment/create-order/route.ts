@@ -89,7 +89,8 @@ export async function POST(req: Request) {
                 console.log('Merchant Order ID:', client_txn_id);
                 console.log('Amount:', amount);
 
-                const callbackUrl = `${process.env.NEXT_PUBLIC_BASE_URL}/api/payment/phonepe-callback`;
+                // PhonePe will redirect user here after payment
+                const phonepeRedirectUrl = `${process.env.NEXT_PUBLIC_BASE_URL}/api/payment/phonepe-callback`;
 
                 const paymentResponse = await phonePe.createPayment({
                     amount: parseFloat(amount),
@@ -97,8 +98,8 @@ export async function POST(req: Request) {
                     customerName: customer_name,
                     customerEmail: customer_email,
                     customerMobile: customer_mobile,
-                    redirectUrl: redirect_url,
-                    callbackUrl: callbackUrl,
+                    redirectUrl: phonepeRedirectUrl,
+                    callbackUrl: phonepeRedirectUrl,
                 });
 
                 console.log('PhonePe Response:', paymentResponse);

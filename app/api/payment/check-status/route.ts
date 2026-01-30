@@ -23,25 +23,53 @@ export async function GET(req: Request) {
                 const statusResponse = await phonePe.checkStatus(merchantOrderId);
                 console.log('PhonePe Status Check:', statusResponse);
 
+                // PhonePe v2 returns state instead of code
+                const paymentState = statusResponse.state || statusResponse.code;
+                const isSuccess = paymentState === 'COMPLETED' || paymentState === 'PAYMENT_SUCCESS' || paymentState === 'SUCCESS';
+                const isPending = paymentState === 'PENDING';
+
                 // Update local database with latest status
-                if (statusResponse.success) {
-                    await db.collection('orders').updateOne(
-                        { client_txn_id: merchantOrderId },
-                        {
-                            $set: {
-                                status: statusResponse.code === 'PAYMENT_SUCCESS' ? 'success' : 'failed',
-                                payment_status: statusResponse.code,
-                                phonepe_response: statusResponse,
-                                updatedAt: new Date()
-                            }
+                const newStatus = isSuccess ? 'success' : (isPending ? 'pending' : 'failed');
+
+                await db.collection('orders').updateOne(
+                    { client_txn_id: merchantOrderId },
+                    {
+                        $set: {
+                            status: newStatus,
+                            payment_status: paymentState,
+                            phonepe_response: statusResponse,
+                            updatedAt: new Date()
                         }
-                    );
+                    }
+                );
+
+                // If successful, send email
+                if (isSuccess) {
+                    const order = await db.collection('orders').findOne({ client_txn_id: merchantOrderId });
+                    if (order && order.status !== 'email_sent') {
+                        const { sendOrderConfirmationEmail } = await import('@/lib/email-service');
+                        sendOrderConfirmationEmail({
+                            customerName: order.customer_name,
+                            customerEmail: order.customer_email,
+                            orderId: order.order_id,
+                            amount: order.amount,
+                            items: order.p_info,
+                            address: order.address,
+                            paymentMethod: 'phonepe'
+                        }).then(() => {
+                            db.collection('orders').updateOne(
+                                { client_txn_id: merchantOrderId },
+                                { $set: { email_sent: true } }
+                            );
+                        }).catch(err => console.error('Email error:', err));
+                    }
                 }
 
                 return NextResponse.json({
-                    success: statusResponse.success,
-                    status: statusResponse.code,
-                    data: statusResponse.data
+                    success: isSuccess,
+                    status: newStatus,
+                    paymentState: paymentState,
+                    data: statusResponse
                 });
             } catch (error: any) {
                 console.error('PhonePe status check error:', error);
