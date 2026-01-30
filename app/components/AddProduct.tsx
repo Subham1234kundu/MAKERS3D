@@ -22,6 +22,8 @@ interface ProductData {
     originalPrice: string; // The "Cutting" price
     price: string; // The "Fixed" price
     category: string;
+    sizes: string;
+    colors: string;
     images: ProductImage[];
 }
 
@@ -40,6 +42,8 @@ export default function AddProduct({ initialData, onSubmit, onCancel }: AddProdu
         originalPrice: '',
         price: '',
         category: '',
+        sizes: '',
+        colors: '',
         images: []
     });
 
@@ -191,8 +195,8 @@ export default function AddProduct({ initialData, onSubmit, onCancel }: AddProdu
 
             <form onSubmit={handleSubmit} className="space-y-8">
                 {/* Images Section */}
-                <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-6 mb-8">
-                    {[0, 1, 2, 3].map((index) => (
+                <div className="grid grid-cols-2 md:grid-cols-3 lg:grid-cols-4 gap-6 mb-8">
+                    {Array.from({ length: (formData.sizes || formData.colors) ? 8 : 4 }).map((_, index) => (
                         <div key={index} className="space-y-3">
                             <div className="aspect-square bg-white/5 border border-white/10 relative group hover:border-white/30 transition-all flex items-center justify-center overflow-hidden rounded-sm">
                                 {formData.images[index]?.url ? (
@@ -220,7 +224,9 @@ export default function AddProduct({ initialData, onSubmit, onCancel }: AddProdu
                                         ) : (
                                             <>
                                                 <span className="text-2xl font-thin">+</span>
-                                                <span className="text-[9px] uppercase tracking-widest mt-2 font-light">Cloudinary Upload</span>
+                                                <span className="text-[9px] uppercase tracking-widest mt-2 font-light">
+                                                    {index < 4 ? 'Main Image' : 'Variant Image'}
+                                                </span>
                                                 <input
                                                     type="file"
                                                     className="hidden"
@@ -283,6 +289,31 @@ export default function AddProduct({ initialData, onSubmit, onCancel }: AddProdu
 
                         <div className="grid grid-cols-2 gap-4">
                             <div className="group">
+                                <label className="block text-[10px] uppercase tracking-widest text-white/40 mb-2 font-medium">Available Sizes (Optional)</label>
+                                <input
+                                    type="text"
+                                    name="sizes"
+                                    value={formData.sizes}
+                                    onChange={handleChange}
+                                    className="w-full bg-transparent border-b border-white/20 py-2 text-[10px] text-white focus:outline-none focus:border-white transition-colors placeholder:text-white/10 font-light uppercase tracking-widest"
+                                    placeholder="S, M, L, XL"
+                                />
+                            </div>
+                            <div className="group">
+                                <label className="block text-[10px] uppercase tracking-widest text-white/40 mb-2 font-medium">Available Colors (Optional)</label>
+                                <input
+                                    type="text"
+                                    name="colors"
+                                    value={formData.colors}
+                                    onChange={handleChange}
+                                    className="w-full bg-transparent border-b border-white/20 py-2 text-[10px] text-white focus:outline-none focus:border-white transition-colors placeholder:text-white/10 font-light uppercase tracking-widest"
+                                    placeholder="White, Black, Gold"
+                                />
+                            </div>
+                        </div>
+
+                        <div className="grid grid-cols-2 gap-4">
+                            <div className="group">
                                 <label className="block text-[10px] uppercase tracking-widest text-white/40 mb-2 font-medium">Cutting Price (MRP)</label>
                                 <input
                                     type="number"
@@ -332,7 +363,7 @@ export default function AddProduct({ initialData, onSubmit, onCancel }: AddProdu
 
                             <div className={`absolute left-0 right-0 top-full mt-2 bg-black border border-white/10 z-50 overflow-y-auto max-h-60 transition-all duration-300 origin-top shadow-2xl ${isCategoryOpen ? 'opacity-100 scale-y-100 translate-y-0' : 'opacity-0 scale-y-95 -translate-y-2 pointer-events-none'}`}>
                                 {/* Default Collections */}
-                                {['DIVINE', 'AURA', 'MOTION', 'BOX'].map((cat) => (
+                                {['DIVINE', 'ASH_AND_STONE', 'AURA', 'MOTION', 'BOX'].map((cat) => (
                                     <div
                                         key={cat}
                                         onClick={() => {
@@ -341,7 +372,7 @@ export default function AddProduct({ initialData, onSubmit, onCancel }: AddProdu
                                         }}
                                         className="px-4 py-3 text-[10px] uppercase tracking-widest text-white/40 hover:text-white hover:bg-white/5 cursor-pointer transition-all border-b border-white/5"
                                     >
-                                        {cat}
+                                        {cat.replace(/_/g, ' ')}
                                     </div>
                                 ))}
 

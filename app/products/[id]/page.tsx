@@ -24,6 +24,8 @@ export default function ProductDetailPage() {
     const { addToCart, cartCount } = useCart();
     const { data: session } = useSession();
     const [isLiking, setIsLiking] = useState(false);
+    const [selectedSize, setSelectedSize] = useState('');
+    const [selectedColor, setSelectedColor] = useState('');
 
     const containerRef = useRef<HTMLDivElement>(null);
     const imageRef = useRef<HTMLDivElement>(null);
@@ -214,6 +216,61 @@ export default function ProductDetailPage() {
                             {product.description}
                         </p>
 
+                        {/* Variants Section */}
+                        <div className="space-y-8 mb-12">
+                            {product.sizes && (
+                                <div className="space-y-4">
+                                    <div className="flex justify-between items-end">
+                                        <label className="text-[10px] uppercase tracking-[0.3em] text-white/40 font-medium">Select Size</label>
+                                        <span className="text-[9px] uppercase tracking-widest text-white/20">{selectedSize || 'Required'}</span>
+                                    </div>
+                                    <div className="flex flex-wrap gap-3">
+                                        {product.sizes.split(',').map((size: string) => {
+                                            const s = size.trim();
+                                            return (
+                                                <button
+                                                    key={s}
+                                                    onClick={() => setSelectedSize(s)}
+                                                    className={`min-w-[50px] h-[50px] flex items-center justify-center border text-[10px] tracking-widest uppercase transition-all duration-300 ${selectedSize === s
+                                                        ? 'bg-white text-black border-white shadow-[0_0_20px_rgba(255,255,255,0.15)]'
+                                                        : 'border-white/10 text-white/40 hover:border-white/30 hover:text-white'
+                                                        }`}
+                                                >
+                                                    {s}
+                                                </button>
+                                            )
+                                        })}
+                                    </div>
+                                </div>
+                            )}
+
+                            {product.colors && (
+                                <div className="space-y-4">
+                                    <div className="flex justify-between items-end">
+                                        <label className="text-[10px] uppercase tracking-[0.3em] text-white/40 font-medium">Select Color</label>
+                                        <span className="text-[9px] uppercase tracking-widest text-white/20">{selectedColor || 'Required'}</span>
+                                    </div>
+                                    <div className="flex flex-wrap gap-3">
+                                        {product.colors.split(',').map((color: string) => {
+                                            const c = color.trim();
+                                            return (
+                                                <button
+                                                    key={c}
+                                                    onClick={() => setSelectedColor(c)}
+                                                    className={`px-6 h-[50px] flex items-center justify-center border text-[10px] tracking-widest uppercase transition-all duration-300 ${selectedColor === c
+                                                        ? 'bg-white text-black border-white shadow-[0_0_20px_rgba(255,255,255,0.15)]'
+                                                        : 'border-white/10 text-white/40 hover:border-white/30 hover:text-white'
+                                                        }`}
+                                                >
+                                                    {c}
+                                                </button>
+                                            )
+                                        })}
+                                    </div>
+                                </div>
+                            )}
+                        </div>
+
                         {/* Action Buttons */}
                         <div className="flex flex-col gap-3 sm:gap-4 mb-12 sm:mb-16">
                             <div className="flex gap-3 sm:gap-4">
@@ -264,7 +321,15 @@ export default function ProductDetailPage() {
                                 {/* Add to Cart Button */}
                                 <button
                                     onClick={() => {
-                                        addToCart(product);
+                                        if (product.sizes && !selectedSize) {
+                                            alert('Please select a size');
+                                            return;
+                                        }
+                                        if (product.colors && !selectedColor) {
+                                            alert('Please select a color');
+                                            return;
+                                        }
+                                        addToCart({ ...product, selectedSize, selectedColor });
                                         router.push('/cart');
                                     }}
                                     className="flex-1 bg-white text-black py-4 sm:py-5 px-6 text-[11px] sm:text-xs font-bold uppercase tracking-[0.2em] border border-white hover:bg-gray-100 transition-all duration-300 flex items-center justify-center gap-3 relative touch-manipulation active:scale-95"
@@ -286,7 +351,15 @@ export default function ProductDetailPage() {
                             {/* Buy Now Button */}
                             <button
                                 onClick={() => {
-                                    addToCart(product);
+                                    if (product.sizes && !selectedSize) {
+                                        alert('Please select a size');
+                                        return;
+                                    }
+                                    if (product.colors && !selectedColor) {
+                                        alert('Please select a color');
+                                        return;
+                                    }
+                                    addToCart({ ...product, selectedSize, selectedColor });
                                     router.push('/checkout');
                                 }}
                                 className="w-full border-2 border-white text-white py-4 sm:py-5 text-[11px] sm:text-xs font-bold uppercase tracking-[0.2em] hover:bg-white hover:text-black transition-all duration-300 touch-manipulation active:scale-95"

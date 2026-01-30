@@ -41,7 +41,7 @@ export async function POST(request: NextRequest) {
         }
 
         const body = await request.json();
-        const { name, price, originalPrice, category, images, description, specifications } = body;
+        const { name, price, originalPrice, category, images, description, specifications, sizes, colors } = body;
 
         if (!name || !price || !category || (!images || images.length === 0)) {
             return NextResponse.json({ message: 'Missing required fields' }, { status: 400 });
@@ -56,6 +56,8 @@ export async function POST(request: NextRequest) {
             images: Array.isArray(images) ? images : [images],
             description: description || '',
             specifications: specifications || '',
+            sizes: sizes || '',
+            colors: colors || '',
             createdAt: new Date(),
             updatedAt: new Date()
         });
@@ -75,7 +77,7 @@ export async function PUT(request: NextRequest) {
         }
 
         const body = await request.json();
-        const { id, name, price, originalPrice, category, images, description, specifications } = body;
+        const { id, name, price, originalPrice, category, images, description, specifications, sizes, colors } = body;
 
         if (!id) {
             return NextResponse.json({ message: 'Product ID required' }, { status: 400 });
@@ -93,6 +95,8 @@ export async function PUT(request: NextRequest) {
         if (images) updateData.images = Array.isArray(images) ? images : [images];
         if (description !== undefined) updateData.description = description;
         if (specifications !== undefined) updateData.specifications = specifications;
+        if (sizes !== undefined) updateData.sizes = sizes;
+        if (colors !== undefined) updateData.colors = colors;
 
         const result = await db.collection('products').updateOne(
             { _id: new ObjectId(id) },

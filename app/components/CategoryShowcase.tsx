@@ -24,6 +24,7 @@ interface CategoryShowcaseProps {
 export default function CategoryShowcase({ products }: CategoryShowcaseProps) {
     const categories = [
         { id: 'DIVINE', label: 'DIVINE', image: '/categories/divine.png' },
+        { id: 'ASH_AND_STONE', label: 'ASH & STONE', image: '/categories/ash_and_stone.png' },
         { id: 'AURA', label: 'AURA', image: '/categories/aura.png' },
         { id: 'MOTION', label: 'MOTION', image: '/categories/motion.png' },
         { id: 'BOX', label: 'BOX', image: '/categories/box.png' },
@@ -53,31 +54,96 @@ export default function CategoryShowcase({ products }: CategoryShowcaseProps) {
             );
         }
 
-        // Only scroll into view if this is NOT the initial mount
-        // We use a separate timer to ensure layout has settled
-        if (isMounted.current && listRef.current) {
+        // Handle mobile scroll-to-active only on category click
+        if (isMounted.current && listRef.current && window.innerWidth < 1024) {
             const activeElem = listRef.current.querySelector(`[data-active="true"]`);
             if (activeElem) {
                 activeElem.scrollIntoView({ behavior: 'smooth', block: 'nearest', inline: 'center' });
             }
-        } else {
-            isMounted.current = true;
+        }
+
+        isMounted.current = true;
+    }, [activeCategory]);
+
+    // Natural Scroll Switching (Non-locking)
+    useEffect(() => {
+        // Desktop: Switch based on scroll progress within section
+        const handleDesktopScroll = () => {
+            if (window.innerWidth < 1024 || !sectionRef.current) return;
+
+            const rect = sectionRef.current.getBoundingClientRect();
+            const sectionHeight = rect.height;
+            const scrollVisible = window.innerHeight;
+
+            // Start the transition logic slightly later (offset by 0.15)
+            // This ensures the first category stays active longer as you enter the section
+            const rawProgress = (scrollVisible - rect.top) / (sectionHeight + scrollVisible);
+            const scrollOffset = 0.15; // Delay start
+            const progress = Math.max(0, Math.min(1, (rawProgress - scrollOffset) / (1 - scrollOffset)));
+
+            if (rawProgress > scrollOffset && rawProgress < 1) {
+                const totalCategories = categories.length;
+                const index = Math.min(Math.floor(progress * totalCategories), totalCategories - 1);
+
+                if (categories[index].id !== activeCategory) {
+                    setActiveCategory(categories[index].id);
+                }
+            } else if (rawProgress <= scrollOffset) {
+                // Ensure first category is reset if we scroll back up
+                if (activeCategory !== categories[0].id) {
+                    setActiveCategory(categories[0].id);
+                }
+            }
+        };
+
+        // Mobile: Scroll-Spy for the horizontal list
+        const handleMobileScroll = () => {
+            if (window.innerWidth >= 1024 || !listRef.current) return;
+            const container = listRef.current;
+            const items = container.querySelectorAll('.category-item');
+            let closestId = activeCategory;
+            let minDistance = Infinity;
+            const containerCenter = container.getBoundingClientRect().left + container.offsetWidth / 2;
+
+            items.forEach((item) => {
+                const htmlItem = item as HTMLElement;
+                const rect = htmlItem.getBoundingClientRect();
+                const itemCenter = rect.left + rect.width / 2;
+                const distance = Math.abs(containerCenter - itemCenter);
+
+                if (distance < minDistance) {
+                    minDistance = distance;
+                    closestId = htmlItem.getAttribute('data-id') || activeCategory;
+                }
+            });
+
+            if (closestId !== activeCategory) {
+                setActiveCategory(closestId);
+            }
+        };
+
+        window.addEventListener('scroll', handleDesktopScroll, { passive: true });
+        const mobileContainer = listRef.current;
+        if (mobileContainer) {
+            mobileContainer.addEventListener('scroll', handleMobileScroll, { passive: true });
         }
 
         return () => {
-            // Reset mounted state if component unmounts (handles Strict Mode double-run)
-            isMounted.current = false;
+            window.removeEventListener('scroll', handleDesktopScroll);
+            if (mobileContainer) {
+                mobileContainer.removeEventListener('scroll', handleMobileScroll);
+            }
         };
-    }, [activeCategory]);
+    }, [activeCategory, categories]);
 
     return (
-        <section ref={sectionRef} className="bg-black pt-16 pb-8 lg:py-32 overflow-hidden" suppressHydrationWarning>
+        <section ref={sectionRef} className="bg-black pt-16 pb-8 lg:py-24 overflow-hidden" suppressHydrationWarning>
             <div className="max-w-7xl mx-auto px-4 sm:px-8" suppressHydrationWarning>
                 {/* Mobile: Focal Portal Top | Desktop: Side-by-Side */}
-                <div className="flex flex-col lg:flex-row items-center lg:items-center gap-10 sm:gap-16 lg:gap-24" suppressHydrationWarning>
+                <div className="flex flex-col lg:flex-row items-center lg:justify-between gap-6 sm:gap-16 lg:gap-0" suppressHydrationWarning>
 
                     {/* Left Side (Desktop) / Bottom (Mobile): Category Selection */}
-                    <div className="w-full lg:w-1/3 order-2 lg:order-1 flex flex-col items-center lg:items-start" suppressHydrationWarning>
+                    <div className="w-full lg:w-[25%] order-2 lg:order-1 flex flex-col items-center lg:items-start" suppressHydrationWarning>
                         <div className="mb-4 sm:mb-12 hidden lg:block" suppressHydrationWarning>
                             <span className="text-[9px] text-white/30 tracking-[0.5em] uppercase font-light block mb-4" suppressHydrationWarning>Explore Universe</span>
                             <div className="w-12 h-[1px] bg-white/10" suppressHydrationWarning></div>
@@ -85,11 +151,11 @@ export default function CategoryShowcase({ products }: CategoryShowcaseProps) {
 
                         <div
                             ref={listRef}
-                            className="flex lg:flex-col overflow-x-auto lg:overflow-x-visible no-scrollbar -mx-4 px-4 sm:mx-0 sm:px-0 gap-8 sm:gap-10 lg:gap-32 w-screen lg:w-full scroll-smooth py-4 lg:py-0 relative"
+                            className="flex lg:flex-col overflow-x-auto lg:overflow-x-visible no-scrollbar -mx-4 px-4 sm:mx-0 sm:px-0 gap-4 sm:gap-10 lg:gap-16 w-screen lg:w-full scroll-smooth py-4 lg:py-0 relative"
                             suppressHydrationWarning
                         >
                             {/* Vertical Connection Track (Desktop) */}
-                            <div className="hidden lg:block absolute left-[39px] top-10 bottom-10 w-[1px] bg-white/5 z-0" suppressHydrationWarning>
+                            <div className="hidden lg:block absolute left-[40px] top-10 bottom-10 w-[1px] bg-white/5 z-0" suppressHydrationWarning>
                                 <div
                                     className="absolute top-0 left-0 w-full bg-white transition-all duration-1000 ease-in-out shadow-[0_0_15px_rgba(255,255,255,0.3)]"
                                     style={{
@@ -103,16 +169,17 @@ export default function CategoryShowcase({ products }: CategoryShowcaseProps) {
                             {categories.map((cat) => (
                                 <button
                                     key={cat.id}
+                                    data-id={cat.id}
                                     data-active={activeCategory === cat.id}
                                     onClick={() => handleCategoryClick(cat.id)}
-                                    className={`category-item group relative flex-shrink-0 lg:flex-shrink-0 transition-all duration-700 flex flex-col lg:flex-row items-center gap-3 sm:gap-6 z-10 ${activeCategory === cat.id ? 'opacity-100' : 'opacity-20 hover:opacity-50'
+                                    className={`category-item group relative flex-shrink-0 lg:flex-shrink-0 transition-all duration-700 flex flex-col lg:flex-row items-center gap-3 sm:gap-6 z-10 w-24 lg:w-full ${activeCategory === cat.id ? 'opacity-100' : 'opacity-40 hover:opacity-100'
                                         }`}
                                     suppressHydrationWarning
                                 >
-                                    {/* Circular Icon with Active Glow */}
-                                    <div className={`relative w-14 h-14 sm:w-20 sm:h-20 rounded-full overflow-hidden border transition-all duration-700 ${activeCategory === cat.id
+                                    {/* Architectural Icon Box - Rounded on Mobile */}
+                                    <div className={`relative flex-shrink-0 w-14 h-14 sm:w-20 sm:h-20 overflow-hidden border transition-all duration-700 rounded-full lg:rounded-none ${activeCategory === cat.id
                                         ? 'border-white/60 scale-110 shadow-[0_0_25px_rgba(255,255,255,0.1)]'
-                                        : 'border-white/5 grayscale group-hover:grayscale-0'
+                                        : 'border-white/20 grayscale-[50%] group-hover:grayscale-0 group-hover:border-white/40'
                                         }`} suppressHydrationWarning>
                                         <Image
                                             src={cat.image}
@@ -128,7 +195,7 @@ export default function CategoryShowcase({ products }: CategoryShowcaseProps) {
 
                                     <div className="flex flex-col items-center lg:items-start" suppressHydrationWarning>
                                         <div className="flex items-center gap-2 lg:gap-4" suppressHydrationWarning>
-                                            <span className={`text-[10px] sm:text-xs lg:text-5xl xl:text-6xl font-thin tracking-[0.2em] lg:tracking-[0.1em] uppercase transition-all duration-500 ${activeCategory === cat.id ? 'lg:translate-x-4' : ''
+                                            <span className={`text-[10px] sm:text-xs lg:text-3xl xl:text-5xl font-thin tracking-[0.3em] uppercase italic transition-all duration-700 whitespace-nowrap ${activeCategory === cat.id ? 'lg:translate-x-6 text-white' : 'text-white/60'
                                                 }`} suppressHydrationWarning>
                                                 {cat.label}
                                             </span>
@@ -153,15 +220,15 @@ export default function CategoryShowcase({ products }: CategoryShowcaseProps) {
                             {/* View All Masterpieces */}
                             <Link
                                 href="/products"
-                                className="group relative flex-shrink-0 transition-all duration-500 flex flex-col lg:flex-row items-center gap-3 sm:gap-6 opacity-30 hover:opacity-100 py-2 lg:py-0"
+                                className="group relative flex-shrink-0 transition-all duration-500 flex flex-col lg:flex-row items-center gap-3 sm:gap-6 opacity-100 py-2 lg:py-0 w-24 lg:w-full"
                                 suppressHydrationWarning
                             >
-                                <div className="w-14 h-14 sm:w-20 sm:h-20 rounded-full border border-white/10 flex items-center justify-center group-hover:bg-white/10 group-hover:border-white transition-all duration-500" suppressHydrationWarning>
+                                <div className="flex-shrink-0 w-14 h-14 sm:w-20 sm:h-20 overflow-hidden rounded-full lg:rounded-none border border-white/40 flex items-center justify-center group-hover:bg-white/10 group-hover:border-white transition-all duration-500" suppressHydrationWarning>
                                     <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="1" className="text-white">
                                         <path d="M5 12h14M12 5l7 7-7 7" strokeLinecap="round" strokeLinejoin="round" />
                                     </svg>
                                 </div>
-                                <span className="text-[9px] font-light tracking-[0.4em] uppercase text-white" suppressHydrationWarning>
+                                <span className="text-[9px] font-bold tracking-[0.4em] uppercase text-white" suppressHydrationWarning>
                                     Explore All
                                 </span>
                             </Link>
@@ -169,67 +236,84 @@ export default function CategoryShowcase({ products }: CategoryShowcaseProps) {
                     </div>
 
                     {/* Right Side (Desktop) / Top (Mobile): Featured Product Portal */}
-                    <div className="w-full lg:w-2/3 relative order-1 lg:order-2" suppressHydrationWarning>
-                        {/* Immersive Background Elements */}
-                        <div className="absolute top-1/2 left-1/2 -translate-x-1/2 -translate-y-1/2 w-[150%] h-[150%] bg-white/[0.02] blur-[100px] sm:blur-[150px] rounded-full pointer-events-none" suppressHydrationWarning></div>
+                    <div className="w-full lg:w-1/2 relative order-1 lg:order-2 h-[450px] sm:h-[600px] lg:h-[750px] flex justify-center lg:justify-end" suppressHydrationWarning>
+                        {/* Immersive Background Glow */}
+                        <div className="absolute top-1/2 left-1/2 -translate-x-1/2 -translate-y-1/2 w-[160%] h-[160%] bg-white/[0.01] blur-[150px] rounded-full pointer-events-none" suppressHydrationWarning></div>
 
-                        <div className="absolute top-0 left-1/2 -translate-x-1/2 -mt-12 lg:hidden" suppressHydrationWarning>
-                            <span className="text-[8px] text-white/30 tracking-[1em] uppercase font-thin whitespace-nowrap" suppressHydrationWarning>Featured Masterpiece</span>
-                        </div>
-
-                        <div ref={productRef} className="relative h-[350px] sm:h-[600px] lg:h-[750px] w-full flex items-center justify-center" suppressHydrationWarning>
-                            {/* Celestial Rotating Rings */}
-                            <div className="absolute inset-x-0 inset-y-0 border border-white/[0.04] rounded-full animate-[spin_25s_linear_infinite] scale-[1.1] pointer-events-none" suppressHydrationWarning></div>
-                            <div className="absolute inset-8 sm:inset-16 border border-white/[0.02] rounded-full animate-[spin_35s_linear_infinite_reverse] scale-[0.95] pointer-events-none" suppressHydrationWarning></div>
+                        <div ref={productRef} className="relative h-full w-full max-w-[600px] flex items-center justify-center" suppressHydrationWarning>
+                            {/* Sharp Architectural Framing */}
+                            <div className="absolute inset-x-0 inset-y-0 border border-white/[0.05] pointer-events-none z-10" suppressHydrationWarning></div>
+                            <div className="absolute inset-x-4 inset-y-4 border border-white/[0.02] pointer-events-none z-10" suppressHydrationWarning></div>
 
                             {featuredProduct ? (
-                                <Link href={`/products/${featuredProduct.id || featuredProduct._id}`} className="group relative block w-full h-full max-w-[280px] max-h-[280px] sm:max-w-[550px] sm:max-h-[550px]" suppressHydrationWarning>
-                                    <div className="relative h-full w-full overflow-hidden rounded-full bg-white/[0.02] border border-white/5 group-hover:border-white/10 transition-all duration-1000 shadow-[0_0_100px_rgba(0,0,0,0.6)]" suppressHydrationWarning>
-                                        <Image
-                                            src={typeof featuredProduct.images?.[0] === 'string' ? featuredProduct.images[0] : (featuredProduct.image || '/placeholder.png')}
-                                            alt={featuredProduct.name || featuredProduct.title || 'Featured'}
-                                            fill
-                                            className="object-cover object-center transition-transform duration-[2000ms] group-hover:scale-110"
-                                            sizes="(max-width: 640px) 280px, (max-width: 1024px) 550px, 600px"
-                                            priority
-                                            suppressHydrationWarning
-                                        />
+                                <Link href={`/products/${featuredProduct.id || featuredProduct._id}`} className="group relative block w-full h-full" suppressHydrationWarning>
+                                    <div className="relative h-full w-full overflow-hidden bg-white/[0.02] transition-all duration-1000 shadow-[0_40px_120px_rgba(0,0,0,0.9)]" suppressHydrationWarning>
+                                        {/* Dynamic Collection Image - No Border Radius */}
+                                        {(() => {
+                                            const imageData = featuredProduct.images?.[0] || featuredProduct.image;
+                                            const imageUrl = typeof imageData === 'object' ? imageData?.url : imageData;
+                                            return (
+                                                <Image
+                                                    src={imageUrl || '/placeholder.png'}
+                                                    alt={featuredProduct.name || featuredProduct.title || 'Featured'}
+                                                    fill
+                                                    className="object-cover object-center transition-transform duration-[4000ms] group-hover:scale-110"
+                                                    sizes="(max-width: 640px) 100vw, (max-width: 1024px) 50vw, 800px"
+                                                    priority
+                                                    suppressHydrationWarning
+                                                />
+                                            );
+                                        })()}
 
-                                        {/* Cinematic Light Sweep */}
-                                        <div className="absolute inset-0 bg-gradient-to-tr from-transparent via-white/5 to-transparent -translate-x-full -translate-y-full group-hover:translate-x-full group-hover:translate-y-full transition-transform duration-[1500ms] ease-in-out" suppressHydrationWarning></div>
+                                        {/* Cinematic Permanent Branding Overlay */}
+                                        <div className="absolute inset-0 bg-gradient-to-t from-black/90 via-black/10 to-transparent flex flex-col justify-end p-6 sm:p-10 lg:p-14 z-20" suppressHydrationWarning>
+                                            <div className="max-w-xl" suppressHydrationWarning>
+                                                <div className="flex items-center gap-3 mb-3 overflow-hidden" suppressHydrationWarning>
+                                                    <div className="h-[1px] w-6 bg-white/40 animate-[slideRight_1s_ease-out_forwards]" suppressHydrationWarning></div>
+                                                    <span className="text-white/40 text-[7px] sm:text-[8px] tracking-[0.8em] uppercase font-light block" suppressHydrationWarning>
+                                                        Masterpiece Series
+                                                    </span>
+                                                </div>
 
-                                        {/* Depth Blur Overlay (Touch Optimized) */}
-                                        <div className="absolute inset-0 flex flex-col items-center justify-center opacity-0 group-hover:opacity-100 transition-all duration-700 bg-black/60 backdrop-blur-[3px]" suppressHydrationWarning>
-                                            <div className="text-center px-6" suppressHydrationWarning>
-                                                <h4 className="text-white text-base sm:text-4xl font-thin tracking-[0.1em] uppercase mb-2 sm:mb-4" suppressHydrationWarning>
+                                                <h4 className="text-white text-2xl sm:text-4xl lg:text-5xl font-thin tracking-tight uppercase mb-6 leading-[1.05]" suppressHydrationWarning>
                                                     {featuredProduct.name || featuredProduct.title}
                                                 </h4>
-                                                <span className="text-white/60 font-light tracking-widest text-[10px] sm:text-xl block mb-4 sm:mb-8" suppressHydrationWarning>
-                                                    ₹{featuredProduct.price.toLocaleString('en-IN')}
-                                                </span>
-                                                <div className="inline-block px-4 py-1.5 sm:px-8 sm:py-3 border border-white/10 text-[7px] sm:text-[10px] tracking-[0.5em] text-white/90 uppercase hover:bg-white hover:text-black transition-all" suppressHydrationWarning>
-                                                    Enquire Details
+
+                                                <div className="group/btn relative inline-flex items-center gap-4 py-2" suppressHydrationWarning>
+                                                    <span className="text-white text-[8px] sm:text-[9px] tracking-[0.6em] uppercase font-bold transition-all duration-500 group-hover:tracking-[0.8em]" suppressHydrationWarning>
+                                                        Explore Geometry
+                                                    </span>
+                                                    <div className="w-10 h-[1px] bg-white transition-all duration-500 group-hover:w-20 group-hover:bg-white/100" suppressHydrationWarning></div>
                                                 </div>
                                             </div>
                                         </div>
+
+                                        {/* Subtle Atmospheric Flare - Interactive */}
+                                        <div className="absolute inset-0 bg-gradient-to-br from-white/[0.03] to-transparent opacity-0 group-hover:opacity-100 transition-opacity duration-1000 pointer-events-none" suppressHydrationWarning></div>
                                     </div>
                                 </Link>
                             ) : (
-                                <div className="h-full w-full max-w-[280px] max-h-[280px] sm:max-w-[550px] sm:max-h-[550px] flex flex-col items-center justify-center border border-white/5 rounded-full bg-white/[0.01] overflow-hidden" suppressHydrationWarning>
-                                    <div className="relative w-full h-full flex flex-col items-center justify-center gap-6" suppressHydrationWarning>
-                                        <div className="w-12 h-12 border border-white/10 rounded-full flex items-center justify-center animate-pulse" suppressHydrationWarning>
-                                            <div className="w-2 h-2 bg-white/20 rounded-full" suppressHydrationWarning></div>
-                                        </div>
-                                        <span className="text-white/10 text-[7px] sm:text-[10px] tracking-[1em] uppercase font-thin text-center px-12 leading-relaxed" suppressHydrationWarning>
-                                            COMING SOON<br /><span className="mt-2 block opacity-40 text-[6px]">MASTERY IN PROGRESS</span>
+                                <div className="h-full w-full flex flex-col items-center justify-center bg-transparent overflow-hidden" suppressHydrationWarning>
+                                    <div className="relative w-full h-full flex flex-col items-center justify-center gap-2" suppressHydrationWarning>
+                                        <span className="text-white/5 text-4xl sm:text-6xl lg:text-7xl font-black tracking-[0.2em] uppercase italic absolute select-none pointer-events-none" suppressHydrationWarning>
+                                            {activeCategory}
                                         </span>
+                                        <div className="relative z-10 flex flex-col items-center" suppressHydrationWarning>
+                                            <span className="text-white text-[10px] sm:text-xs tracking-[1.2em] uppercase font-thin mb-4 opacity-40" suppressHydrationWarning>
+                                                Coming Soon
+                                            </span>
+                                            <h4 className="text-white/80 text-3xl sm:text-5xl lg:text-6xl font-thin tracking-tighter uppercase italic leading-none" suppressHydrationWarning>
+                                                Under<br />Fabrication
+                                            </h4>
+                                            <div className="w-12 h-[1px] bg-white/20 mt-8" suppressHydrationWarning></div>
+                                        </div>
                                     </div>
                                 </div>
                             )}
                         </div>
 
-                        {/* WATERMARK LABEL */}
-                        <div className="absolute -right-8 -top-8 text-[120px] font-black text-white/[0.02] select-none pointer-events-none hidden lg:block uppercase italic" suppressHydrationWarning>
+                        {/* HIGH-FASHION VERTICAL WATERMARK */}
+                        <div className="absolute -right-20 top-1/2 -translate-y-1/2 rotate-90 text-[140px] font-black text-white/[0.02] select-none pointer-events-none hidden lg:block uppercase italic leading-none whitespace-nowrap" suppressHydrationWarning>
                             {activeCategory}
                         </div>
                     </div>

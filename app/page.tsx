@@ -146,9 +146,9 @@ export default function HomePage() {
       </div>
 
       {/* Dynamic Category Showcase */}
-      {/* {!isLoadingProducts && products.length > 0 && (
+      {!isLoadingProducts && products.length > 0 && (
         <CategoryShowcase products={products} />
-      )} */}
+      )}
 
       {/* Products Section */}
       <section className="bg-black px-4 sm:px-8 pt-8 pb-20 md:py-32" suppressHydrationWarning>
