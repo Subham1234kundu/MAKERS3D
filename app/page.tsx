@@ -164,38 +164,12 @@ export default function HomePage() {
 
           {/* Product Grid */}
           <div className="grid grid-cols-2 lg:grid-cols-4 gap-x-2.5 gap-y-6 sm:gap-6 children-appear" suppressHydrationWarning>
-            {/* Featured Sample Products */}
-            <ProductCard
-              id="featured-1"
-              image="/images/product-1.jpg"
-              alt="Ethereal Geometry"
-              title="Ethereal Geometry"
-              price={2499}
-              originalPrice={4999}
-            />
-            <ProductCard
-              id="featured-2"
-              image="/images/product-2.jpg"
-              alt="Parametric Core"
-              title="Parametric Core"
-              price={3299}
-              originalPrice={5999}
-            />
-            <ProductCard
-              id="featured-3"
-              image="/images/product-3.jpg"
-              alt="Vortex Vessel"
-              title="Vortex Vessel"
-              price={1899}
-              originalPrice={3499}
-            />
-
             {isLoadingProducts ? (
               [1, 2, 3, 4].map((i) => (
                 <div key={i} className="aspect-[3/4] bg-white/5 animate-pulse rounded-2xl" suppressHydrationWarning />
               ))
             ) : filteredProducts.length > 0 ? (
-              filteredProducts.slice(0, 4).map((product) => {
+              filteredProducts.map((product) => {
                 const imageData = product.images?.[0] || product.image;
                 const imageUrl = typeof imageData === 'object' ? imageData?.url : imageData;
                 const imageAlt = typeof imageData === 'object' ? imageData?.alt : product.name || product.title;
@@ -227,17 +201,18 @@ export default function HomePage() {
           </div>
 
           {/* View All Button */}
-          {/* {!isLoadingProducts && (
+          {!isLoadingProducts && (
             <div className="mt-16 flex justify-center" suppressHydrationWarning>
-              <div
-                className="group relative px-10 py-4 bg-white/5 border border-white/10 text-white text-[10px] font-bold tracking-[0.4em] uppercase rounded-full overflow-hidden transition-all hover:bg-white hover:text-black hover:scale-105 cursor-not-allowed"
+              <Link
+                href="/products"
+                className="group relative px-10 py-4 bg-white/5 border border-white/10 text-white text-[10px] font-bold tracking-[0.4em] uppercase rounded-full overflow-hidden transition-all hover:bg-white hover:text-black hover:scale-105"
                 suppressHydrationWarning
               >
                 <span className="relative z-10" suppressHydrationWarning>View All Masterpieces</span>
                 <div className="absolute inset-0 bg-white scale-x-0 group-hover:scale-x-100 transition-transform origin-left duration-500" suppressHydrationWarning />
-              </div>
+              </Link>
             </div>
-          )} */}
+          )}
         </div>
       </section>
 

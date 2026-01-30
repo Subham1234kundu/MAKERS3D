@@ -25,55 +25,6 @@ export default function ProductDetailPage() {
     const { data: session } = useSession();
     const [isLiking, setIsLiking] = useState(false);
 
-    // Fake product data for featured items
-    const FEATURED_PRODUCTS: Record<string, any> = {
-        'featured-1': {
-            id: 'featured-1',
-            name: 'Ethereal Geometry',
-            title: 'Ethereal Geometry',
-            price: 2499,
-            originalPrice: 4999,
-            category: 'DIVINE',
-            description: 'A mathematical masterpiece captured in physical form. This piece utilizes complex algorithmic patterns to create a sense of flowing movement within a static structure. Perfect for modern architectural spaces and collectors of digital craft.',
-            image: '/images/product-1.jpg',
-            images: [
-                { url: '/images/product-1.jpg', alt: 'Ethereal Geometry Main View' },
-                { url: '/images/product-4.jpg', alt: 'Ethereal Geometry Detail' }
-            ],
-            specifications: 'Material: Industrial Grade Resin\nFinish: Matte Obsidian\nHeight: 24cm\nWeight: 450g'
-        },
-        'featured-2': {
-            id: 'featured-2',
-            name: 'Parametric Core',
-            title: 'Parametric Core',
-            price: 3299,
-            originalPrice: 5999,
-            category: 'AURA',
-            description: 'The Parametric Core explores the intersection of organic growth and mechanical precision. Its intricate lattice structure provides structural integrity while maintaining a lightweight, ethereal presence that reacts beautifully to light.',
-            image: '/images/product-2.jpg',
-            images: [
-                { url: '/images/product-2.jpg', alt: 'Parametric Core Main View' },
-                { url: '/images/product-5.jpg', alt: 'Parametric Core Detail' }
-            ],
-            specifications: 'Material: Biopolymer Composite\nFinish: Satin Lunar White\nHeight: 18cm\nWeight: 320g'
-        },
-        'featured-3': {
-            id: 'featured-3',
-            name: 'Vortex Vessel',
-            title: 'Vortex Vessel',
-            price: 1899,
-            originalPrice: 3499,
-            category: 'MOTION',
-            description: 'Inspired by fluid dynamics, the Vortex Vessel captures the energy of a swirling current. Its spiral architecture creates dynamic shadows throughout the day, making it a living piece of art for any minimalist environment.',
-            image: '/images/product-3.jpg',
-            images: [
-                { url: '/images/product-3.jpg', alt: 'Vortex Vessel Main View' },
-                { url: '/images/product-6.jpg', alt: 'Vortex Vessel Detail' }
-            ],
-            specifications: 'Material: Recycled Polymer\nFinish: Iridescent Shadow\nHeight: 30cm\nWeight: 600g'
-        }
-    };
-
     const containerRef = useRef<HTMLDivElement>(null);
     const imageRef = useRef<HTMLDivElement>(null);
     const contentRef = useRef<HTMLDivElement>(null);
@@ -86,15 +37,6 @@ export default function ProductDetailPage() {
         const fetchProduct = async () => {
             if (!id) return;
             setIsLoading(true);
-
-            // Check if it's a featured/fake product first
-            if (FEATURED_PRODUCTS[id]) {
-                setTimeout(() => {
-                    setProduct(FEATURED_PRODUCTS[id]);
-                    setIsLoading(false);
-                }, 500); // Simulate network delay
-                return;
-            }
 
             try {
                 const res = await fetch(`/api/products/${id}`);

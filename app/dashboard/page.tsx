@@ -7,6 +7,7 @@ import { gsap } from 'gsap';
 import Link from 'next/link';
 import dynamic from 'next/dynamic';
 import AddProduct from '../components/AddProduct';
+import AddCollection from '../components/AddCollection';
 import DeleteProductModal from '../components/DeleteProductModal';
 import OrderDetailsModal from '../components/OrderDetailsModal';
 
@@ -19,7 +20,7 @@ export default function DashboardPage() {
     const { data: session, status } = useSession();
     const router = useRouter();
     const containerRef = useRef<HTMLDivElement>(null);
-    const [activeView, setActiveView] = useState<'overview' | 'products' | 'orders' | 'requests' | 'customers' | 'settings'>('overview');
+    const [activeView, setActiveView] = useState<'overview' | 'products' | 'collections' | 'orders' | 'requests' | 'customers' | 'settings'>('overview');
     const [customers, setCustomers] = useState<any[]>([]);
     const [searchQuery, setSearchQuery] = useState('');
 
@@ -48,6 +49,13 @@ export default function DashboardPage() {
     const [isAddFormOpen, setIsAddFormOpen] = useState(false);
     const [productToDelete, setProductToDelete] = useState<any>(null);
     const [selectedOrder, setSelectedOrder] = useState<any>(null);
+
+    // Collections state
+    const [collections, setCollections] = useState<any[]>([]);
+    const [isLoadingCollections, setIsLoadingCollections] = useState(false);
+    const [editingCollection, setEditingCollection] = useState<any>(null);
+    const [isAddCollectionFormOpen, setIsAddCollectionFormOpen] = useState(false);
+    const [collectionToDelete, setCollectionToDelete] = useState<any>(null);
 
     const fetchProducts = async () => {
         setIsLoadingProducts(true);
@@ -149,12 +157,81 @@ export default function DashboardPage() {
         setIsAddFormOpen(true);
     };
 
+    // Collections functions
+    const fetchCollections = async () => {
+        setIsLoadingCollections(true);
+        try {
+            const res = await fetch('/api/admin/collections');
+            if (res.ok) {
+                const data = await res.json();
+                setCollections(data);
+            }
+        } catch (error) {
+            console.error('Error fetching collections:', error);
+        } finally {
+            setIsLoadingCollections(false);
+        }
+    };
+
+    const handleSaveCollection = async (collectionData: any) => {
+        try {
+            const method = editingCollection ? 'PUT' : 'POST';
+            const payload = editingCollection ? { ...collectionData, id: editingCollection.id } : collectionData;
+
+            const res = await fetch('/api/admin/collections', {
+                method,
+                headers: { 'Content-Type': 'application/json' },
+                body: JSON.stringify(payload)
+            });
+
+            if (res.ok) {
+                fetchCollections();
+                setIsAddCollectionFormOpen(false);
+                setEditingCollection(null);
+            } else {
+                const data = await res.json();
+                alert(data.message || 'Error saving collection');
+            }
+        } catch (error) {
+            console.error('Save error:', error);
+            alert('Connection error');
+        }
+    };
+
+    const handleEditCollection = (collection: any) => {
+        setEditingCollection(collection);
+        setIsAddCollectionFormOpen(true);
+    };
+
+    const handleConfirmDeleteCollection = async () => {
+        if (collectionToDelete) {
+            try {
+                const res = await fetch(`/api/admin/collections?id=${collectionToDelete.id}`, {
+                    method: 'DELETE'
+                });
+                if (res.ok) {
+                    setCollections(collections.filter(c => c.id !== collectionToDelete.id));
+                    setCollectionToDelete(null);
+                } else {
+                    const data = await res.json();
+                    alert(data.message || 'Error deleting collection');
+                }
+            } catch (error) {
+                console.error('Delete error:', error);
+                alert('Connection error');
+            }
+        }
+    };
+
     useEffect(() => {
         if (activeView === 'customers' && customers.length === 0) {
             fetchCustomers();
         }
         if (activeView === 'products' && products.length === 0) {
             fetchProducts();
+        }
+        if (activeView === 'collections' && collections.length === 0) {
+            fetchCollections();
         }
         if (activeView === 'orders' && orders.length === 0) {
             fetchOrders();
@@ -272,6 +349,12 @@ export default function DashboardPage() {
                         className={`text-[10px] uppercase tracking-[0.2em] px-4 py-2 transition-all ${activeView === 'products' ? 'text-white border-b border-white' : 'text-white/40 hover:text-white'}`}
                     >
                         Products
+                    </button>
+                    <button
+                        onClick={() => setActiveView('collections')}
+                        className={`text-[10px] uppercase tracking-[0.2em] px-4 py-2 transition-all ${activeView === 'collections' ? 'text-white border-b border-white' : 'text-white/40 hover:text-white'}`}
+                    >
+                        Collections
                     </button>
                     <button
                         onClick={() => setActiveView('orders')}
@@ -454,6 +537,98 @@ export default function DashboardPage() {
                             onClose={() => setProductToDelete(null)}
                             onConfirm={handleConfirmDelete}
                             productName={productToDelete?.name || ''}
+                        />
+                    </div>
+                )}
+
+                {activeView === 'collections' && (
+                    <div className="space-y-8 animate-in fade-in duration-500">
+                        <div className="flex justify-between items-center">
+                            <h2 className="text-xl font-thin tracking-widest">COLLECTIONS MANAGEMENT</h2>
+                            <button
+                                onClick={() => { setIsAddCollectionFormOpen(!isAddCollectionFormOpen); setEditingCollection(null); }}
+                                className="text-[10px] uppercase tracking-[0.2em] bg-white text-black px-6 py-3 hover:bg-gray-200 transition-colors"
+                            >
+                                {isAddCollectionFormOpen ? 'Cancel' : '+ Add Collection'}
+                            </button>
+                        </div>
+
+                        {isAddCollectionFormOpen && (
+                            <div className="mb-12">
+                                <AddCollection
+                                    initialData={editingCollection}
+                                    onSubmit={handleSaveCollection}
+                                    onCancel={() => { setIsAddCollectionFormOpen(false); setEditingCollection(null); }}
+                                />
+                            </div>
+                        )}
+
+                        <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6">
+                            {collections.map((collection) => (
+                                <div key={collection.id} className="group relative border border-white/5 bg-neutral-900/20 hover:border-white/20 transition-all overflow-hidden">
+                                    <div className="aspect-[4/3] bg-neutral-800 overflow-hidden relative">
+                                        <div className="absolute inset-0 bg-black/40 opacity-0 group-hover:opacity-100 transition-opacity z-10 backdrop-blur-[2px]" />
+                                        {collection.image ? (
+                                            <img
+                                                src={collection.image}
+                                                alt={collection.name}
+                                                className="w-full h-full object-cover opacity-80 group-hover:opacity-100 group-hover:scale-105 transition-all duration-700"
+                                            />
+                                        ) : (
+                                            <div className="w-full h-full flex items-center justify-center text-white/20">
+                                                <svg className="w-16 h-16" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                                                    <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={1} d="M4 16l4.586-4.586a2 2 0 012.828 0L16 16m-2-2l1.586-1.586a2 2 0 012.828 0L20 14m-6-6h.01M6 20h12a2 2 0 002-2V6a2 2 0 00-2-2H6a2 2 0 00-2 2v12a2 2 0 002 2z" />
+                                                </svg>
+                                            </div>
+                                        )}
+
+                                        <div className="absolute inset-0 z-20 flex items-center justify-center gap-3 opacity-0 group-hover:opacity-100 transition-all duration-300 translate-y-2 group-hover:translate-y-0">
+                                            <button
+                                                onClick={(e) => { e.stopPropagation(); handleEditCollection(collection); }}
+                                                className="w-10 h-10 flex items-center justify-center border border-white/20 bg-black/50 text-white hover:bg-white hover:text-black hover:border-white transition-all rounded-sm hover:scale-110"
+                                                title="Edit Collection"
+                                            >
+                                                <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round">
+                                                    <path d="M17 3a2.828 2.828 0 1 1 4 4L7.5 20.5 2 22l1.5-5.5L17 3z"></path>
+                                                </svg>
+                                            </button>
+                                            <button
+                                                onClick={(e) => { e.stopPropagation(); setCollectionToDelete(collection); }}
+                                                className="w-10 h-10 flex items-center justify-center border border-white/20 bg-black/50 text-white hover:bg-red-500 hover:text-white hover:border-red-500 transition-all rounded-sm hover:scale-110"
+                                                title="Delete Collection"
+                                            >
+                                                <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round">
+                                                    <polyline points="3 6 5 6 21 6"></polyline>
+                                                    <path d="M19 6v14a2 2 0 0 1-2 2H7a2 2 0 0 1-2-2V6m3 0V4a2 2 0 0 1 2-2h4a2 2 0 0 1 2 2v2"></path>
+                                                </svg>
+                                            </button>
+                                        </div>
+                                    </div>
+                                    <div className="p-4 border-t border-white/5">
+                                        <h3 className="text-sm font-light tracking-wide mb-1">{collection.name}</h3>
+                                        <div className="flex justify-between items-center text-[10px] uppercase tracking-wider text-white/50">
+                                            <span>{collection.slug}</span>
+                                            <span className="text-white/30">Order: {collection.order}</span>
+                                        </div>
+                                        {collection.description && (
+                                            <p className="text-[10px] text-white/30 mt-2 line-clamp-2">{collection.description}</p>
+                                        )}
+                                    </div>
+                                </div>
+                            ))}
+                        </div>
+
+                        {collections.length === 0 && !isLoadingCollections && (
+                            <div className="text-center py-20">
+                                <p className="text-white/40 text-sm uppercase tracking-widest">No collections yet. Create your first one!</p>
+                            </div>
+                        )}
+
+                        <DeleteProductModal
+                            isOpen={!!collectionToDelete}
+                            onClose={() => setCollectionToDelete(null)}
+                            onConfirm={handleConfirmDeleteCollection}
+                            productName={collectionToDelete?.name || ''}
                         />
                     </div>
                 )}

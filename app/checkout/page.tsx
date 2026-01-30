@@ -6,13 +6,6 @@ import { useCart } from '../providers/CartProvider';
 import Navbar from '../components/Navbar';
 import Footer from '../components/Footer';
 import { useSession } from 'next-auth/react';
-import Script from 'next/script';
-
-declare global {
-    interface Window {
-        EKQR: any;
-    }
-}
 
 export default function CheckoutPage() {
     const { cartItems, cartTotal, clearCart } = useCart();
@@ -25,7 +18,7 @@ export default function CheckoutPage() {
         }
     }, [status, router]);
     const [isProcessing, setIsProcessing] = useState(false);
-    const [paymentMethod, setPaymentMethod] = useState<'upi' | 'cod'>('upi');
+    const [paymentMethod, setPaymentMethod] = useState<'phonepe' | 'cod'>('phonepe');
     const [isPaymentSuccess, setIsPaymentSuccess] = useState(false);
 
     const [formData, setFormData] = useState({
@@ -116,34 +109,14 @@ export default function CheckoutPage() {
                 if (paymentMethod === 'cod') {
                     clearCart();
                     router.push(`/order-confirmation?id=${data.order_id}&method=cod`);
-                } else {
-                    localStorage.setItem('last_txn_id', data.client_txn_id);
-                    localStorage.setItem('last_txn_date', new Date().toLocaleDateString('en-GB').replace(/\//g, '-'));
-
-                    // Initialize and trigger UPIGateway SDK as per documentation
-                    if (window.EKQR) {
-                        const paymentSDK = new window.EKQR({
-                            sessionId: data.data.session_id,
-                            callbacks: {
-                                onSuccess: function (response: any) {
-                                    console.log("Payment Successful:", response);
-                                    clearCart();
-                                    router.push(`/order-confirmation?id=${data.client_txn_id}`);
-                                },
-                                onError: function (response: any) {
-                                    console.error("Payment Error:", response);
-                                    alert('Payment failed or error occurred.');
-                                },
-                                onCancelled: function (response: any) {
-                                    console.info("Payment Cancelled:", response);
-                                }
-                            }
-                        });
-
-                        // Trigger the payment process (opens the official modal/popup)
-                        paymentSDK.pay();
+                } else if (paymentMethod === 'phonepe') {
+                    // Redirect to PhonePe payment page
+                    if (data.redirectUrl) {
+                        localStorage.setItem('last_txn_id', data.client_txn_id);
+                        localStorage.setItem('last_txn_date', new Date().toLocaleDateString('en-GB').replace(/\//g, '-'));
+                        window.location.href = data.redirectUrl;
                     } else {
-                        alert('Payment system is loading, please try again in a moment.');
+                        alert('Payment redirect URL not received');
                     }
                 }
             } else {
@@ -167,225 +140,261 @@ export default function CheckoutPage() {
                 <div className="grid grid-cols-1 lg:grid-cols-2 gap-12 lg:gap-24">
                     {/* Checkout Form */}
                     <div className="space-y-8 animate-fadeIn">
-                        <div>
-                            <h1 className="text-3xl md:text-5xl font-thin tracking-tighter mb-4">Checkout</h1>
-                            <p className="text-white/40 text-sm uppercase tracking-[0.2em]">Shipping & Contact Information</p>
+                        <div className="border-b border-white/5 pb-6">
+                            <h1 className="text-4xl md:text-6xl font-thin tracking-wider text-white mb-3">CHECKOUT</h1>
+                            <p className="text-white/40 text-[10px] uppercase tracking-[0.3em] font-light">Complete your order</p>
                         </div>
 
                         <form onSubmit={handlePayment} className="space-y-8">
-                            <div className="space-y-6">
+                            <div className="space-y-8">
                                 {/* Form Inputs */}
-                                <div className="space-y-4">
+                                <div className="space-y-6">
                                     <div className="group">
-                                        <label className="text-[10px] uppercase tracking-[0.3em] text-white/40 block mb-2 transition-colors group-focus-within:text-white">Full Name</label>
+                                        <label className="text-[10px] uppercase tracking-[0.3em] text-white/40 block mb-3 transition-colors group-focus-within:text-white font-light">Full Name</label>
                                         <input
                                             type="text"
                                             name="name"
                                             value={formData.name}
                                             onChange={handleInputChange}
-                                            className={`w-full bg-white/5 border ${errors.name ? 'border-red-500' : 'border-white/10'} px-5 py-4 text-sm text-white focus:outline-none focus:border-white transition-all font-light`}
-                                            placeholder="EX: JOHN DOE"
+                                            style={{ WebkitBoxShadow: '0 0 0 1000px black inset', WebkitTextFillColor: 'white' }}
+                                            className={`w-full !bg-transparent border-b ${errors.name ? 'border-red-500' : 'border-white/20'} px-0 py-3 text-sm !text-white focus:outline-none focus:border-white transition-all font-light placeholder:text-white/20 focus:!bg-transparent active:!bg-transparent`}
+                                            placeholder="John Doe"
                                         />
-                                        {errors.name && <p className="text-red-500 text-[9px] mt-1 tracking-widest">{errors.name.toUpperCase()}</p>}
+                                        {errors.name && <p className="text-red-500 text-[9px] mt-2 tracking-wide font-light">{errors.name}</p>}
                                     </div>
 
-                                    <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
+                                    <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
                                         <div className="group">
-                                            <label className="text-[10px] uppercase tracking-[0.3em] text-white/40 block mb-2">Email Address</label>
+                                            <label className="text-[10px] uppercase tracking-[0.3em] text-white/40 block mb-3 font-light">Email Address</label>
                                             <input
                                                 type="email"
                                                 name="email"
                                                 value={formData.email}
                                                 onChange={handleInputChange}
-                                                className={`w-full bg-white/5 border ${errors.email ? 'border-red-500' : 'border-white/10'} px-5 py-4 text-sm text-white focus:outline-none focus:border-white transition-all font-light`}
-                                                placeholder="EMAIL@EXAMPLE.COM"
+                                                style={{ WebkitBoxShadow: '0 0 0 1000px black inset', WebkitTextFillColor: 'white' }}
+                                                className={`w-full !bg-transparent border-b ${errors.email ? 'border-red-500' : 'border-white/20'} px-0 py-3 text-sm !text-white focus:outline-none focus:border-white transition-all font-light placeholder:text-white/20 focus:!bg-transparent active:!bg-transparent`}
+                                                placeholder="email@example.com"
                                             />
-                                            {errors.email && <p className="text-red-500 text-[9px] mt-1 tracking-widest">{errors.email.toUpperCase()}</p>}
+                                            {errors.email && <p className="text-red-500 text-[9px] mt-2 tracking-wide font-light">{errors.email}</p>}
                                         </div>
                                         <div className="group">
-                                            <label className="text-[10px] uppercase tracking-[0.3em] text-white/40 block mb-2">Mobile Number</label>
+                                            <label className="text-[10px] uppercase tracking-[0.3em] text-white/40 block mb-3 font-light">Mobile Number</label>
                                             <input
                                                 type="tel"
                                                 name="mobile"
                                                 value={formData.mobile}
                                                 onChange={handleInputChange}
-                                                className={`w-full bg-white/5 border ${errors.mobile ? 'border-red-500' : 'border-white/10'} px-5 py-4 text-sm text-white focus:outline-none focus:border-white transition-all font-light`}
+                                                style={{ WebkitBoxShadow: '0 0 0 1000px black inset', WebkitTextFillColor: 'white' }}
+                                                className={`w-full !bg-transparent border-b ${errors.mobile ? 'border-red-500' : 'border-white/20'} px-0 py-3 text-sm !text-white focus:outline-none focus:border-white transition-all font-light placeholder:text-white/20 focus:!bg-transparent active:!bg-transparent`}
                                                 placeholder="9876543210"
                                             />
-                                            {errors.mobile && <p className="text-red-500 text-[9px] mt-1 tracking-widest">{errors.mobile.toUpperCase()}</p>}
+                                            {errors.mobile && <p className="text-red-500 text-[9px] mt-2 tracking-wide font-light">{errors.mobile}</p>}
                                         </div>
                                     </div>
 
                                     <div className="group">
-                                        <label className="text-[10px] uppercase tracking-[0.3em] text-white/40 block mb-2">Street Address</label>
+                                        <label className="text-[10px] uppercase tracking-[0.3em] text-white/40 block mb-3 font-light">Street Address</label>
                                         <input
                                             type="text"
                                             name="street"
                                             value={formData.street}
                                             onChange={handleInputChange}
-                                            className={`w-full bg-white/5 border ${errors.street ? 'border-red-500' : 'border-white/10'} px-5 py-4 text-sm text-white focus:outline-none focus:border-white transition-all font-light`}
-                                            placeholder="HOUSE NO, BUILDING NAME, STREET"
+                                            style={{ WebkitBoxShadow: '0 0 0 1000px black inset', WebkitTextFillColor: 'white' }}
+                                            className={`w-full !bg-transparent border-b ${errors.street ? 'border-red-500' : 'border-white/20'} px-0 py-3 text-sm !text-white focus:outline-none focus:border-white transition-all font-light placeholder:text-white/20 focus:!bg-transparent active:!bg-transparent`}
+                                            placeholder="House no, Building name, Street"
                                         />
-                                        {errors.street && <p className="text-red-500 text-[9px] mt-1 tracking-widest">{errors.street.toUpperCase()}</p>}
+                                        {errors.street && <p className="text-red-500 text-[9px] mt-2 tracking-wide font-light">{errors.street}</p>}
                                     </div>
 
-                                    <div className="grid grid-cols-1 md:grid-cols-3 gap-4">
+                                    <div className="grid grid-cols-1 md:grid-cols-3 gap-6">
                                         <div className="group">
-                                            <label className="text-[10px] uppercase tracking-[0.3em] text-white/40 block mb-2">City</label>
+                                            <label className="text-[10px] uppercase tracking-[0.3em] text-white/40 block mb-3 font-light">City</label>
                                             <input
                                                 type="text"
                                                 name="city"
                                                 value={formData.city}
                                                 onChange={handleInputChange}
-                                                className={`w-full bg-white/5 border ${errors.city ? 'border-red-500' : 'border-white/10'} px-5 py-4 text-sm text-white focus:outline-none focus:border-white transition-all font-light`}
-                                                placeholder="CITY"
+                                                style={{ WebkitBoxShadow: '0 0 0 1000px black inset', WebkitTextFillColor: 'white' }}
+                                                className={`w-full !bg-transparent border-b ${errors.city ? 'border-red-500' : 'border-white/20'} px-0 py-3 text-sm !text-white focus:outline-none focus:border-white transition-all font-light placeholder:text-white/20 focus:!bg-transparent active:!bg-transparent`}
+                                                placeholder="City"
                                             />
-                                            {errors.city && <p className="text-red-500 text-[9px] mt-1 tracking-widest">{errors.city.toUpperCase()}</p>}
+                                            {errors.city && <p className="text-red-500 text-[9px] mt-2 tracking-wide font-light">{errors.city}</p>}
                                         </div>
                                         <div className="group">
-                                            <label className="text-[10px] uppercase tracking-[0.3em] text-white/40 block mb-2">State</label>
+                                            <label className="text-[10px] uppercase tracking-[0.3em] text-white/40 block mb-3 font-light">State</label>
                                             <input
                                                 type="text"
                                                 name="state"
                                                 value={formData.state}
                                                 onChange={handleInputChange}
-                                                className={`w-full bg-white/5 border ${errors.state ? 'border-red-500' : 'border-white/10'} px-5 py-4 text-sm text-white focus:outline-none focus:border-white transition-all font-light`}
-                                                placeholder="STATE"
+                                                style={{ WebkitBoxShadow: '0 0 0 1000px black inset', WebkitTextFillColor: 'white' }}
+                                                className={`w-full !bg-transparent border-b ${errors.state ? 'border-red-500' : 'border-white/20'} px-0 py-3 text-sm !text-white focus:outline-none focus:border-white transition-all font-light placeholder:text-white/20 focus:!bg-transparent active:!bg-transparent`}
+                                                placeholder="State"
                                             />
-                                            {errors.state && <p className="text-red-500 text-[9px] mt-1 tracking-widest">{errors.state.toUpperCase()}</p>}
+                                            {errors.state && <p className="text-red-500 text-[9px] mt-2 tracking-wide font-light">{errors.state}</p>}
                                         </div>
                                         <div className="group">
-                                            <label className="text-[10px] uppercase tracking-[0.3em] text-white/40 block mb-2">Pincode</label>
+                                            <label className="text-[10px] uppercase tracking-[0.3em] text-white/40 block mb-3 font-light">Pincode</label>
                                             <input
                                                 type="text"
                                                 name="pincode"
                                                 maxLength={6}
                                                 value={formData.pincode}
                                                 onChange={handleInputChange}
-                                                className={`w-full bg-white/5 border ${errors.pincode ? 'border-red-500' : 'border-white/10'} px-5 py-4 text-sm text-white focus:outline-none focus:border-white transition-all font-light`}
+                                                style={{ WebkitBoxShadow: '0 0 0 1000px black inset', WebkitTextFillColor: 'white' }}
+                                                className={`w-full !bg-transparent border-b ${errors.pincode ? 'border-red-500' : 'border-white/20'} px-0 py-3 text-sm !text-white focus:outline-none focus:border-white transition-all font-light placeholder:text-white/20 focus:!bg-transparent active:!bg-transparent`}
                                                 placeholder="400001"
                                             />
-                                            {errors.pincode && <p className="text-red-500 text-[9px] mt-1 tracking-widest">{errors.pincode.toUpperCase()}</p>}
+                                            {errors.pincode && <p className="text-red-500 text-[9px] mt-2 tracking-wide font-light">{errors.pincode}</p>}
                                         </div>
                                     </div>
                                 </div>
 
                                 {/* Payment Method Selection */}
-                                <div className="space-y-4 pt-4 border-t border-white/5">
-                                    <p className="text-[10px] uppercase tracking-[0.3em] text-white/40">Select Payment Method</p>
-                                    <div className="grid grid-cols-1 sm:grid-cols-2 gap-4">
+                                <div className="space-y-6 pt-8 border-t border-white/5">
+                                    <p className="text-[10px] uppercase tracking-[0.3em] text-white/40 font-light">Payment Method</p>
+                                    <div className="grid grid-cols-1 gap-3">
                                         <button
                                             type="button"
-                                            onClick={() => setPaymentMethod('upi')}
-                                            className={`p-6 border transition-all text-left flex flex-col gap-4 ${paymentMethod === 'upi' ? 'bg-white text-black border-white' : 'bg-transparent border-white/10 text-white hover:border-white/30'}`}
+                                            onClick={() => setPaymentMethod('phonepe')}
+                                            className={`group relative overflow-hidden border transition-all duration-300 ${paymentMethod === 'phonepe' ? 'border-white bg-white/5' : 'border-white/10 hover:border-white/30'}`}
                                         >
-                                            <div className="flex justify-between items-center">
-                                                <span className="text-[10px] font-bold uppercase tracking-widest">Instant UPI</span>
-                                                {paymentMethod === 'upi' && (
-                                                    <div className="w-2 h-2 rounded-full bg-black"></div>
-                                                )}
+                                            <div className="p-6 flex items-center justify-between">
+                                                <div className="flex items-center gap-4">
+                                                    <div className={`w-5 h-5 rounded-full border-2 transition-all ${paymentMethod === 'phonepe' ? 'border-white bg-white' : 'border-white/20'}`}>
+                                                        {paymentMethod === 'phonepe' && (
+                                                            <div className="w-full h-full flex items-center justify-center">
+                                                                <div className="w-2 h-2 rounded-full bg-black"></div>
+                                                            </div>
+                                                        )}
+                                                    </div>
+                                                    <div className="text-left">
+                                                        <p className="text-[11px] font-light tracking-[0.2em] uppercase text-white mb-1">Online Payment</p>
+                                                        <p className="text-[9px] text-white/40 font-light tracking-wide">UPI • Cards • NetBanking</p>
+                                                    </div>
+                                                </div>
+                                                <div className={`text-[9px] uppercase tracking-widest font-light transition-opacity ${paymentMethod === 'phonepe' ? 'opacity-100' : 'opacity-0'}`}>
+                                                    Selected
+                                                </div>
                                             </div>
-                                            <div className="flex gap-2 items-center opacity-80">
-                                                <div className="w-5 h-5 bg-[#5f259f] rounded-md flex items-center justify-center text-[7px] text-white font-bold">P</div>
-                                                <div className="w-5 h-5 bg-white border border-black/10 rounded-md flex items-center justify-center text-[7px] text-[#4285F4] font-bold">G</div>
-                                                <div className="w-5 h-5 bg-[#ff9900] rounded-md flex items-center justify-center text-[7px] text-black font-bold">A</div>
-                                                <div className="w-5 h-5 bg-black rounded-md flex items-center justify-center text-[7px] text-white font-bold italic">B</div>
-                                                <div className="w-5 h-5 bg-[#2563eb] rounded-md flex items-center justify-center text-[7px] text-white font-bold">S</div>
-                                            </div>
-                                            <p className="text-[8px] uppercase tracking-tighter opacity-60">PhonePe, GPay, Amazon, BHIM, SBI</p>
                                         </button>
+
                                         <button
                                             type="button"
                                             onClick={() => setPaymentMethod('cod')}
-                                            className={`p-6 border transition-all text-left flex flex-col gap-2 ${paymentMethod === 'cod' ? 'bg-white text-black border-white' : 'bg-transparent border-white/10 text-white hover:border-white/30'}`}
+                                            className={`group relative overflow-hidden border transition-all duration-300 ${paymentMethod === 'cod' ? 'border-white bg-white/5' : 'border-white/10 hover:border-white/30'}`}
                                         >
-                                            <div className="flex justify-between items-center">
-                                                <span className="text-[10px] font-bold uppercase tracking-widest">Cash on Delivery</span>
-                                                {paymentMethod === 'cod' && (
-                                                    <div className="w-2 h-2 rounded-full bg-black"></div>
-                                                )}
+                                            <div className="p-6 flex items-center justify-between">
+                                                <div className="flex items-center gap-4">
+                                                    <div className={`w-5 h-5 rounded-full border-2 transition-all ${paymentMethod === 'cod' ? 'border-white bg-white' : 'border-white/20'}`}>
+                                                        {paymentMethod === 'cod' && (
+                                                            <div className="w-full h-full flex items-center justify-center">
+                                                                <div className="w-2 h-2 rounded-full bg-black"></div>
+                                                            </div>
+                                                        )}
+                                                    </div>
+                                                    <div className="text-left">
+                                                        <p className="text-[11px] font-light tracking-[0.2em] uppercase text-white mb-1">Cash on Delivery</p>
+                                                        <p className="text-[9px] text-white/40 font-light tracking-wide">Pay when you receive</p>
+                                                    </div>
+                                                </div>
+                                                <div className={`text-[9px] uppercase tracking-widest font-light transition-opacity ${paymentMethod === 'cod' ? 'opacity-100' : 'opacity-0'}`}>
+                                                    Selected
+                                                </div>
                                             </div>
-                                            <p className="text-[9px] opacity-60 uppercase tracking-tighter">Pay when you receive items</p>
                                         </button>
                                     </div>
                                 </div>
                             </div>
 
-                            <button
-                                type="submit"
-                                disabled={isProcessing}
-                                className="w-full bg-white text-black py-5 text-[11px] font-bold uppercase tracking-[0.4em] transition-all hover:bg-gray-200 active:scale-[0.98] disabled:opacity-50 flex items-center justify-center gap-3"
-                            >
-                                {isProcessing ? (
-                                    <span className="animate-pulse">PROCESSING...</span>
-                                ) : (
-                                    <>
-                                        {paymentMethod === 'upi' ? `PAY ₹${finalTotal.toLocaleString('en-IN')} VIA UPI` : `CONFIRM COD ORDER (₹${finalTotal.toLocaleString('en-IN')})`}
-                                        <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2">
-                                            <path d="M5 12h14m-7-7l7 7-7 7" strokeLinecap="round" strokeLinejoin="round" />
-                                        </svg>
-                                    </>
-                                )}
-                            </button>
-                            <p className="text-center text-[9px] text-white/30 tracking-[0.2em] uppercase">Makers3D Built on Reliability • Secured Encryption</p>
+                            <div className="space-y-4 pt-6">
+                                <button
+                                    type="submit"
+                                    disabled={isProcessing}
+                                    className="w-full bg-white text-black py-5 text-[10px] font-light uppercase tracking-[0.3em] transition-all hover:bg-neutral-100 active:scale-[0.99] disabled:opacity-50 disabled:cursor-not-allowed flex items-center justify-center gap-3 group relative overflow-hidden"
+                                >
+                                    {isProcessing ? (
+                                        <div className="flex items-center gap-2">
+                                            <div className="w-4 h-4 border-2 border-black/20 border-t-black rounded-full animate-spin"></div>
+                                            <span>PROCESSING ORDER...</span>
+                                        </div>
+                                    ) : (
+                                        <>
+                                            <span>
+                                                {paymentMethod === 'phonepe'
+                                                    ? `PROCEED TO PAYMENT • ₹${finalTotal.toLocaleString('en-IN')}`
+                                                    : `PLACE ORDER • ₹${finalTotal.toLocaleString('en-IN')}`}
+                                            </span>
+                                            <svg
+                                                className="w-4 h-4 transition-transform group-hover:translate-x-1"
+                                                fill="none"
+                                                stroke="currentColor"
+                                                viewBox="0 0 24 24"
+                                            >
+                                                <path strokeLinecap="round" strokeLinejoin="round" strokeWidth="2" d="M9 5l7 7-7 7" />
+                                            </svg>
+                                        </>
+                                    )}
+                                </button>
+                                <p className="text-center text-[9px] text-white/30 tracking-[0.25em] uppercase font-light">Secure Checkout • Encrypted Transaction</p>
+                            </div>
                         </form>
                     </div>
 
                     {/* Order Summary */}
                     <div className="lg:border-l lg:border-white/5 lg:pl-12 space-y-8 animate-fadeIn" style={{ animationDelay: '0.2s' }}>
-                        <h2 className="text-xl font-thin tracking-widest uppercase">Your Order</h2>
+                        <div className="border-b border-white/5 pb-6">
+                            <h2 className="text-2xl font-thin tracking-wider uppercase text-white">ORDER SUMMARY</h2>
+                            <p className="text-white/40 text-[10px] uppercase tracking-[0.3em] font-light mt-2">{cartItems.length} {cartItems.length === 1 ? 'Item' : 'Items'}</p>
+                        </div>
 
-                        <div className="space-y-6">
+                        <div className="space-y-4">
                             {cartItems.map((item) => (
-                                <div key={item.id} className="flex gap-4 items-center">
-                                    <div className="relative w-16 h-20 bg-neutral-900 border border-white/5 overflow-hidden flex-shrink-0">
+                                <div key={item.id} className="flex gap-4 pb-4 border-b border-white/5 last:border-0">
+                                    <div className="relative w-20 h-24 bg-neutral-900/50 border border-white/10 overflow-hidden flex-shrink-0">
                                         <img
                                             src={typeof item.images?.[0] === 'string' ? item.images[0] : (item.images?.[0]?.url || item.image)}
                                             alt={typeof item.images?.[0] === 'object' ? item.images[0].alt : (item.name || item.title || 'Product')}
-                                            className="object-cover w-full h-full"
+                                            className="object-cover w-full h-full opacity-90"
                                         />
-                                        <span className="absolute -top-2 -right-2 bg-white text-black text-[9px] font-bold w-5 h-5 rounded-full flex items-center justify-center border border-black">
+                                        <div className="absolute top-2 right-2 bg-white text-black text-[9px] font-light w-5 h-5 rounded-full flex items-center justify-center">
                                             {item.quantity}
-                                        </span>
+                                        </div>
                                     </div>
-                                    <div className="flex-1">
-                                        <p className="text-sm font-light tracking-wide">{item.name || item.title}</p>
-                                        <p className="text-[10px] text-white/40 uppercase tracking-widest">{item.category}</p>
+                                    <div className="flex-1 flex flex-col justify-center">
+                                        <p className="text-sm font-light tracking-wide text-white mb-1">{item.name || item.title}</p>
+                                        <p className="text-[9px] text-white/40 uppercase tracking-[0.2em] font-light">{item.category}</p>
                                     </div>
-                                    <p className="text-sm font-light">₹{(item.price * item.quantity).toLocaleString('en-IN')}</p>
+                                    <div className="flex items-center">
+                                        <p className="text-sm font-light text-white">₹{(item.price * item.quantity).toLocaleString('en-IN')}</p>
+                                    </div>
                                 </div>
                             ))}
                         </div>
 
-                        <div className="pt-8 border-t border-white/5 space-y-4">
+                        <div className="pt-6 border-t border-white/5 space-y-3">
                             <div className="flex justify-between text-sm">
-                                <span className="text-white/40 font-light">Subtotal</span>
-                                <span className="font-light">₹{cartTotal.toLocaleString('en-IN')}</span>
+                                <span className="text-white/40 font-light tracking-wide">Subtotal</span>
+                                <span className="font-light text-white">₹{cartTotal.toLocaleString('en-IN')}</span>
                             </div>
                             {paymentMethod === 'cod' && (
                                 <div className="flex justify-between text-sm animate-fadeIn">
-                                    <span className="text-white/40 font-light">COD Handling Fee (10%)</span>
-                                    <span className="text-white/80 font-light">+ ₹{codCharge.toLocaleString('en-IN')}</span>
+                                    <span className="text-white/40 font-light tracking-wide">COD Handling Fee</span>
+                                    <span className="text-white/60 font-light">+ ₹{codCharge.toLocaleString('en-IN')}</span>
                                 </div>
                             )}
                             <div className="flex justify-between text-sm">
-                                <span className="text-white/40 font-light">Shipping</span>
-                                <span className="text-green-400 font-light uppercase tracking-widest text-[10px]">Free</span>
+                                <span className="text-white/40 font-light tracking-wide">Shipping</span>
+                                <span className="text-white font-light uppercase tracking-[0.2em] text-[10px]">Free</span>
                             </div>
-                            <div className="flex justify-between items-end pt-4">
-                                <span className="text-xs uppercase tracking-[0.3em]">Total Amount</span>
-                                <span className="text-2xl font-light">₹{finalTotal.toLocaleString('en-IN')}</span>
+                            <div className="flex justify-between items-center pt-4 border-t border-white/10">
+                                <span className="text-[10px] uppercase tracking-[0.3em] text-white/60 font-light">Total</span>
+                                <span className="text-3xl font-thin tracking-wider text-white">₹{finalTotal.toLocaleString('en-IN')}</span>
                             </div>
                         </div>
                     </div>
                 </div>
             </main>
-
-            <Script
-                src="https://cdn.ekqr.in/ekqr_sdk.js"
-                strategy="afterInteractive"
-                onLoad={() => console.log('EKQR SDK Loaded')}
-            />
 
             <Footer />
 

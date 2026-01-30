@@ -121,13 +121,13 @@ export default function ShippingPolicy() {
                                 <div className="space-y-6">
                                     {[
                                         { title: "Order Confirmed", desc: "Payment successfully received and verified." },
-                                        // { title: "Design Approved", desc: "For personalized orders, specifications are locked and verified." },
+                                        { title: "Design Approved", desc: "For personalized orders, specifications are locked and verified." },
                                         { title: "Printing Started", desc: "The additive manufacturing process has commenced." },
                                         { title: "Quality Check", desc: "Rigorous assessment for structural and aesthetic excellence." },
                                         { title: "Packed & Ready", desc: "Securely encased for transit and awaiting courier dispatch." },
                                         { title: "Shipped", desc: "Handover to logistics partner with active tracking credentials." },
                                         { title: "Delivered", desc: "Final handover to client. Acquisition complete." }
-                                    ].filter(step => step.title !== "Design Approved").map((step, i, arr) => (
+                                    ].map((step, i, arr) => (
                                         <div key={i} className="flex gap-6 group">
                                             <div className="flex flex-col items-center gap-2">
                                                 <div className="w-2 h-2 rounded-full bg-white/40 group-hover:bg-white transition-colors" />

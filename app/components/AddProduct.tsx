@@ -2,6 +2,12 @@
 
 import { useState, useEffect, useRef } from 'react';
 
+interface Collection {
+    id: string;
+    name: string;
+    slug: string;
+}
+
 interface ProductImage {
     url: string;
     alt: string;
@@ -39,6 +45,26 @@ export default function AddProduct({ initialData, onSubmit, onCancel }: AddProdu
 
     const [isCategoryOpen, setIsCategoryOpen] = useState(false);
     const [isUploading, setIsUploading] = useState<number | null>(null);
+    const [collections, setCollections] = useState<Collection[]>([]);
+    const [isLoadingCollections, setIsLoadingCollections] = useState(true);
+
+    // Fetch collections
+    useEffect(() => {
+        const fetchCollections = async () => {
+            try {
+                const res = await fetch('/api/collections');
+                if (res.ok) {
+                    const data = await res.json();
+                    setCollections(data);
+                }
+            } catch (error) {
+                console.error('Error fetching collections:', error);
+            } finally {
+                setIsLoadingCollections(false);
+            }
+        };
+        fetchCollections();
+    }, []);
 
     // Load initial data if editing
     useEffect(() => {
@@ -282,14 +308,16 @@ export default function AddProduct({ initialData, onSubmit, onCancel }: AddProdu
                         </div>
 
                         <div className="group relative">
-                            <label className="block text-[10px] uppercase tracking-widest text-white/40 mb-2 font-medium">Category</label>
+                            <label className="block text-[10px] uppercase tracking-widest text-white/40 mb-2 font-medium">
+                                Collection
+                            </label>
 
                             <div
                                 onClick={() => setIsCategoryOpen(!isCategoryOpen)}
                                 className="w-full bg-transparent border-b border-white/20 py-2 text-sm text-white cursor-pointer flex justify-between items-center hover:border-white transition-colors group-hover:border-white/50"
                             >
                                 <span className={`${formData.category ? 'text-white' : 'text-white/40'} tracking-wide font-light`}>
-                                    {formData.category || 'Select Category'}
+                                    {formData.category || 'Select Collection'}
                                 </span>
                                 <svg
                                     width="10"
@@ -302,19 +330,41 @@ export default function AddProduct({ initialData, onSubmit, onCancel }: AddProdu
                                 </svg>
                             </div>
 
-                            <div className={`absolute left-0 right-0 top-full mt-2 bg-black border border-white/10 z-50 overflow-hidden transition-all duration-300 origin-top shadow-2xl ${isCategoryOpen ? 'opacity-100 scale-y-100 translate-y-0' : 'opacity-0 scale-y-95 -translate-y-2 pointer-events-none'}`}>
-                                {['Lighting', 'Decor', 'Lifestyle', 'Garden'].map((cat) => (
+                            <div className={`absolute left-0 right-0 top-full mt-2 bg-black border border-white/10 z-50 overflow-y-auto max-h-60 transition-all duration-300 origin-top shadow-2xl ${isCategoryOpen ? 'opacity-100 scale-y-100 translate-y-0' : 'opacity-0 scale-y-95 -translate-y-2 pointer-events-none'}`}>
+                                {/* Default Collections */}
+                                {['DIVINE', 'AURA', 'MOTION', 'BOX'].map((cat) => (
                                     <div
                                         key={cat}
                                         onClick={() => {
                                             setFormData(prev => ({ ...prev, category: cat }));
                                             setIsCategoryOpen(false);
                                         }}
-                                        className="px-4 py-3 text-[10px] uppercase tracking-widest text-white/40 hover:text-white hover:bg-white/5 cursor-pointer transition-all border-b border-white/5 last:border-0"
+                                        className="px-4 py-3 text-[10px] uppercase tracking-widest text-white/40 hover:text-white hover:bg-white/5 cursor-pointer transition-all border-b border-white/5"
                                     >
                                         {cat}
                                     </div>
                                 ))}
+
+                                {/* Custom Collections from Database */}
+                                {!isLoadingCollections && collections.length > 0 && (
+                                    <>
+                                        <div className="px-4 py-2 text-[9px] uppercase tracking-widest text-white/60 bg-white/5 border-b border-white/10">
+                                            Custom Collections
+                                        </div>
+                                        {collections.map((collection) => (
+                                            <div
+                                                key={collection.id}
+                                                onClick={() => {
+                                                    setFormData(prev => ({ ...prev, category: collection.slug.toUpperCase() }));
+                                                    setIsCategoryOpen(false);
+                                                }}
+                                                className="px-4 py-3 text-[10px] uppercase tracking-widest text-white/40 hover:text-white hover:bg-white/5 cursor-pointer transition-all border-b border-white/5 last:border-0"
+                                            >
+                                                {collection.name}
+                                            </div>
+                                        ))}
+                                    </>
+                                )}
                             </div>
                         </div>
                     </div>

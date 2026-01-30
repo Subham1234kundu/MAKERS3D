@@ -125,10 +125,29 @@ export async function DELETE(request: NextRequest) {
         }
 
         const db = await getDatabase('makers3d_db');
+
+        // Delete the product
         const result = await db.collection('products').deleteOne({ _id: new ObjectId(id) });
 
         if (result.deletedCount === 0) {
             return NextResponse.json({ message: 'Product not found' }, { status: 404 });
+        }
+
+        // Clean up: Remove this product from all user carts in the database
+        try {
+            await db.collection('carts').updateMany(
+                {},
+                { $pull: { items: { id: id } } } as any
+            );
+        } catch (pullError) {
+            console.error('Failed to remove deleted product from user carts:', pullError);
+        }
+
+        // Clean up: Remove this product from all user likes
+        try {
+            await db.collection('likes').deleteMany({ productId: id });
+        } catch (likeError) {
+            console.error('Failed to remove deleted product from likes:', likeError);
         }
 
         return NextResponse.json({ message: 'Product deleted' });

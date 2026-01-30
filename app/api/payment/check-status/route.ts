@@ -1,72 +1,87 @@
 import { NextResponse } from 'next/server';
+import { phonePe } from '@/lib/phonepe';
 import { getDatabase } from '@/lib/mongodb';
 
-export async function POST(req: Request) {
+export async function GET(req: Request) {
     try {
-        const body = await req.json();
-        const { client_txn_id, txn_date } = body;
+        const { searchParams } = new URL(req.url);
+        const merchantOrderId = searchParams.get('orderId');
+        const paymentMethod = searchParams.get('method');
 
-        if (!client_txn_id || !txn_date) {
-            return NextResponse.json({ success: false, msg: 'Missing parameters' }, { status: 400 });
+        if (!merchantOrderId) {
+            return NextResponse.json({
+                success: false,
+                msg: 'Order ID is required'
+            }, { status: 400 });
         }
 
-        const apiKey = process.env.UPIGATEWAY_KEY;
+        const db = await getDatabase('makers3d_db');
 
-        const response = await fetch('https://api.ekqr.in/api/check_order_status', {
-            method: 'POST',
-            headers: {
-                'Content-Type': 'application/json'
-            },
-            body: JSON.stringify({
-                key: apiKey,
-                client_txn_id,
-                txn_date
-            })
-        });
-
-        const data = await response.json();
-
-        // Update DB if success
-        if (data.status && data.data.status === 'success') {
+        // For PhonePe payments, check with PhonePe API
+        if (paymentMethod === 'phonepe') {
             try {
-                const db = await getDatabase('makers3d_db');
+                const statusResponse = await phonePe.checkStatus(merchantOrderId);
+                console.log('PhonePe Status Check:', statusResponse);
 
-                // Get order details before updating
-                const order = await db.collection('orders').findOne({ client_txn_id: client_txn_id });
-
-                await db.collection('orders').updateOne(
-                    { client_txn_id: client_txn_id },
-                    {
-                        $set: {
-                            status: 'success',
-                            upi_txn_id: data.data.upi_txn_id,
-                            updatedAt: new Date()
+                // Update local database with latest status
+                if (statusResponse.success) {
+                    await db.collection('orders').updateOne(
+                        { client_txn_id: merchantOrderId },
+                        {
+                            $set: {
+                                status: statusResponse.code === 'PAYMENT_SUCCESS' ? 'success' : 'failed',
+                                payment_status: statusResponse.code,
+                                phonepe_response: statusResponse,
+                                updatedAt: new Date()
+                            }
                         }
-                    }
-                );
-
-                // Send order confirmation email (non-blocking)
-                if (order && order.customer_email) {
-                    const { sendOrderConfirmationEmail } = await import('@/lib/email-service');
-                    sendOrderConfirmationEmail({
-                        customerName: order.customer_name,
-                        customerEmail: order.customer_email,
-                        orderId: order.order_id || order.client_txn_id,
-                        amount: order.amount,
-                        items: order.p_info,
-                        address: order.address,
-                        paymentMethod: 'upi'
-                    }).catch(err => console.error('Order confirmation email error:', err));
+                    );
                 }
-            } catch (dbError) {
-                console.error('Database update error during status check:', dbError);
+
+                return NextResponse.json({
+                    success: statusResponse.success,
+                    status: statusResponse.code,
+                    data: statusResponse.data
+                });
+            } catch (error: any) {
+                console.error('PhonePe status check error:', error);
+                return NextResponse.json({
+                    success: false,
+                    msg: error.message
+                }, { status: 500 });
             }
         }
 
-        return NextResponse.json(data);
+        // For other payment methods, check database
+        const order = await db.collection('orders').findOne({
+            $or: [
+                { client_txn_id: merchantOrderId },
+                { order_id: merchantOrderId }
+            ]
+        });
+
+        if (!order) {
+            return NextResponse.json({
+                success: false,
+                msg: 'Order not found'
+            }, { status: 404 });
+        }
+
+        return NextResponse.json({
+            success: true,
+            status: order.status,
+            payment_method: order.payment_method,
+            order: {
+                order_id: order.order_id,
+                amount: order.amount,
+                customer_name: order.customer_name,
+                customer_email: order.customer_email,
+                status: order.status
+            }
+        });
 
     } catch (error: any) {
-        console.error('Payment check error:', error);
+        console.error('Status check error:', error);
         return NextResponse.json({
             success: false,
             msg: 'Internal Server Error'
