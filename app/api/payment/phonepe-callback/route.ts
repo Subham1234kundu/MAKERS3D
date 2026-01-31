@@ -115,15 +115,22 @@ export async function POST(req: NextRequest) {
                 }
             );
 
-            // Send confirmation email
+            // Fetch the order for subsequent actions (cart clearing, email sending)
             const order = await db.collection('orders').findOne({ client_txn_id: merchantOrderId });
+
+            // Clear the cart in database if we have an order email
+            if (order && order.customer_email) {
+                db.collection('carts').deleteOne({ email: order.customer_email.toLowerCase() })
+                    .catch(err => console.error('Failed to clear cart after PhonePe payment:', err));
+            }
+
+            // Send confirmation email
             if (order) {
                 const { sendOrderConfirmationEmail } = await import('@/lib/email-service');
                 sendOrderConfirmationEmail({
                     customerName: order.customer_name,
                     customerEmail: order.customer_email,
                     orderId: order.order_id,
-                    amount: order.amount,
                     items: order.p_info,
                     address: order.address,
                     paymentMethod: 'phonepe'
@@ -229,15 +236,22 @@ export async function GET(req: NextRequest) {
                 }
             );
 
-            // Send email
+            // Fetch order for subsequent actions
             const order = await db.collection('orders').findOne({ client_txn_id: merchantOrderId });
+
+            // Clear cart if successful
+            if (order && order.customer_email) {
+                db.collection('carts').deleteOne({ email: order.customer_email.toLowerCase() })
+                    .catch(err => console.error('Failed to clear cart after PhonePe GET callback:', err));
+            }
+
+            // Send email
             if (order) {
                 const { sendOrderConfirmationEmail } = await import('@/lib/email-service');
                 sendOrderConfirmationEmail({
                     customerName: order.customer_name,
                     customerEmail: order.customer_email,
                     orderId: order.order_id,
-                    amount: order.amount,
                     items: order.p_info,
                     address: order.address,
                     paymentMethod: 'phonepe'

@@ -46,7 +46,6 @@ export async function sendOrderConfirmationEmail(params: {
     customerName: string;
     customerEmail: string;
     orderId: string;
-    amount: string;
     items: string;
     address: string;
     paymentMethod: string;
@@ -55,7 +54,6 @@ export async function sendOrderConfirmationEmail(params: {
         orderId: params.orderId,
         customerName: params.customerName,
         items: params.items,
-        amount: params.amount,
         address: params.address,
         paymentMethod: params.paymentMethod,
     });

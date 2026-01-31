@@ -56,13 +56,16 @@ export async function POST(req: Request) {
                     { upsert: true }
                 );
 
+                // Clear the cart in database (non-blocking)
+                db.collection('carts').deleteOne({ email: customer_email.toLowerCase() })
+                    .catch(err => console.error('Failed to clear cart after COD:', err));
+
                 // Send order confirmation email (non-blocking)
                 const { sendOrderConfirmationEmail } = await import('@/lib/email-service');
                 sendOrderConfirmationEmail({
                     customerName: customer_name,
                     customerEmail: customer_email,
                     orderId: orderData.order_id,
-                    amount,
                     items: p_info,
                     address,
                     paymentMethod: 'cod'

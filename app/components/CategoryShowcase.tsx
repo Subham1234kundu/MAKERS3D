@@ -138,15 +138,15 @@ export default function CategoryShowcase({ products }: CategoryShowcaseProps) {
 
     return (
         <section ref={sectionRef} className="bg-black pt-16 pb-8 lg:py-24 overflow-hidden" suppressHydrationWarning>
-            <div className="max-w-7xl mx-auto px-4 sm:px-8" suppressHydrationWarning>
+            <div className="max-w-7xl 2xl:max-w-[1600px] mx-auto px-4 sm:px-8" suppressHydrationWarning>
                 {/* Mobile: Focal Portal Top | Desktop: Side-by-Side */}
                 <div className="flex flex-col lg:flex-row items-center lg:justify-between gap-6 sm:gap-16 lg:gap-0" suppressHydrationWarning>
 
                     {/* Left Side (Desktop) / Bottom (Mobile): Category Selection */}
-                    <div className="w-full lg:w-[25%] order-2 lg:order-1 flex flex-col items-center lg:items-start" suppressHydrationWarning>
+                    <div className="w-full lg:w-[25%] 2xl:w-[35%] order-2 lg:order-1 flex flex-col items-center lg:items-start" suppressHydrationWarning>
                         <div className="mb-4 sm:mb-12 hidden lg:block" suppressHydrationWarning>
-                            <span className="text-[9px] text-white/30 tracking-[0.5em] uppercase font-light block mb-4" suppressHydrationWarning>Explore Universe</span>
-                            <div className="w-12 h-[1px] bg-white/10" suppressHydrationWarning></div>
+                            <span className="text-[9px] 2xl:text-base text-white/30 tracking-[0.5em] uppercase font-light block mb-4" suppressHydrationWarning>Explore Universe</span>
+                            <div className="w-12 2xl:w-24 h-[1px] bg-white/10" suppressHydrationWarning></div>
                         </div>
 
                         <div
@@ -172,12 +172,12 @@ export default function CategoryShowcase({ products }: CategoryShowcaseProps) {
                                     data-id={cat.id}
                                     data-active={activeCategory === cat.id}
                                     onClick={() => handleCategoryClick(cat.id)}
-                                    className={`category-item group relative flex-shrink-0 lg:flex-shrink-0 transition-all duration-700 flex flex-col lg:flex-row items-center gap-3 sm:gap-6 z-10 w-24 lg:w-full ${activeCategory === cat.id ? 'opacity-100' : 'opacity-40 hover:opacity-100'
+                                    className={`category-item group relative flex-shrink-0 lg:flex-shrink-0 transition-all duration-700 flex flex-col lg:flex-row items-center 2xl:justify-between gap-3 sm:gap-6 z-10 w-24 lg:w-full ${activeCategory === cat.id ? 'opacity-100' : 'opacity-40 hover:opacity-100'
                                         }`}
                                     suppressHydrationWarning
                                 >
                                     {/* Architectural Icon Box - Rounded on Mobile */}
-                                    <div className={`relative flex-shrink-0 w-14 h-14 sm:w-20 sm:h-20 overflow-hidden border transition-all duration-700 rounded-full lg:rounded-none ${activeCategory === cat.id
+                                    <div className={`relative flex-shrink-0 w-14 h-14 sm:w-20 sm:h-20 2xl:w-32 2xl:h-32 overflow-hidden border transition-all duration-700 rounded-full lg:rounded-none ${activeCategory === cat.id
                                         ? 'border-white/60 scale-110 shadow-[0_0_25px_rgba(255,255,255,0.1)]'
                                         : 'border-white/20 grayscale-[50%] group-hover:grayscale-0 group-hover:border-white/40'
                                         }`} suppressHydrationWarning>
@@ -195,7 +195,7 @@ export default function CategoryShowcase({ products }: CategoryShowcaseProps) {
 
                                     <div className="flex flex-col items-center lg:items-start" suppressHydrationWarning>
                                         <div className="flex items-center gap-2 lg:gap-4" suppressHydrationWarning>
-                                            <span className={`text-[10px] sm:text-xs lg:text-3xl xl:text-5xl font-thin tracking-[0.3em] uppercase italic transition-all duration-700 whitespace-nowrap ${activeCategory === cat.id ? 'lg:translate-x-6 text-white' : 'text-white/60'
+                                            <span className={`text-[10px] sm:text-xs lg:text-3xl xl:text-5xl 2xl:text-7xl font-thin tracking-[0.3em] uppercase italic transition-all duration-700 whitespace-nowrap ${activeCategory === cat.id ? 'lg:translate-x-6 text-white' : 'text-white/60'
                                                 }`} suppressHydrationWarning>
                                                 {cat.label}
                                             </span>
@@ -236,11 +236,11 @@ export default function CategoryShowcase({ products }: CategoryShowcaseProps) {
                     </div>
 
                     {/* Right Side (Desktop) / Top (Mobile): Featured Product Portal */}
-                    <div className="w-full lg:w-1/2 relative order-1 lg:order-2 h-[450px] sm:h-[600px] lg:h-[750px] flex justify-center lg:justify-end" suppressHydrationWarning>
+                    <div className="w-full lg:w-1/2 2xl:w-[60%] relative order-1 lg:order-2 h-[450px] sm:h-[600px] lg:h-[750px] 2xl:h-[900px] flex justify-center lg:justify-end" suppressHydrationWarning>
                         {/* Immersive Background Glow */}
                         <div className="absolute top-1/2 left-1/2 -translate-x-1/2 -translate-y-1/2 w-[160%] h-[160%] bg-white/[0.01] blur-[150px] rounded-full pointer-events-none" suppressHydrationWarning></div>
 
-                        <div ref={productRef} className="relative h-full w-full max-w-[600px] flex items-center justify-center" suppressHydrationWarning>
+                        <div ref={productRef} className="relative h-full w-full max-w-[600px] 2xl:max-w-[1000px] flex items-center justify-center" suppressHydrationWarning>
                             {/* Sharp Architectural Framing */}
                             <div className="absolute inset-x-0 inset-y-0 border border-white/[0.05] pointer-events-none z-10" suppressHydrationWarning></div>
                             <div className="absolute inset-x-4 inset-y-4 border border-white/[0.02] pointer-events-none z-10" suppressHydrationWarning></div>
@@ -270,17 +270,17 @@ export default function CategoryShowcase({ products }: CategoryShowcaseProps) {
                                             <div className="max-w-xl" suppressHydrationWarning>
                                                 <div className="flex items-center gap-3 mb-3 overflow-hidden" suppressHydrationWarning>
                                                     <div className="h-[1px] w-6 bg-white/40 animate-[slideRight_1s_ease-out_forwards]" suppressHydrationWarning></div>
-                                                    <span className="text-white/40 text-[7px] sm:text-[8px] tracking-[0.8em] uppercase font-light block" suppressHydrationWarning>
+                                                    <span className="text-white/40 text-[7px] sm:text-[8px] 2xl:text-sm tracking-[0.8em] uppercase font-light block" suppressHydrationWarning>
                                                         Masterpiece Series
                                                     </span>
                                                 </div>
 
-                                                <h4 className="text-white text-2xl sm:text-4xl lg:text-5xl font-thin tracking-tight uppercase mb-6 leading-[1.05]" suppressHydrationWarning>
+                                                <h4 className="text-white text-2xl sm:text-4xl lg:text-5xl 2xl:text-7xl font-thin tracking-tight uppercase mb-6 leading-[1.05]" suppressHydrationWarning>
                                                     {featuredProduct.name || featuredProduct.title}
                                                 </h4>
 
                                                 <div className="group/btn relative inline-flex items-center gap-4 py-2" suppressHydrationWarning>
-                                                    <span className="text-white text-[8px] sm:text-[9px] tracking-[0.6em] uppercase font-bold transition-all duration-500 group-hover:tracking-[0.8em]" suppressHydrationWarning>
+                                                    <span className="text-white text-[8px] sm:text-[9px] 2xl:text-sm tracking-[0.6em] uppercase font-bold transition-all duration-500 group-hover:tracking-[0.8em]" suppressHydrationWarning>
                                                         Explore Geometry
                                                     </span>
                                                     <div className="w-10 h-[1px] bg-white transition-all duration-500 group-hover:w-20 group-hover:bg-white/100" suppressHydrationWarning></div>
@@ -302,7 +302,7 @@ export default function CategoryShowcase({ products }: CategoryShowcaseProps) {
                                             <span className="text-white text-[10px] sm:text-xs tracking-[1.2em] uppercase font-thin mb-4 opacity-40" suppressHydrationWarning>
                                                 Coming Soon
                                             </span>
-                                            <h4 className="text-white/80 text-3xl sm:text-5xl lg:text-6xl font-thin tracking-tighter uppercase italic leading-none" suppressHydrationWarning>
+                                            <h4 className="text-white/80 text-3xl sm:text-5xl lg:text-6xl 2xl:text-8xl font-thin tracking-tighter uppercase italic leading-none" suppressHydrationWarning>
                                                 Under<br />Fabrication
                                             </h4>
                                             <div className="w-12 h-[1px] bg-white/20 mt-8" suppressHydrationWarning></div>

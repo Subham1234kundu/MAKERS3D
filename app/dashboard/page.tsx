@@ -10,6 +10,7 @@ import AddProduct from '../components/AddProduct';
 import AddCollection from '../components/AddCollection';
 import DeleteProductModal from '../components/DeleteProductModal';
 import OrderDetailsModal from '../components/OrderDetailsModal';
+import { isAdmin } from '@/lib/admin';
 
 const ParticleCubeLogo = dynamic(() => import('../components/ParticleCubeLogo'), {
     ssr: false,
@@ -87,25 +88,68 @@ export default function DashboardPage() {
         }
     };
 
+
     const handleStatusUpdate = async (orderId: string, newStatus: string) => {
         try {
+            let trackingNumber = '';
+            const statusLower = newStatus.toLowerCase();
+
+            // If marking as shipped, ask for tracking number
+            if (statusLower === 'shipped') {
+                const input = prompt('Please enter the Tracking Number (Optional):');
+                if (input === null) return; // User cancelled
+                trackingNumber = input.trim();
+            }
+
+            // Show loading state
+            const statusText = newStatus.charAt(0).toUpperCase() + newStatus.slice(1);
+
             const res = await fetch('/api/admin/orders', {
                 method: 'PATCH',
                 headers: { 'Content-Type': 'application/json' },
-                body: JSON.stringify({ orderId, status: newStatus })
+                body: JSON.stringify({
+                    orderId,
+                    status: newStatus,
+                    trackingNumber: trackingNumber || undefined
+                })
             });
 
             if (res.ok) {
+                // Update local state
                 setOrders(prevOrders => prevOrders.map(order =>
-                    order.id === orderId ? { ...order, status: newStatus.charAt(0).toUpperCase() + newStatus.slice(1) } : order
+                    order.id === orderId ? { ...order, status: statusText, rawStatus: statusLower, tracking_number: trackingNumber || order.tracking_number } : order
                 ));
+
+                // Also update selectedOrder if it's the one being updated
+                if (selectedOrder && selectedOrder.id === orderId) {
+                    setSelectedOrder((prev: any) => prev ? {
+                        ...prev,
+                        status: statusText,
+                        rawStatus: statusLower,
+                        tracking_number: trackingNumber || prev.tracking_number
+                    } : null);
+                }
+
+                // Show success message based on status
+                if (statusLower === 'shipped') {
+                    alert(`✅ Order marked as Shipped!${trackingNumber ? ` (Tracking: ${trackingNumber})` : ''}\n\n📧 Shipping confirmation email has been sent to the customer.`);
+                } else if (statusLower === 'delivered') {
+                    alert(`✅ Order marked as Delivered!\n\n📧 Delivery confirmation email has been sent to the customer.`);
+                } else if (statusLower === 'approved') {
+                    alert(`✅ Order approved successfully!\n\n📧 Order confirmation email has been sent to the customer.`);
+                } else {
+                    alert(`✅ Order status updated to ${statusText}`);
+                }
             } else {
-                alert('Failed to update status');
+                const errorData = await res.json();
+                alert(`❌ Failed to update status: ${errorData.message || 'Unknown error'}`);
             }
         } catch (error) {
             console.error('Status update error:', error);
+            alert('❌ Network error. Please check your connection and try again.');
         }
     };
+
 
     const handleConfirmDelete = async () => {
         if (productToDelete) {
@@ -286,11 +330,15 @@ export default function DashboardPage() {
         c.email?.toLowerCase().includes(searchQuery.toLowerCase())
     );
 
+
     useEffect(() => {
         if (status === 'unauthenticated') {
             router.push('/login');
+        } else if (status === 'authenticated' && !isAdmin(session?.user?.email)) {
+            // Redirect non-admin users to home page
+            router.push('/');
         }
-    }, [status, router]);
+    }, [status, session, router]);
 
     useEffect(() => {
         if (containerRef.current) {
@@ -307,6 +355,11 @@ export default function DashboardPage() {
     }, []);
 
     if (status === 'loading') return <div className="min-h-screen bg-black text-white flex items-center justify-center">Loading...</div>;
+
+    // Show loading while checking admin status
+    if (status === 'authenticated' && !isAdmin(session?.user?.email)) {
+        return <div className="min-h-screen bg-black text-white flex items-center justify-center">Redirecting...</div>;
+    }
 
     return (
         <div className="bg-black min-h-screen text-white p-8">
@@ -688,43 +741,20 @@ export default function DashboardPage() {
                                         <div className="px-5 pb-5 pt-0">
                                             <div className="flex justify-between items-center pt-4 border-t border-white/5">
                                                 <div className="text-sm font-light text-white">{order.amount}</div>
-                                                <div className="relative z-50">
-                                                    {(order.status === 'Pending' || order.status === 'Pending Review') && (
-                                                        <button
-                                                            onClick={(e) => {
-                                                                e.preventDefault(); // Safety
-                                                                e.stopPropagation(); // Safety
-                                                                handleStatusUpdate(order.id, 'Approved');
-                                                            }}
-                                                            className="flex justify-center items-center gap-2 px-6 py-3 bg-blue-600 active:bg-blue-700 text-white text-[10px] uppercase tracking-widest font-bold shadow-md transition-all duration-200 rounded-sm cursor-pointer select-none active:scale-95"
-                                                        >
-                                                            <svg className="pointer-events-none" width="12" height="12" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="3" strokeLinecap="round" strokeLinejoin="round">
-                                                                <polyline points="20 6 9 17 4 12"></polyline>
-                                                            </svg>
-                                                            <span className="pointer-events-none">Approve</span>
-                                                        </button>
-                                                    )}
-                                                    {order.status === 'Approved' && (
-                                                        <button
-                                                            onClick={(e) => { e.preventDefault(); e.stopPropagation(); handleStatusUpdate(order.id, 'Shipped'); }}
-                                                            className="px-4 py-2 text-[10px] uppercase tracking-widest bg-purple-500/10 text-purple-500 border border-purple-500/20 active:bg-purple-500 active:text-white transition-all rounded-sm cursor-pointer"
-                                                        >
-                                                            Mark Shipped
-                                                        </button>
-                                                    )}
-                                                    {order.status === 'Shipped' && (
-                                                        <button
-                                                            onClick={(e) => { e.preventDefault(); e.stopPropagation(); handleStatusUpdate(order.id, 'Delivered'); }}
-                                                            className="px-4 py-2 text-[10px] uppercase tracking-widest bg-green-500/10 text-green-500 border border-green-500/20 active:bg-green-500 active:text-white transition-all rounded-sm cursor-pointer"
-                                                        >
-                                                            Mark Delivered
-                                                        </button>
-                                                    )}
-                                                    {order.status === 'Delivered' && (
-                                                        <span className="text-[10px] uppercase tracking-widest text-white/20">
-                                                            Completed
-                                                        </span>
-                                                    )}
+                                                <div className="relative z-50 flex items-center gap-2">
+                                                    <select
+                                                        value={order.status}
+                                                        onChange={(e) => handleStatusUpdate(order.id, e.target.value)}
+                                                        className="bg-neutral-900 border border-white/10 text-white text-[10px] uppercase tracking-widest px-3 py-2 rounded-sm outline-none focus:border-white/40 transition-all cursor-pointer"
+                                                    >
+                                                        <option value="" disabled>Change Status</option>
+                                                        <option value="Pending">Pending</option>
+                                                        <option value="Pending Review">Pending Review</option>
+                                                        <option value="Approved">Approved</option>
+                                                        <option value="Shipped">Shipped</option>
+                                                        <option value="Delivered">Delivered</option>
+                                                        <option value="Cancelled">Cancelled</option>
+                                                    </select>
                                                 </div>
                                             </div>
                                         </div>
@@ -770,12 +800,13 @@ export default function DashboardPage() {
                                                 <td onClick={() => setSelectedOrder(order)} className="py-4 text-[10px] text-white/40 uppercase tracking-widest cursor-pointer">{order.date}</td>
                                                 <td onClick={() => setSelectedOrder(order)} className="py-4 cursor-pointer">
                                                     <span key={order.status} className={`text-[10px] uppercase tracking-widest px-2 py-1 rounded-sm
-                                                        ${order.status === 'Pending' ? 'bg-yellow-500/10 text-yellow-500' : ''}
-                                                        ${order.status === 'Pending Review' ? 'bg-orange-500/10 text-orange-500' : ''}
-                                                        ${order.status === 'Approved' ? 'bg-blue-500/10 text-blue-500' : ''}
-                                                        ${order.status === 'Shipped' ? 'bg-purple-500/10 text-purple-500' : ''}
-                                                        ${order.status === 'Delivered' ? 'bg-green-500/10 text-green-500' : ''}
-                                                    `}>
+                                    ${order.status === 'Pending' ? 'bg-yellow-500/10 text-yellow-500' : ''}
+                                    ${order.status === 'Pending Review' ? 'bg-orange-500/10 text-orange-500' : ''}
+                                    ${order.status === 'Approved' ? 'bg-blue-500/10 text-blue-500' : ''}
+                                    ${order.status === 'Shipped' ? 'bg-purple-500/10 text-purple-500' : ''}
+                                    ${order.status === 'Delivered' ? 'bg-green-500/10 text-green-500' : ''}
+                                    ${order.status === 'Cancelled' ? 'bg-red-500/10 text-red-500' : ''}
+                                `}>
                                                         {order.status}
                                                     </span>
                                                 </td>
@@ -783,43 +814,27 @@ export default function DashboardPage() {
                                                     className="py-4 pr-6 text-right relative z-50"
                                                     onClick={(e) => e.stopPropagation()}
                                                 >
-                                                    <div className="flex justify-end items-center">
-                                                        {(order.status === 'Pending' || order.status === 'Pending Review') && (
-                                                            <button
-                                                                onClick={(e) => {
-                                                                    e.preventDefault();
-                                                                    e.stopPropagation();
-                                                                    handleStatusUpdate(order.id, 'Approved');
-                                                                }}
-                                                                className="group flex items-center gap-2 px-5 py-2 bg-blue-600 text-white text-[10px] uppercase tracking-widest font-bold shadow-[0_0_15px_rgba(37,99,235,0.5)] hover:bg-blue-500 hover:shadow-[0_0_25px_rgba(37,99,235,0.8)] transition-all duration-300 rounded-sm cursor-pointer select-none"
-                                                            >
-                                                                <svg className="pointer-events-none" width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="3" strokeLinecap="round" strokeLinejoin="round">
-                                                                    <polyline points="20 6 9 17 4 12"></polyline>
-                                                                </svg>
-                                                                <span className="pointer-events-none">Approve</span>
-                                                            </button>
-                                                        )}
-                                                        {order.status === 'Approved' && (
-                                                            <button
-                                                                onClick={(e) => { e.stopPropagation(); handleStatusUpdate(order.id, 'Shipped'); }}
-                                                                className="text-[10px] uppercase tracking-widest bg-purple-500/10 text-purple-500 border border-purple-500/20 hover:bg-purple-500 hover:text-white px-3 py-1 transition-all rounded-sm cursor-pointer"
-                                                            >
-                                                                Mark Shipped
-                                                            </button>
-                                                        )}
-                                                        {order.status === 'Shipped' && (
-                                                            <button
-                                                                onClick={(e) => { e.stopPropagation(); handleStatusUpdate(order.id, 'Delivered'); }}
-                                                                className="text-[10px] uppercase tracking-widest bg-green-500/10 text-green-500 border border-green-500/20 hover:bg-green-500 hover:text-white px-3 py-1 transition-all rounded-sm cursor-pointer"
-                                                            >
-                                                                Mark Delivered
-                                                            </button>
-                                                        )}
-                                                        {order.status === 'Delivered' && (
-                                                            <span className="text-[10px] uppercase tracking-widest text-white/20">
-                                                                Completed
-                                                            </span>
-                                                        )}
+                                                    <div className="flex justify-end items-center gap-3">
+                                                        <select
+                                                            value={order.status}
+                                                            onChange={(e) => handleStatusUpdate(order.id, e.target.value)}
+                                                            className="bg-neutral-900 border border-white/10 text-white text-[10px] uppercase tracking-widest px-3 py-2 rounded-sm outline-none focus:border-white/40 transition-all cursor-pointer hover:bg-neutral-800"
+                                                        >
+                                                            <option value="" disabled>Change Status</option>
+                                                            <option value="Pending">Pending</option>
+                                                            <option value="Pending Review">Pending Review</option>
+                                                            <option value="Approved">Approved</option>
+                                                            <option value="Shipped">Shipped</option>
+                                                            <option value="Delivered">Delivered</option>
+                                                            <option value="Cancelled">Cancelled</option>
+                                                        </select>
+
+                                                        <button
+                                                            onClick={() => setSelectedOrder(order)}
+                                                            className="text-[10px] uppercase tracking-widest text-white/40 hover:text-white border-b border-transparent hover:border-white transition-all pb-0.5"
+                                                        >
+                                                            Details
+                                                        </button>
                                                     </div>
                                                 </td>
                                             </tr>
@@ -833,6 +848,7 @@ export default function DashboardPage() {
                             isOpen={!!selectedOrder}
                             onClose={() => setSelectedOrder(null)}
                             order={selectedOrder}
+                            onUpdateStatus={handleStatusUpdate}
                         />
                     </div>
                 )}

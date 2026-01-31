@@ -19,7 +19,7 @@ export default function ChatButton() {
                 <div className="flex flex-col gap-4 sm:gap-5" suppressHydrationWarning>
                     {/* WhatsApp Option */}
                     <a
-                        href="https://wa.me/918348270114"
+                        href="https://wa.me/917863983914"
                         target="_blank"
                         rel="noopener noreferrer"
                         className="flex items-center gap-3 sm:gap-4 group/item"
@@ -37,7 +37,7 @@ export default function ChatButton() {
 
                     {/* Instagram Option */}
                     <a
-                        href="https://instagram.com/makers3dstudio"
+                        href="https://www.instagram.com/makers3d.in"
                         target="_blank"
                         rel="noopener noreferrer"
                         className="flex items-center gap-3 sm:gap-4 group/item"

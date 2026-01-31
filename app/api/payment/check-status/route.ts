@@ -3,10 +3,30 @@ import { phonePe } from '@/lib/phonepe';
 import { getDatabase } from '@/lib/mongodb';
 
 export async function GET(req: Request) {
+    return handleStatusCheck(req);
+}
+
+export async function POST(req: Request) {
+    return handleStatusCheck(req);
+}
+
+async function handleStatusCheck(req: Request) {
     try {
         const { searchParams } = new URL(req.url);
-        const merchantOrderId = searchParams.get('orderId');
-        const paymentMethod = searchParams.get('method');
+        let merchantOrderId = searchParams.get('orderId') || searchParams.get('merchantTransactionId');
+        let paymentMethod = searchParams.get('method');
+
+        // If it's a POST request, try to get from body
+        if (req.method === 'POST') {
+            try {
+                const body = await req.json();
+                merchantOrderId = merchantOrderId || body.client_txn_id || body.merchantTransactionId || body.orderId;
+                // Default to phonepe if we have txn info from body which usually comes from online flow
+                paymentMethod = paymentMethod || body.method || 'phonepe';
+            } catch (e) {
+                // Ignore parse error
+            }
+        }
 
         if (!merchantOrderId) {
             return NextResponse.json({
@@ -18,7 +38,7 @@ export async function GET(req: Request) {
         const db = await getDatabase('makers3d_db');
 
         // For PhonePe payments, check with PhonePe API
-        if (paymentMethod === 'phonepe') {
+        if (paymentMethod === 'phonepe' || merchantOrderId.startsWith('TXN')) {
             try {
                 const statusResponse = await phonePe.checkStatus(merchantOrderId);
                 console.log('PhonePe Status Check:', statusResponse);
@@ -43,16 +63,21 @@ export async function GET(req: Request) {
                     }
                 );
 
-                // If successful, send email
+                // If successful, send email and clear cart
                 if (isSuccess) {
                     const order = await db.collection('orders').findOne({ client_txn_id: merchantOrderId });
                     if (order && order.status !== 'email_sent') {
+                        // Clear cart
+                        if (order.customer_email) {
+                            db.collection('carts').deleteOne({ email: order.customer_email.toLowerCase() })
+                                .catch(err => console.error('Failed to clear cart after successful check-status:', err));
+                        }
+
                         const { sendOrderConfirmationEmail } = await import('@/lib/email-service');
                         sendOrderConfirmationEmail({
                             customerName: order.customer_name,
                             customerEmail: order.customer_email,
                             orderId: order.order_id,
-                            amount: order.amount,
                             items: order.p_info,
                             address: order.address,
                             paymentMethod: 'phonepe'
@@ -73,14 +98,11 @@ export async function GET(req: Request) {
                 });
             } catch (error: any) {
                 console.error('PhonePe status check error:', error);
-                return NextResponse.json({
-                    success: false,
-                    msg: error.message
-                }, { status: 500 });
+                // Fallback to database check if API fails
             }
         }
 
-        // For other payment methods, check database
+        // For other payment methods or if PhonePe check fails, check database
         const order = await db.collection('orders').findOne({
             $or: [
                 { client_txn_id: merchantOrderId },
@@ -95,6 +117,12 @@ export async function GET(req: Request) {
             }, { status: 404 });
         }
 
+        // If order from DB is successful but cart wasn't cleared, clear it
+        if (order.status === 'success' && order.customer_email) {
+            db.collection('carts').deleteOne({ email: order.customer_email.toLowerCase() })
+                .catch(err => console.error('Failed to clear cart in DB check:', err));
+        }
+
         return NextResponse.json({
             success: true,
             status: order.status,
@@ -105,6 +133,11 @@ export async function GET(req: Request) {
                 customer_name: order.customer_name,
                 customer_email: order.customer_email,
                 status: order.status
+            },
+            data: {
+                status: order.status,
+                upi_txn_id: order.client_txn_id,
+                amount: order.amount
             }
         });
 

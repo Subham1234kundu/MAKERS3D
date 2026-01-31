@@ -24,28 +24,24 @@ function FlowingWire({ color = "white", speed = 0.4, index = 0 }) {
         if (!lineRef.current) return;
         const time = state.clock.getElapsedTime() * speed;
         const positions = lineRef.current.geometry.attributes.position;
-        const mouseX = state.mouse.x * 4;
-        const mouseY = state.mouse.y * 4;
+        const mx = state.mouse.x * 4;
+        const my = state.mouse.y * 4;
 
         for (let i = 0; i < count; i++) {
-            const offset = i * 0.08 + index; // Slower frequency for elegant flow at full width
-
-            // Base wave motion - WIDENED TO FULL SPAN
+            const offset = i * 0.08 + index;
             let x = (i - count / 2) * 0.45;
             let y = Math.sin(time + offset) * 2.5;
             let z = Math.cos(time * 0.6 + offset) * 2;
 
-            // Add organic secondary motion for "nice flow"
             y += Math.sin(time * 0.4 + i * 0.03) * 1.2;
             z += Math.cos(time * 0.2 + i * 0.06) * 1.2;
 
-            // Interactive "Moveable" part: React to mouse with smoother falloff
             const distFromMouse = Math.sqrt(Math.pow(state.mouse.x * 12 - x, 2) + Math.pow(state.mouse.y * 12 - y, 2));
             const mouseEffect = Math.max(0, 1 - distFromMouse / 15);
 
-            y += mouseY * mouseEffect * 2.5;
-            x += mouseX * mouseEffect * 1.5;
-            z += (mouseX + mouseY) * mouseEffect * 1.5;
+            y += my * mouseEffect * 2.5;
+            x += mx * mouseEffect * 1.5;
+            z += (mx + my) * mouseEffect * 1.5;
 
             positions.setXYZ(i, x, y, z);
         }
@@ -64,9 +60,10 @@ function FlowingWire({ color = "white", speed = 0.4, index = 0 }) {
                 attach="material"
                 color={color}
                 transparent
-                opacity={1}
-                linewidth={3.5}
+                opacity={0.8}
+                linewidth={2}
                 blending={THREE.AdditiveBlending}
+                depthWrite={false}
             />
         </line>
     );
@@ -133,35 +130,34 @@ export default function ShivaHero() {
                     }, "-=1.2");
 
                 // --- Perfect Scroll Animation ---
-                // Using a Master Timeline for synchronized scroll control
                 const scrollTl = gsap.timeline({
                     scrollTrigger: {
                         trigger: containerRef.current,
                         start: "top top",
-                        end: "bottom 20%",
-                        scrub: 1,
-                        invalidateOnRefresh: true
+                        end: "bottom center",
+                        scrub: 0.5, // Reduced scrub for faster responsiveness
+                        invalidateOnRefresh: true,
                     }
                 });
 
-                // 1. Image Parallax
+                // 1. Image Parallax (Optimized)
                 scrollTl.fromTo(imageRef.current,
                     { y: 0, scale: 1 },
-                    { y: 120, scale: 1.08, ease: "none" },
+                    { y: 80, scale: 1.05, ease: "none", force3D: true },
                     0
                 );
 
-                // 2. Title & Content Fade Out (Refined)
+                // 2. Title & Content (Optimized)
                 scrollTl.fromTo(overlayRef.current,
                     { y: 0, opacity: 1 },
-                    { y: -180, opacity: 0, ease: "power2.inOut" },
+                    { y: -120, opacity: 0, ease: "power1.inOut" },
                     0
                 );
 
-                // 3. Atmosphere (Stars/Strings) Deep Scroll
+                // 3. Atmosphere (Optimized)
                 scrollTl.fromTo(atmosphereRef.current,
-                    { y: 0, scale: 1, opacity: 0.4 },
-                    { y: -80, scale: 1.15, opacity: 0.1, ease: "none" },
+                    { y: 0, scale: 1, opacity: 1 },
+                    { y: -50, scale: 1.1, opacity: 0.2, ease: "none" },
                     0
                 );
             }, containerRef);
@@ -196,48 +192,48 @@ export default function ShivaHero() {
     return (
         <section ref={containerRef} className="relative w-full h-[105vh] bg-black overflow-hidden flex flex-col items-center justify-center select-none" suppressHydrationWarning>
             {/* 3D Atmosphere Layer */}
-            <div ref={atmosphereRef} className="absolute inset-0 z-0 opacity-100" suppressHydrationWarning>
+            <div ref={atmosphereRef} className="absolute inset-0 z-0 opacity-100 will-change-transform" suppressHydrationWarning>
                 {mounted && (
                     <Canvas
-                        dpr={[1, 1.5]}
-                        gl={{ powerPreference: "high-performance", antialias: false }}
+                        dpr={[1, 1.2]} // Slightly reduced DPR for performance
+                        gl={{
+                            powerPreference: "high-performance",
+                            antialias: false,
+                            stencil: false,
+                            depth: true
+                        }}
                         suppressHydrationWarning
                     >
                         <PerspectiveCamera makeDefault position={[0, 0, 12]} />
                         <ambientLight intensity={0.1} />
-                        <FloatDrei speed={1.5} rotationIntensity={0.2} floatIntensity={0.2}>
-                            <EtherealStrings />
-                        </FloatDrei>
+                        <EtherealStrings />
                     </Canvas>
                 )}
-
             </div>
 
-            {/* Hero Image - Optimized for 'Perfect Top' */}
-            <div className="absolute inset-0 z-10 w-full h-full overflow-hidden" suppressHydrationWarning>
-                <div className="relative w-full h-full" ref={imageRef} suppressHydrationWarning>
+            <div className="absolute inset-0 z-10 w-full h-full overflow-hidden pointer-events-none" suppressHydrationWarning>
+                <div className="relative w-full h-full will-change-transform" ref={imageRef} suppressHydrationWarning>
                     <Image
                         src="/shiva_mandir_hero.png"
                         alt="Shiva Mandir Architectural Masterpiece"
                         fill
-                        className="object-cover object-top sm:object-contain grayscale contrast-[1.1] brightness-[0.4] transition-transform duration-700 hover:grayscale-0 hover:scale-105"
+                        className="object-cover object-top sm:object-contain grayscale contrast-[1.1] brightness-[0.4]"
                         priority
                         sizes="100vw"
-                        quality={90}
+                        quality={85} // Optimized quality for hero
                     />
-
                 </div>
-
-
-
-
-                {/* Advanced Lighting & Vignette */}
-                <div className="absolute inset-0 bg-gradient-to-b from-black/80 via-transparent to-black z-11 pointer-events-none" suppressHydrationWarning />
-                <div className="absolute inset-0 bg-[radial-gradient(circle_at_center,transparent_0%,black_100%)] z-11 opacity-70 pointer-events-none" suppressHydrationWarning />
             </div>
 
+
+
+
+            {/* Advanced Lighting & Vignette */}
+            <div className="absolute inset-0 bg-gradient-to-b from-black/80 via-transparent to-black z-11 pointer-events-none" suppressHydrationWarning />
+            <div className="absolute inset-0 bg-[radial-gradient(circle_at_center,transparent_0%,black_100%)] z-11 opacity-70 pointer-events-none" suppressHydrationWarning />
+
             {/* Content Layers */}
-            <div ref={overlayRef} className="relative z-20 flex flex-col items-center justify-between h-full w-full py-24 opacity-0 pointer-events-none" suppressHydrationWarning>
+            <div ref={overlayRef} className="relative z-20 flex flex-col items-center justify-between h-full w-full py-24 opacity-0 pointer-events-none will-change-transform" suppressHydrationWarning>
                 <div className="text-center px-6 mt-4 sm:mt-10" suppressHydrationWarning>
                     <div className="overflow-hidden mb-2" suppressHydrationWarning>
                         <span className="block text-white/20 text-[7px] sm:text-[9px] font-medium tracking-[1.5em] uppercase">

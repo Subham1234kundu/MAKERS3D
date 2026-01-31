@@ -207,7 +207,6 @@ export const getOrderConfirmationContent = (orderDetails: {
     orderId: string;
     customerName: string;
     items: string;
-    amount: string;
     address: string;
     paymentMethod: string;
 }) => `
@@ -268,17 +267,8 @@ export const getOrderConfirmationContent = (orderDetails: {
             </p>
         </div>
 
-        <div style="background: rgba(255, 255, 255, 0.03); padding: 20px; margin-top: 25px;">
-            <div style="display: flex; justify-content: space-between; align-items: center;">
-                <p style="font-size: 11px; letter-spacing: 0.3em; text-transform: uppercase; color: rgba(255, 255, 255, 0.5); margin: 0;">
-                    Total Amount
-                </p>
-                <p style="font-size: 28px; font-weight: 100; color: #ffffff; margin: 0;">
-                    ₹${parseInt(orderDetails.amount).toLocaleString('en-IN')}
-                </p>
-            </div>
-        </div>
     </div>
+
 
     <div style="text-align: center; margin-top: 40px;">
         <a href="${process.env.NEXT_PUBLIC_BASE_URL || 'https://makers3d.com'}/profile" 

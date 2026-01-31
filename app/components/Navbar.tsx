@@ -7,6 +7,7 @@ import { gsap } from 'gsap';
 import { useSession } from 'next-auth/react';
 import { useRouter, usePathname } from 'next/navigation';
 import { useCart } from '../providers/CartProvider';
+import { isAdmin } from '@/lib/admin';
 
 // Dynamically import the 3D component to avoid SSR issues
 const ParticleCubeLogo = dynamic(() => import('./ParticleCubeLogo'), {
@@ -81,6 +82,30 @@ const NavIcons = ({
           suppressHydrationWarning
         />
       </div>
+
+      {/* Dashboard Icon - Admin Only */}
+      {session && isAdmin(session?.user?.email) && (
+        <Link
+          href="/dashboard"
+          className={`nav-icon ${!isMobileNav ? 'always-visible' : ''} ${pathname === '/dashboard' ? 'active' : ''} p-0`}
+          aria-label="Dashboard"
+          suppressHydrationWarning
+        >
+          <svg
+            fill="none"
+            stroke="currentColor"
+            viewBox="0 0 24 24"
+            className="w-[19px] h-[19px] opacity-60 hover:opacity-100 transition-opacity"
+          >
+            <path
+              strokeLinecap="round"
+              strokeLinejoin="round"
+              strokeWidth={1.2}
+              d="M9 17V7m0 10a2 2 0 01-2 2H5a2 2 0 01-2-2V7a2 2 0 012-2h2a2 2 0 012 2m0 10a2 2 0 002 2h2a2 2 0 002-2M9 7a2 2 0 012-2h2a2 2 0 012 2m0 10V7m0 10a2 2 0 002 2h2a2 2 0 002-2V7a2 2 0 00-2-2h-2a2 2 0 00-2 2"
+            />
+          </svg>
+        </Link>
+      )}
 
       <div className="user-menu-container flex items-center" suppressHydrationWarning>
         <button
