@@ -48,12 +48,14 @@ export async function GET(request: NextRequest) {
             date: new Date(order.createdAt).toISOString().split('T')[0],
             rawStatus: order.status,
             payment_method: order.payment_method || 'upi',
+            address: order.address,
             items: order.p_info ? order.p_info.split(', ').map((name: string) => {
                 const trimmedName = name.trim();
                 const productImage = productImageMap.get(trimmedName.toLowerCase()) || '/images/placeholder.jpg';
                 return {
                     name: trimmedName,
-                    image: productImage
+                    image: productImage,
+                    price: 0 // We don't have individual prices in this simplified view, but we could fetch them if needed
                 };
             }) : []
         }));

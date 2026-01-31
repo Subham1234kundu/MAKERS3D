@@ -2,6 +2,8 @@
 
 import { useState, useRef, useEffect } from 'react';
 import { gsap } from 'gsap';
+import jsPDF from 'jspdf';
+import autoTable from 'jspdf-autotable';
 
 interface OrderDetailsModalProps {
     isOpen: boolean;
@@ -30,6 +32,119 @@ export default function OrderDetailsModal({ isOpen, onClose, order, onUpdateStat
     if (!isOpen || !order) return null;
 
     const lowerStatus = order.status?.toLowerCase() || order.rawStatus || '';
+
+    const generateBill = () => {
+        const doc: any = new jsPDF();
+        const pageWidth = doc.internal.pageSize.getWidth();
+
+        // Logo Section
+        doc.setFontSize(28);
+        doc.setFont('helvetica', 'bold');
+        doc.setTextColor(0, 0, 0);
+        doc.text('MAKERS', 20, 25);
+
+        const makersWidth = doc.getTextWidth('MAKERS');
+        doc.setTextColor(150, 150, 150);
+        doc.text('3D', 20 + makersWidth + 1, 25);
+
+        doc.setFontSize(9);
+        doc.setFont('helvetica', 'bold');
+        doc.setTextColor(100, 100, 100);
+        doc.text('STUDIO_CORE', 20, 31);
+
+        doc.setFontSize(8);
+        doc.setFont('helvetica', 'normal');
+        doc.setTextColor(150, 150, 150);
+        doc.text('PREMIUM 3D MASTERPIECES', 20, 35);
+
+        // Header Line
+        doc.setDrawColor(230, 230, 230);
+        doc.setLineWidth(0.5);
+        doc.line(20, 40, pageWidth - 20, 40);
+
+        // Invoice Info (Right Aligned)
+        doc.setFontSize(20);
+        doc.setFont('helvetica', 'bold');
+        doc.setTextColor(0, 0, 0);
+        doc.text('INVOICE', pageWidth - 20, 30, { align: 'right' });
+
+        doc.setFontSize(9);
+        doc.setFont('helvetica', 'normal');
+        doc.setTextColor(100, 100, 100);
+        doc.text(`Order: #${order.id.slice(0, 12)}`, pageWidth - 20, 35, { align: 'right' });
+        doc.text(`Date: ${order.date}`, pageWidth - 20, 40, { align: 'right' });
+
+        // Bill Details Section
+        doc.setFontSize(10);
+        doc.setFont('helvetica', 'bold');
+        doc.setTextColor(0, 0, 0);
+        doc.text('BILL TO:', 20, 55);
+
+        doc.setFont('helvetica', 'normal');
+        doc.setTextColor(60, 60, 60);
+        doc.text(order.customer, 20, 61);
+        doc.text(order.email || '', 20, 66);
+        doc.text(order.phone || '', 20, 71);
+
+        // Payment Info
+        doc.setFont('helvetica', 'bold');
+        doc.text('PAYMENT:', 120, 55);
+        doc.setFont('helvetica', 'normal');
+        doc.text(`Method: ${order.payment_method?.toUpperCase() || 'UPI'}`, 120, 61);
+        doc.text(`Status: PAID`, 120, 66);
+
+        // Shipping Address
+        if (order.address) {
+            doc.setFont('helvetica', 'bold');
+            doc.text('SHIPPING ADDRESS:', 20, 85);
+            doc.setFont('helvetica', 'normal');
+            const addr = typeof order.address === 'string' ? order.address :
+                `${order.address.addressLine}, ${order.address.city}, ${order.address.state} - ${order.address.pincode}`;
+            const splitAddress = doc.splitTextToSize(addr, 100);
+            doc.text(splitAddress, 20, 91);
+        }
+
+        // Items Table
+        const tableData = order.items?.map((item: any) => [
+            item.name,
+            item.quantity || 1,
+            `INR ${item.price || order.amount.replace(/[^0-9]/g, '')}`,
+            `INR ${item.price ? (item.price * (item.quantity || 1)).toLocaleString() : order.amount.replace(/[^0-9]/g, '')}`
+        ]) || [[order.product, 1, order.amount, order.amount]];
+
+        autoTable(doc, {
+            startY: 110,
+            head: [['PRODUCT DESCRIPTION', 'QTY', 'UNIT PRICE', 'TOTAL']],
+            body: tableData,
+            theme: 'striped',
+            headStyles: { fillColor: [20, 20, 20], textColor: [255, 255, 255], fontSize: 8, fontStyle: 'bold' },
+            bodyStyles: { fontSize: 9, textColor: [50, 50, 50] },
+            alternateRowStyles: { fillColor: [250, 250, 250] },
+            margin: { left: 20, right: 20 }
+        });
+
+        const finalY = (doc as any).lastAutoTable?.finalY || 180;
+
+        // Totals
+        doc.setDrawColor(230, 230, 230);
+        doc.line(120, finalY + 5, pageWidth - 20, finalY + 5);
+
+        doc.setFontSize(11);
+        doc.setFont('helvetica', 'bold');
+        doc.setTextColor(0, 0, 0);
+        doc.text('Grand Total:', 140, finalY + 15);
+        doc.text(order.amount, pageWidth - 20, finalY + 15, { align: 'right' });
+
+        // Footer
+        doc.setFont('helvetica', 'italic');
+        doc.setFontSize(8);
+        doc.setTextColor(150, 150, 150);
+        doc.text('This is a computer generated invoice and does not require a physical signature.', pageWidth / 2, 280, { align: 'center' });
+        doc.setFont('helvetica', 'normal');
+        doc.text('Thank you for choosing Makers3D Studio!', pageWidth / 2, 285, { align: 'center' });
+
+        doc.save(`Invoice_${order.id}.pdf`);
+    };
 
     return (
         <div className="fixed inset-0 z-50 flex items-center justify-center p-4">
@@ -123,8 +238,39 @@ export default function OrderDetailsModal({ isOpen, onClose, order, onUpdateStat
                             </div>
                         )}
 
+                        {order.address && (
+                            <div className="bg-white/5 p-4 rounded-sm border border-white/5">
+                                <p className="text-[10px] text-white/40 uppercase tracking-widest mb-2">Shipping Address</p>
+                                {typeof order.address === 'string' ? (
+                                    <p className="text-sm font-light text-white/80">{order.address}</p>
+                                ) : (
+                                    <div className="space-y-1">
+                                        <p className="text-sm font-light text-white/90">{order.address.addressLine}</p>
+                                        <p className="text-sm font-light text-white/80">{order.address.city}, {order.address.state}</p>
+                                        <p className="text-sm font-light text-white/80">PIN: {order.address.pincode}</p>
+                                        {order.address.landmark && (
+                                            <p className="text-xs text-white/40 italic">Landmark: {order.address.landmark}</p>
+                                        )}
+                                    </div>
+                                )}
+                            </div>
+                        )}
+
                         <div className="space-y-4 pt-4 border-t border-white/5">
-                            <p className="text-[10px] text-white/40 uppercase tracking-widest">Actions</p>
+                            <div className="flex justify-between items-center mb-2">
+                                <p className="text-[10px] text-white/40 uppercase tracking-widest">Actions</p>
+                                <button
+                                    onClick={generateBill}
+                                    className="text-[10px] uppercase tracking-widest text-blue-400 hover:text-blue-300 flex items-center gap-2 transition-colors"
+                                >
+                                    <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round">
+                                        <path d="M21 15v4a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2v-4"></path>
+                                        <polyline points="7 10 12 15 17 10"></polyline>
+                                        <line x1="12" y1="15" x2="12" y2="3"></line>
+                                    </svg>
+                                    Download Bill (PDF)
+                                </button>
+                            </div>
 
                             <div className="flex flex-wrap gap-3">
                                 {(order.status === 'Pending' || order.status === 'Pending Review') && onUpdateStatus && (
