@@ -122,21 +122,19 @@ export default function ProductDetailPage() {
             <Navbar />
 
             <main className="max-w-7xl mx-auto px-4 sm:px-6 pt-24 md:pt-32 pb-12 md:pb-20">
-                {/* Breadcrumb - Horizontal Scroll on Mobile */}
-                <nav className="mb-8 md:mb-12 w-full overflow-x-auto no-scrollbar">
-                    <div className="flex items-center gap-2 text-[10px] sm:text-xs uppercase tracking-[0.2em] text-white/40 whitespace-nowrap">
-                        <Link href="/" className="hover:text-white transition-colors">Home</Link>
-                        <span>/</span>
-                        {product.category ? (
-                            <Link href={`/products?category=${product.category}`} className="hover:text-white transition-colors">
-                                {product.category}
-                            </Link>
-                        ) : (
-                            <Link href="/products" className="hover:text-white transition-colors">Products</Link>
-                        )}
-                        <span>/</span>
-                        <span className="text-white/80">{product.name || product.title}</span>
-                    </div>
+                {/* Breadcrumb */}
+                <nav className="mb-8 md:mb-12 flex items-center gap-2 text-[10px] sm:text-xs uppercase tracking-widest text-white/40">
+                    <Link href="/" className="hover:text-white transition-colors whitespace-nowrap flex-shrink-0">Home</Link>
+                    <span className="flex-shrink-0">/</span>
+                    {product.category ? (
+                        <Link href={`/products?category=${product.category}`} className="hover:text-white transition-colors whitespace-nowrap flex-shrink-0">
+                            {product.category}
+                        </Link>
+                    ) : (
+                        <Link href="/products" className="hover:text-white transition-colors whitespace-nowrap flex-shrink-0">Products</Link>
+                    )}
+                    <span className="flex-shrink-0">/</span>
+                    <span className="text-white/80 truncate min-w-0">{product.name || product.title}</span>
                 </nav>
 
                 <div className="grid grid-cols-1 lg:grid-cols-2 gap-10 md:gap-16 lg:gap-24 items-start">
