@@ -123,10 +123,16 @@ export default function ProductDetailPage() {
 
             <main className="max-w-7xl mx-auto px-4 sm:px-6 pt-24 md:pt-32 pb-12 md:pb-20">
                 {/* Breadcrumb */}
-                <nav className="mb-8 md:mb-12 flex items-center gap-2 text-[10px] sm:text-xs uppercase tracking-[0.2em] text-white/40">
+                <nav className="mb-8 md:mb-12 flex flex-wrap items-center gap-2 text-[10px] sm:text-xs uppercase tracking-[0.2em] text-white/40 leading-none">
                     <Link href="/" className="hover:text-white transition-colors">Home</Link>
                     <span>/</span>
-                    <Link href="/products" className="hover:text-white transition-colors">Products</Link>
+                    {product.category ? (
+                        <Link href={`/products?category=${product.category}`} className="hover:text-white transition-colors">
+                            {product.category}
+                        </Link>
+                    ) : (
+                        <Link href="/products" className="hover:text-white transition-colors">Products</Link>
+                    )}
                     <span>/</span>
                     <span className="text-white/80 line-clamp-1">{product.name || product.title}</span>
                 </nav>
@@ -135,7 +141,7 @@ export default function ProductDetailPage() {
                     {/* Image Gallery Section */}
                     <div ref={imageRef} className="space-y-4">
                         {/* Main Image */}
-                        <div className="relative aspect-square sm:aspect-[4/5] bg-neutral-900 overflow-hidden group">
+                        <div className="relative aspect-[3/4] bg-neutral-900 overflow-hidden group">
                             <Image
                                 src={currentImageUrl}
                                 alt={currentImageAlt}
@@ -283,7 +289,6 @@ export default function ProductDetailPage() {
                                                             }`}
                                                     >
                                                         {s}
-                                                        {price > 0 && <span className="ml-1 text-[8px] opacity-60">₹{price}</span>}
                                                     </button>
                                                 )
                                             });
@@ -318,7 +323,6 @@ export default function ProductDetailPage() {
                                                             }`}
                                                     >
                                                         {c}
-                                                        {price > 0 && <span className="ml-1 text-[8px] opacity-60">₹{price}</span>}
                                                     </button>
                                                 )
                                             });
