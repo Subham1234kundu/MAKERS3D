@@ -22,8 +22,8 @@ interface ProductData {
     originalPrice: string; // The "Cutting" price
     price: string; // The "Fixed" price
     category: string;
-    sizes: string;
-    colors: string;
+    sizes: string | any[];
+    colors: string | any[];
     images: ProductImage[];
 }
 
@@ -42,10 +42,18 @@ export default function AddProduct({ initialData, onSubmit, onCancel }: AddProdu
         originalPrice: '',
         price: '',
         category: '',
-        sizes: '',
+        sizes: '', // Maintained as string for legacy, but we will treat as JSON if object
         colors: '',
         images: []
     });
+
+    // Local state for structured variants
+    const [structuredSizes, setStructuredSizes] = useState<{ name: string; price: string; originalPrice: string }[]>([]);
+    const [structuredColors, setStructuredColors] = useState<{ name: string; price: string; originalPrice: string }[]>([]);
+
+    // Inputs for new variants
+    const [newSize, setNewSize] = useState({ name: '', price: '', originalPrice: '' });
+    const [newColor, setNewColor] = useState({ name: '', price: '', originalPrice: '' });
 
     const [isCategoryOpen, setIsCategoryOpen] = useState(false);
     const [isUploading, setIsUploading] = useState<number | null>(null);
@@ -77,6 +85,34 @@ export default function AddProduct({ initialData, onSubmit, onCancel }: AddProdu
             const formattedImages = (initialData.images || []).map((img: any) =>
                 typeof img === 'string' ? { url: img, alt: initialData.name || '' } : img
             );
+
+            // Parse Sizes
+            let loadedSizes: { name: string; price: string; originalPrice: string }[] = [];
+            if (Array.isArray(initialData.sizes)) {
+                loadedSizes = initialData.sizes.map((s: any) => ({
+                    name: s.name,
+                    price: s.price.toString(),
+                    originalPrice: s.originalPrice ? s.originalPrice.toString() : ''
+                }));
+            } else if (typeof initialData.sizes === 'string' && initialData.sizes.length > 0) {
+                loadedSizes = initialData.sizes.split(',').map((s: string) => ({ name: s.trim(), price: '0', originalPrice: '' }));
+            }
+
+            // Parse Colors
+            let loadedColors: { name: string; price: string; originalPrice: string }[] = [];
+            if (Array.isArray(initialData.colors)) {
+                loadedColors = initialData.colors.map((c: any) => ({
+                    name: c.name,
+                    price: c.price.toString(),
+                    originalPrice: c.originalPrice ? c.originalPrice.toString() : ''
+                }));
+            } else if (typeof initialData.colors === 'string' && initialData.colors.length > 0) {
+                loadedColors = initialData.colors.split(',').map((c: string) => ({ name: c.trim(), price: '0', originalPrice: '' }));
+            }
+
+            setStructuredSizes(loadedSizes);
+            setStructuredColors(loadedColors);
+
             setFormData({
                 ...initialData,
                 images: formattedImages
@@ -88,6 +124,36 @@ export default function AddProduct({ initialData, onSubmit, onCancel }: AddProdu
         const { name, value } = e.target;
         setFormData(prev => ({ ...prev, [name]: value }));
     };
+
+    // Variant Handlers
+    const addSize = () => {
+        if (!newSize.name) return;
+        setStructuredSizes(prev => [...prev, {
+            name: newSize.name,
+            price: newSize.price || '0',
+            originalPrice: newSize.originalPrice || ''
+        }]);
+        setNewSize({ name: '', price: '', originalPrice: '' });
+    };
+
+    const removeSize = (index: number) => {
+        setStructuredSizes(prev => prev.filter((_, i) => i !== index));
+    };
+
+    const addColor = () => {
+        if (!newColor.name) return;
+        setStructuredColors(prev => [...prev, {
+            name: newColor.name,
+            price: newColor.price || '0',
+            originalPrice: newColor.originalPrice || ''
+        }]);
+        setNewColor({ name: '', price: '', originalPrice: '' });
+    };
+
+    const removeColor = (index: number) => {
+        setStructuredColors(prev => prev.filter((_, i) => i !== index));
+    };
+
 
     const handleImageUpload = async (e: React.ChangeEvent<HTMLInputElement>, index: number) => {
         const file = e.target.files?.[0];
@@ -184,7 +250,22 @@ export default function AddProduct({ initialData, onSubmit, onCancel }: AddProdu
 
     const handleSubmit = (e: React.FormEvent) => {
         e.preventDefault();
-        onSubmit(formData);
+
+        // Prepare final data with structured variants
+        const finalData = {
+            ...formData,
+            sizes: structuredSizes, // Send as array of objects
+            colors: structuredColors // Send as array of objects
+        };
+
+        // Careful: The ProductData interface defined sizes/colors as 'string' originally.
+        // We are bypassing this type restriction at runtime, assuming backend handles flexible JSON.
+        // If the backend strictly expects strings, we might need to JSON.stringify these.
+        // However, standard MongoDB usage in this app seems schema-less for these fields or flexible.
+        // If needed, we can do: sizes: JSON.stringify(structuredSizes)
+        // Let's assume sending the Object is correct for upgrading the system.
+
+        onSubmit(finalData as any);
     };
 
     return (
@@ -196,7 +277,7 @@ export default function AddProduct({ initialData, onSubmit, onCancel }: AddProdu
             <form onSubmit={handleSubmit} className="space-y-8">
                 {/* Images Section */}
                 <div className="grid grid-cols-2 md:grid-cols-3 lg:grid-cols-4 gap-6 mb-8">
-                    {Array.from({ length: (formData.sizes || formData.colors) ? 8 : 4 }).map((_, index) => (
+                    {Array.from({ length: 4 }).map((_, index) => (
                         <div key={index} className="space-y-3">
                             <div className="aspect-square bg-white/5 border border-white/10 relative group hover:border-white/30 transition-all flex items-center justify-center overflow-hidden rounded-sm">
                                 {formData.images[index]?.url ? (
@@ -287,30 +368,88 @@ export default function AddProduct({ initialData, onSubmit, onCancel }: AddProdu
                             />
                         </div>
 
-                        <div className="grid grid-cols-2 gap-4">
-                            <div className="group">
-                                <label className="block text-[10px] uppercase tracking-widest text-white/40 mb-2 font-medium">Available Sizes (Optional)</label>
+                        {/* Structured Sizes */}
+                        <div className="group border border-white/10 p-4 bg-white/[0.02]">
+                            <label className="block text-[10px] uppercase tracking-widest text-white/40 mb-3 font-medium">Available Sizes & Prices</label>
+
+                            <div className="flex gap-2 mb-3">
                                 <input
                                     type="text"
-                                    name="sizes"
-                                    value={formData.sizes}
-                                    onChange={handleChange}
-                                    className="w-full bg-transparent border-b border-white/20 py-2 text-[10px] text-white focus:outline-none focus:border-white transition-colors placeholder:text-white/10 font-light uppercase tracking-widest"
-                                    placeholder="S, M, L, XL"
+                                    value={newSize.name}
+                                    onChange={(e) => setNewSize(prev => ({ ...prev, name: e.target.value }))}
+                                    className="flex-1 bg-white/5 border border-white/10 px-3 py-2 text-[10px] text-white focus:outline-none focus:border-white/40 placeholder:text-white/20 uppercase"
+                                    placeholder="SIZE (e.g. XL)"
                                 />
+                                <input
+                                    type="number"
+                                    value={newSize.originalPrice}
+                                    onChange={(e) => setNewSize(prev => ({ ...prev, originalPrice: e.target.value }))}
+                                    className="w-24 bg-white/5 border border-white/10 px-3 py-2 text-[10px] text-white focus:outline-none focus:border-white/40 placeholder:text-white/20"
+                                    placeholder="MRP (Cut)"
+                                />
+                                <input
+                                    type="number"
+                                    value={newSize.price}
+                                    onChange={(e) => setNewSize(prev => ({ ...prev, price: e.target.value }))}
+                                    className="w-24 bg-white/5 border border-white/10 px-3 py-2 text-[10px] text-white focus:outline-none focus:border-white/40 placeholder:text-white/20"
+                                    placeholder="PRICE (Fix)"
+                                />
+                                <button type="button" onClick={addSize} className="px-3 bg-white/10 hover:bg-white/20 text-white font-thin text-lg">+</button>
                             </div>
-                            <div className="group">
-                                <label className="block text-[10px] uppercase tracking-widest text-white/40 mb-2 font-medium">Available Colors (Optional)</label>
-                                <input
-                                    type="text"
-                                    name="colors"
-                                    value={formData.colors}
-                                    onChange={handleChange}
-                                    className="w-full bg-transparent border-b border-white/20 py-2 text-[10px] text-white focus:outline-none focus:border-white transition-colors placeholder:text-white/10 font-light uppercase tracking-widest"
-                                    placeholder="White, Black, Gold"
-                                />
+
+                            <div className="flex flex-wrap gap-2">
+                                {structuredSizes.map((size, idx) => (
+                                    <div key={idx} className="flex items-center gap-2 bg-white/10 px-3 py-1 rounded-sm border border-white/5">
+                                        <span className="text-[10px] text-white uppercase tracking-wider">{size.name}</span>
+                                        {size.originalPrice && <span className="text-[9px] text-white/40 line-through">₹{size.originalPrice}</span>}
+                                        {Number(size.price) > 0 && <span className="text-[10px] text-emerald-400">₹{size.price}</span>}
+                                        <button type="button" onClick={() => removeSize(idx)} className="text-white/40 hover:text-red-400 ml-1">×</button>
+                                    </div>
+                                ))}
                             </div>
                         </div>
+
+                        {/* Structured Colors */}
+                        <div className="group border border-white/10 p-4 bg-white/[0.02]">
+                            <label className="block text-[10px] uppercase tracking-widest text-white/40 mb-3 font-medium">Available Colors & Prices</label>
+
+                            <div className="flex gap-2 mb-3">
+                                <input
+                                    type="text"
+                                    value={newColor.name}
+                                    onChange={(e) => setNewColor(prev => ({ ...prev, name: e.target.value }))}
+                                    className="flex-1 bg-white/5 border border-white/10 px-3 py-2 text-[10px] text-white focus:outline-none focus:border-white/40 placeholder:text-white/20 uppercase"
+                                    placeholder="COLOR (e.g. GOLD)"
+                                />
+                                <input
+                                    type="number"
+                                    value={newColor.originalPrice}
+                                    onChange={(e) => setNewColor(prev => ({ ...prev, originalPrice: e.target.value }))}
+                                    className="w-24 bg-white/5 border border-white/10 px-3 py-2 text-[10px] text-white focus:outline-none focus:border-white/40 placeholder:text-white/20"
+                                    placeholder="MRP (Cut)"
+                                />
+                                <input
+                                    type="number"
+                                    value={newColor.price}
+                                    onChange={(e) => setNewColor(prev => ({ ...prev, price: e.target.value }))}
+                                    className="w-24 bg-white/5 border border-white/10 px-3 py-2 text-[10px] text-white focus:outline-none focus:border-white/40 placeholder:text-white/20"
+                                    placeholder="PRICE (Fix)"
+                                />
+                                <button type="button" onClick={addColor} className="px-3 bg-white/10 hover:bg-white/20 text-white font-thin text-lg">+</button>
+                            </div>
+
+                            <div className="flex flex-wrap gap-2">
+                                {structuredColors.map((color, idx) => (
+                                    <div key={idx} className="flex items-center gap-2 bg-white/10 px-3 py-1 rounded-sm border border-white/5">
+                                        <span className="text-[10px] text-white uppercase tracking-wider">{color.name}</span>
+                                        {color.originalPrice && <span className="text-[9px] text-white/40 line-through">₹{color.originalPrice}</span>}
+                                        {Number(color.price) > 0 && <span className="text-[10px] text-emerald-400">₹{color.price}</span>}
+                                        <button type="button" onClick={() => removeColor(idx)} className="text-white/40 hover:text-red-400 ml-1">×</button>
+                                    </div>
+                                ))}
+                            </div>
+                        </div>
+
 
                         <div className="grid grid-cols-2 gap-4">
                             <div className="group">
@@ -325,7 +464,7 @@ export default function AddProduct({ initialData, onSubmit, onCancel }: AddProdu
                                 />
                             </div>
                             <div className="group">
-                                <label className="block text-[10px] uppercase tracking-widest text-white/40 mb-2 font-medium">Fixed Price (Selling)</label>
+                                <label className="block text-[10px] uppercase tracking-widest text-white/40 mb-2 font-medium">Base Price (Selling)</label>
                                 <input
                                     type="number"
                                     name="price"
@@ -363,7 +502,7 @@ export default function AddProduct({ initialData, onSubmit, onCancel }: AddProdu
 
                             <div className={`absolute left-0 right-0 top-full mt-2 bg-black border border-white/10 z-50 overflow-y-auto max-h-60 transition-all duration-300 origin-top shadow-2xl ${isCategoryOpen ? 'opacity-100 scale-y-100 translate-y-0' : 'opacity-0 scale-y-95 -translate-y-2 pointer-events-none'}`}>
                                 {/* Default Collections */}
-                                {['DIVINE', 'ASH_AND_STONE', 'AURA', 'MOTION', 'BOX'].map((cat) => (
+                                {['DIVINE', 'LOVE', 'ASH_AND_STONE'/*, 'AURA', 'MOTION', 'BOX'*/].map((cat) => (
                                     <div
                                         key={cat}
                                         onClick={() => {

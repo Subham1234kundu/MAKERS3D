@@ -201,15 +201,55 @@ export default function ProductDetailPage() {
                         </h1>
 
                         <div className="flex items-center gap-4 mb-6 sm:mb-8">
-                            <span className="text-2xl sm:text-3xl font-light">₹{Number(product.price).toLocaleString('en-IN')}</span>
-                            {product.originalPrice && product.originalPrice > product.price && (
-                                <>
-                                    <span className="text-lg sm:text-xl text-white/30 line-through">₹{Number(product.originalPrice).toLocaleString('en-IN')}</span>
-                                    <span className="bg-white/10 px-2 py-1 text-[9px] sm:text-[10px] tracking-widest uppercase border border-white/10">
-                                        {Math.round((1 - product.price / product.originalPrice) * 100)}% OFF
-                                    </span>
-                                </>
-                            )}
+                            <span className="text-2xl sm:text-3xl font-light">
+                                {(() => {
+                                    // Calculate dynamic price
+                                    let currentPrice = Number(product.price);
+                                    let currentOriginalPrice = Number(product.originalPrice);
+
+                                    // Parse Variants
+                                    const parseVariants = (variants: any) => {
+                                        if (Array.isArray(variants)) return variants;
+                                        if (typeof variants === 'string' && variants.length > 0) {
+                                            return variants.split(',').map(s => ({ name: s.trim(), price: 0 }));
+                                        }
+                                        return [];
+                                    };
+
+                                    const sizes = parseVariants(product.sizes);
+                                    const colors = parseVariants(product.colors);
+
+                                    const sizeObj = sizes.find((s: any) => s.name === selectedSize);
+                                    const colorObj = colors.find((c: any) => c.name === selectedColor);
+
+                                    // Override Base Price with Variant Price if set
+                                    if (sizeObj && Number(sizeObj.price) > 0) {
+                                        currentPrice = Number(sizeObj.price);
+                                        if (sizeObj.originalPrice) currentOriginalPrice = Number(sizeObj.originalPrice);
+                                    }
+
+                                    // If color has price, it also overrides (or you can decide logic here, e.g. strictly override)
+                                    // Assuming strict override for now based on "Fixed Price" label
+                                    if (colorObj && Number(colorObj.price) > 0) {
+                                        currentPrice = Number(colorObj.price);
+                                        if (colorObj.originalPrice) currentOriginalPrice = Number(colorObj.originalPrice);
+                                    }
+
+                                    return (
+                                        <>
+                                            {`₹${currentPrice.toLocaleString('en-IN')}`}
+                                            {currentOriginalPrice > currentPrice && (
+                                                <>
+                                                    <span className="text-lg sm:text-xl text-white/30 line-through ml-4">₹{currentOriginalPrice.toLocaleString('en-IN')}</span>
+                                                    <span className="bg-white/10 px-2 py-1 text-[9px] sm:text-[10px] tracking-widest uppercase border border-white/10 ml-3">
+                                                        {Math.round((1 - currentPrice / currentOriginalPrice) * 100)}% OFF
+                                                    </span>
+                                                </>
+                                            )}
+                                        </>
+                                    );
+                                })()}
+                            </span>
                         </div>
 
                         <p className="text-white/60 font-thin leading-relaxed tracking-wide mb-8 sm:mb-10 text-base sm:text-lg">
@@ -218,54 +258,71 @@ export default function ProductDetailPage() {
 
                         {/* Variants Section */}
                         <div className="space-y-8 mb-12">
-                            {product.sizes && (
+                            {product.sizes && (product.sizes.length > 0) && (
                                 <div className="space-y-4">
                                     <div className="flex justify-between items-end">
                                         <label className="text-[10px] uppercase tracking-[0.3em] text-white/40 font-medium">Select Size</label>
                                         <span className="text-[9px] uppercase tracking-widest text-white/20">{selectedSize || 'Required'}</span>
                                     </div>
                                     <div className="flex flex-wrap gap-3">
-                                        {product.sizes.split(',').map((size: string) => {
-                                            const s = size.trim();
-                                            return (
-                                                <button
-                                                    key={s}
-                                                    onClick={() => setSelectedSize(s)}
-                                                    className={`min-w-[50px] h-[50px] flex items-center justify-center border text-[10px] tracking-widest uppercase transition-all duration-300 ${selectedSize === s
-                                                        ? 'bg-white text-black border-white shadow-[0_0_20px_rgba(255,255,255,0.15)]'
-                                                        : 'border-white/10 text-white/40 hover:border-white/30 hover:text-white'
-                                                        }`}
-                                                >
-                                                    {s}
-                                                </button>
-                                            )
-                                        })}
+                                        {(() => {
+                                            const variants = Array.isArray(product.sizes)
+                                                ? product.sizes
+                                                : (typeof product.sizes === 'string' ? product.sizes.split(',').map((s: any) => ({ name: s.trim(), price: 0 })) : []);
+
+                                            return variants.map((size: any) => {
+                                                const s = size.name || size; // Handle obj or string
+                                                const price = Number(size.price || 0);
+                                                return (
+                                                    <button
+                                                        key={s}
+                                                        onClick={() => setSelectedSize(s)}
+                                                        className={`min-w-[50px] h-[50px] px-4 flex items-center justify-center border text-[10px] tracking-widest uppercase transition-all duration-300 ${selectedSize === s
+                                                            ? 'bg-white text-black border-white shadow-[0_0_20px_rgba(255,255,255,0.15)]'
+                                                            : 'border-white/10 text-white/40 hover:border-white/30 hover:text-white'
+                                                            }`}
+                                                    >
+                                                        {s}
+                                                        {price > 0 && <span className="ml-1 text-[8px] opacity-60">₹{price}</span>}
+                                                    </button>
+                                                )
+                                            });
+                                        })()}
                                     </div>
                                 </div>
                             )}
 
-                            {product.colors && (
+                            {product.colors && (product.colors.length > 0) && (
                                 <div className="space-y-4">
                                     <div className="flex justify-between items-end">
                                         <label className="text-[10px] uppercase tracking-[0.3em] text-white/40 font-medium">Select Color</label>
                                         <span className="text-[9px] uppercase tracking-widest text-white/20">{selectedColor || 'Required'}</span>
                                     </div>
                                     <div className="flex flex-wrap gap-3">
-                                        {product.colors.split(',').map((color: string) => {
-                                            const c = color.trim();
-                                            return (
-                                                <button
-                                                    key={c}
-                                                    onClick={() => setSelectedColor(c)}
-                                                    className={`px-6 h-[50px] flex items-center justify-center border text-[10px] tracking-widest uppercase transition-all duration-300 ${selectedColor === c
-                                                        ? 'bg-white text-black border-white shadow-[0_0_20px_rgba(255,255,255,0.15)]'
-                                                        : 'border-white/10 text-white/40 hover:border-white/30 hover:text-white'
-                                                        }`}
-                                                >
-                                                    {c}
-                                                </button>
-                                            )
-                                        })}
+                                        {(() => {
+                                            const variants = Array.isArray(product.colors)
+                                                ? product.colors
+                                                : (typeof product.colors === 'string' ? product.colors.split(',').map((c: any) => ({ name: c.trim(), price: 0 })) : []);
+
+                                            return variants.map((color: any) => {
+                                                const c = color.name || color;
+                                                const price = Number(color.price || 0);
+
+                                                return (
+                                                    <button
+                                                        key={c}
+                                                        onClick={() => setSelectedColor(c)}
+                                                        className={`px-6 h-[50px] flex items-center justify-center border text-[10px] tracking-widest uppercase transition-all duration-300 ${selectedColor === c
+                                                            ? 'bg-white text-black border-white shadow-[0_0_20px_rgba(255,255,255,0.15)]'
+                                                            : 'border-white/10 text-white/40 hover:border-white/30 hover:text-white'
+                                                            }`}
+                                                    >
+                                                        {c}
+                                                        {price > 0 && <span className="ml-1 text-[8px] opacity-60">₹{price}</span>}
+                                                    </button>
+                                                )
+                                            });
+                                        })()}
                                     </div>
                                 </div>
                             )}
@@ -321,15 +378,25 @@ export default function ProductDetailPage() {
                                 {/* Add to Cart Button */}
                                 <button
                                     onClick={() => {
-                                        if (product.sizes && !selectedSize) {
+                                        if (product.sizes && product.sizes.length > 0 && !selectedSize) {
                                             alert('Please select a size');
                                             return;
                                         }
-                                        if (product.colors && !selectedColor) {
+                                        if (product.colors && product.colors.length > 0 && !selectedColor) {
                                             alert('Please select a color');
                                             return;
                                         }
-                                        addToCart({ ...product, selectedSize, selectedColor });
+
+                                        // Calculate final price for cart
+                                        let finalPrice = Number(product.price);
+                                        const variants = (arr: any) => Array.isArray(arr) ? arr : (typeof arr === 'string' ? arr.split(',').map((x: any) => ({ name: x.trim(), price: 0 })) : []);
+                                        const sizeObj = variants(product.sizes).find((s: any) => s.name === selectedSize);
+                                        const colorObj = variants(product.colors).find((c: any) => c.name === selectedColor);
+
+                                        if (sizeObj && Number(sizeObj.price) > 0) finalPrice = Number(sizeObj.price);
+                                        if (colorObj && Number(colorObj.price) > 0) finalPrice = Number(colorObj.price);
+
+                                        addToCart({ ...product, price: finalPrice, selectedSize, selectedColor });
                                         router.push('/cart');
                                     }}
                                     className="flex-1 bg-white text-black py-4 sm:py-5 px-6 text-[11px] sm:text-xs font-bold uppercase tracking-[0.2em] border border-white hover:bg-gray-100 transition-all duration-300 flex items-center justify-center gap-3 relative touch-manipulation active:scale-95"
@@ -351,15 +418,25 @@ export default function ProductDetailPage() {
                             {/* Buy Now Button */}
                             <button
                                 onClick={() => {
-                                    if (product.sizes && !selectedSize) {
+                                    if (product.sizes && product.sizes.length > 0 && !selectedSize) {
                                         alert('Please select a size');
                                         return;
                                     }
-                                    if (product.colors && !selectedColor) {
+                                    if (product.colors && product.colors.length > 0 && !selectedColor) {
                                         alert('Please select a color');
                                         return;
                                     }
-                                    addToCart({ ...product, selectedSize, selectedColor });
+
+                                    // Calculate final price for cart
+                                    let finalPrice = Number(product.price);
+                                    const variants = (arr: any) => Array.isArray(arr) ? arr : (typeof arr === 'string' ? arr.split(',').map((x: any) => ({ name: x.trim(), price: 0 })) : []);
+                                    const sizeObj = variants(product.sizes).find((s: any) => s.name === selectedSize);
+                                    const colorObj = variants(product.colors).find((c: any) => c.name === selectedColor);
+
+                                    if (sizeObj && Number(sizeObj.price) > 0) finalPrice = Number(sizeObj.price);
+                                    if (colorObj && Number(colorObj.price) > 0) finalPrice = Number(colorObj.price);
+
+                                    addToCart({ ...product, price: finalPrice, selectedSize, selectedColor });
                                     router.push('/checkout');
                                 }}
                                 className="w-full border-2 border-white text-white py-4 sm:py-5 text-[11px] sm:text-xs font-bold uppercase tracking-[0.2em] hover:bg-white hover:text-black transition-all duration-300 touch-manipulation active:scale-95"

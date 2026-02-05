@@ -13,10 +13,11 @@ export default function ProductsPage() {
     const categoryData = [
         { id: 'ALL', label: 'SHOP', image: '/categories/all.png' },
         { id: 'DIVINE', label: 'DIVINE', image: '/categories/divine.png' },
+        { id: 'LOVE', label: 'LOVE', image: '/categories/love.png' },
         { id: 'ASH_AND_STONE', label: 'ASH & STONE', image: '/categories/ash_and_stone.png' },
-        { id: 'AURA', label: 'AURA', image: '/categories/aura.png' },
-        { id: 'MOTION', label: 'MOTION', image: '/categories/motion.png' },
-        { id: 'BOX', label: 'BOX', image: '/categories/box.png' },
+        // { id: 'AURA', label: 'AURA', image: '/categories/aura.png' },
+        // { id: 'MOTION', label: 'MOTION', image: '/categories/motion.png' },
+        // { id: 'BOX', label: 'BOX', image: '/categories/box.png' },
         { id: 'CUSTOM', label: 'CUSTOM', image: '/categories/custom.png' },
     ];
 

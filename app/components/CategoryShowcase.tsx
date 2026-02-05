@@ -24,10 +24,11 @@ interface CategoryShowcaseProps {
 export default function CategoryShowcase({ products }: CategoryShowcaseProps) {
     const categories = [
         { id: 'DIVINE', label: 'DIVINE', image: '/categories/divine.png' },
+        { id: 'LOVE', label: 'LOVE', image: '/categories/love.png' },
         { id: 'ASH_AND_STONE', label: 'ASH & STONE', image: '/categories/ash_and_stone.png' },
-        { id: 'AURA', label: 'AURA', image: '/categories/aura.png' },
-        { id: 'MOTION', label: 'MOTION', image: '/categories/motion.png' },
-        { id: 'BOX', label: 'BOX', image: '/categories/box.png' },
+        // { id: 'AURA', label: 'AURA', image: '/categories/aura.png' },
+        // { id: 'MOTION', label: 'MOTION', image: '/categories/motion.png' },
+        // { id: 'BOX', label: 'BOX', image: '/categories/box.png' },
         { id: 'CUSTOM', label: 'CUSTOM', image: '/categories/custom.png' },
     ];
 

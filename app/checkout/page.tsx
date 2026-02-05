@@ -154,6 +154,19 @@ export default function CheckoutPage() {
                     p_info: paymentMethod === 'cod'
                         ? cartItems.map(item => item.name || item.title).join(', ') + ' (Includes 10% COD Fee)'
                         : cartItems.map(item => item.name || item.title).join(', '),
+                    items: cartItems.map(item => {
+                        const firstImage = item.images?.[0];
+                        const imageUrl = typeof firstImage === 'string' ? firstImage : (firstImage?.url || item.image);
+                        return {
+                            id: item.id,
+                            name: item.name || item.title,
+                            price: item.price,
+                            quantity: item.quantity,
+                            image: imageUrl,
+                            selectedSize: item.selectedSize,
+                            selectedColor: item.selectedColor
+                        };
+                    }),
                     customer_name: formData.name,
                     customer_email: formData.email,
                     customer_mobile: formData.mobile,

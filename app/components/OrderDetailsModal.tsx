@@ -105,12 +105,18 @@ export default function OrderDetailsModal({ isOpen, onClose, order, onUpdateStat
         }
 
         // Items Table
-        const tableData = order.items?.map((item: any) => [
-            item.name,
-            item.quantity || 1,
-            `INR ${item.price || order.amount.replace(/[^0-9]/g, '')}`,
-            `INR ${item.price ? (item.price * (item.quantity || 1)).toLocaleString() : order.amount.replace(/[^0-9]/g, '')}`
-        ]) || [[order.product, 1, order.amount, order.amount]];
+        const tableData = order.items?.map((item: any) => {
+            let itemName = item.name;
+            if (item.selectedSize) itemName += `\nSize: ${item.selectedSize}`;
+            if (item.selectedColor) itemName += `\nColor: ${item.selectedColor}`;
+
+            return [
+                itemName,
+                item.quantity || 1,
+                `INR ${Number(item.price).toLocaleString('en-IN')}`,
+                `INR ${(item.price * (item.quantity || 1)).toLocaleString('en-IN')}`
+            ];
+        }) || [[order.product, 1, order.amount, order.amount]];
 
         autoTable(doc, {
             startY: 110,
@@ -210,7 +216,15 @@ export default function OrderDetailsModal({ isOpen, onClose, order, onUpdateStat
                                             </div>
                                             <div className="flex-1">
                                                 <p className="text-sm font-light text-white">{item.name}</p>
-                                                <p className="text-[10px] text-white/40 uppercase tracking-widest">Qty: {item.quantity}</p>
+                                                <div className="flex gap-3 mt-1">
+                                                    {item.selectedSize && (
+                                                        <p className="text-[10px] text-white/50 uppercase tracking-widest bg-white/5 px-2 py-0.5 rounded-sm">Size: {item.selectedSize}</p>
+                                                    )}
+                                                    {item.selectedColor && (
+                                                        <p className="text-[10px] text-white/50 uppercase tracking-widest bg-white/5 px-2 py-0.5 rounded-sm">Color: {item.selectedColor}</p>
+                                                    )}
+                                                </div>
+                                                <p className="text-[10px] text-white/40 uppercase tracking-widest mt-1">Qty: {item.quantity}</p>
                                             </div>
                                         </div>
                                     ))

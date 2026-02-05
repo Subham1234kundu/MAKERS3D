@@ -13,6 +13,8 @@ interface CartItem {
     images?: (string | { url: string; alt: string })[];
     category: string;
     quantity: number;
+    selectedSize?: string;
+    selectedColor?: string;
 }
 
 interface CartContextType {

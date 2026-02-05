@@ -49,15 +49,23 @@ export async function GET(request: NextRequest) {
             rawStatus: order.status,
             payment_method: order.payment_method || 'upi',
             address: order.address,
-            items: order.p_info ? order.p_info.split(', ').map((name: string) => {
+            items: order.items ? order.items.map((item: any) => ({
+                name: item.name,
+                image: item.image || '/images/placeholder.jpg',
+                price: item.price || 0,
+                quantity: item.quantity || 1,
+                selectedSize: item.selectedSize,
+                selectedColor: item.selectedColor
+            })) : (order.p_info ? order.p_info.split(', ').map((name: string) => {
                 const trimmedName = name.trim();
                 const productImage = productImageMap.get(trimmedName.toLowerCase()) || '/images/placeholder.jpg';
                 return {
                     name: trimmedName,
                     image: productImage,
-                    price: 0 // We don't have individual prices in this simplified view, but we could fetch them if needed
+                    price: 0,
+                    quantity: 1
                 };
-            }) : []
+            }) : [])
         }));
 
         return NextResponse.json(formattedOrders);

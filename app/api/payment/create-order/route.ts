@@ -13,6 +13,7 @@ export async function POST(req: Request) {
             customer_mobile,
             address,
             redirect_url,
+            items, // Extract items
             payment_method = 'phonepe'
         } = body;
 
@@ -31,6 +32,7 @@ export async function POST(req: Request) {
                     address,
                     amount,
                     p_info,
+                    items, // Save items
                     status: 'cod_pending',
                     payment_method: 'cod',
                     createdAt: new Date(),
@@ -117,6 +119,7 @@ export async function POST(req: Request) {
                     address,
                     amount,
                     p_info,
+                    items, // Save items
                     status: 'pending',
                     payment_method: 'phonepe',
                     phonepe_data: paymentResponse,

@@ -792,7 +792,15 @@ export default function DashboardPage() {
                                                                 <div className="w-full h-full flex items-center justify-center text-[8px] text-white/20">N/A</div>
                                                             )}
                                                         </div>
-                                                        <span className="text-sm font-light text-white/80">{order.product}</span>
+                                                        <div className="flex flex-col">
+                                                            <span className="text-sm font-light text-white/80">{order.product}</span>
+                                                            {order.items && order.items.length > 0 && (
+                                                                <div className="flex gap-2 text-[9px] text-white/40 uppercase tracking-wider mt-1">
+                                                                    {order.items[0].selectedSize && <span>Size: {order.items[0].selectedSize}</span>}
+                                                                    {order.items[0].selectedColor && <span>Color: {order.items[0].selectedColor}</span>}
+                                                                </div>
+                                                            )}
+                                                        </div>
                                                     </div>
                                                 </td>
                                                 <td onClick={() => setSelectedOrder(order)} className="py-4 text-sm font-light text-white cursor-pointer">{order.customer}</td>
