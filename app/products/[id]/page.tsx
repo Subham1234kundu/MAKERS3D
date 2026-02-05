@@ -9,13 +9,25 @@ import Navbar from '../../components/Navbar';
 import Footer from '../../components/Footer';
 import { useCart } from '../../providers/CartProvider';
 import { useSession } from 'next-auth/react';
+import ProductCard from '../../components/ProductCard';
+
+// Check if string is a valid MongoDB ObjectId (24-char hex)
+const isValidObjectId = (str: string) => /^[a-fA-F0-9]{24}$/.test(str);
+
+// Known category slugs
+const CATEGORY_SLUGS = ['divine', 'love', 'custom', 'ash_and_stone', 'aura', 'motion', 'box', 'all'];
 
 export default function ProductDetailPage() {
     const params = useParams();
     const id = params?.id as string;
     const router = useRouter();
 
+    // Determine if this is a category page or product page
+    const isCategory = id && (CATEGORY_SLUGS.includes(id.toLowerCase()) || !isValidObjectId(id));
+    const categorySlug = isCategory ? id.toLowerCase() : null;
+
     const [product, setProduct] = useState<any>(null);
+    const [products, setProducts] = useState<any[]>([]);
     const [isLoading, setIsLoading] = useState(true);
     const [hasMounted, setHasMounted] = useState(false);
     const [activeTab, setActiveTab] = useState('description');
@@ -35,37 +47,85 @@ export default function ProductDetailPage() {
         setHasMounted(true);
     }, []);
 
+    // Helper to parse variants
+    const parseVariants = (variants: any) => {
+        if (Array.isArray(variants)) return variants;
+        if (typeof variants === 'string' && variants.length > 0) {
+            return variants.split(',').map(s => ({ name: s.trim(), price: 0 }));
+        }
+        return [];
+    };
+
     useEffect(() => {
-        const fetchProduct = async () => {
-            if (!id) return;
-            setIsLoading(true);
-
-            try {
-                const res = await fetch(`/api/products/${id}`);
-                if (res.ok) {
-                    const data = await res.json();
-                    setProduct(data);
-
-                    // Check if liked if logged in
-                    if (session?.user?.email) {
-                        const likesRes = await fetch('/api/likes');
-                        if (likesRes.ok) {
-                            const likedProducts = await likesRes.json();
-                            const liked = likedProducts.some((p: any) => p.id === id || p._id === id);
-                            setIsLiked(liked);
-                        }
+        if (isCategory) {
+            // Fetch products for category page
+            const fetchProducts = async () => {
+                setIsLoading(true);
+                try {
+                    const res = await fetch('/api/products');
+                    if (res.ok) {
+                        const data = await res.json();
+                        // Filter by category (case-insensitive, handle ash_and_stone)
+                        const filtered = categorySlug === 'all'
+                            ? data
+                            : data.filter((p: any) =>
+                                p.category?.toLowerCase().replace(/\s+/g, '_') === categorySlug ||
+                                p.category?.toLowerCase() === categorySlug?.replace(/_/g, ' ')
+                            );
+                        setProducts(filtered);
                     }
-                } else {
-                    console.error('Product not found');
+                } catch (error) {
+                    console.error('Fetch products error:', error);
+                } finally {
+                    setIsLoading(false);
                 }
-            } catch (error) {
-                console.error('Error fetching product:', error);
-            } finally {
-                setIsLoading(false);
-            }
-        };
-        fetchProduct();
-    }, [id, session]);
+            };
+            fetchProducts();
+        } else {
+            // Fetch single product for detail page
+            const fetchProduct = async () => {
+                if (!id) return;
+                setIsLoading(true);
+
+                try {
+                    const res = await fetch(`/api/products/${id}`);
+                    if (res.ok) {
+                        const data = await res.json();
+                        setProduct(data);
+
+                        // Auto-select first size if available
+                        const sizes = parseVariants(data.sizes);
+                        if (sizes.length > 0) {
+                            setSelectedSize(sizes[0].name || sizes[0]);
+                        }
+
+                        // Auto-select first color if available
+                        const colors = parseVariants(data.colors);
+                        if (colors.length > 0) {
+                            setSelectedColor(colors[0].name || colors[0]);
+                        }
+
+                        // Check if liked if logged in
+                        if (session?.user?.email) {
+                            const likesRes = await fetch('/api/likes');
+                            if (likesRes.ok) {
+                                const likedProducts = await likesRes.json();
+                                const liked = likedProducts.some((p: any) => p.id === id || p._id === id);
+                                setIsLiked(liked);
+                            }
+                        }
+                    } else {
+                        console.error('Product not found');
+                    }
+                } catch (error) {
+                    console.error('Error fetching product:', error);
+                } finally {
+                    setIsLoading(false);
+                }
+            };
+            fetchProduct();
+        }
+    }, [id, session, isCategory, categorySlug]);
 
     useEffect(() => {
         if (isLoading || !product) return;

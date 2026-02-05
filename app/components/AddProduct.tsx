@@ -451,31 +451,40 @@ export default function AddProduct({ initialData, onSubmit, onCancel }: AddProdu
                         </div>
 
 
-                        <div className="grid grid-cols-2 gap-4">
-                            <div className="group">
-                                <label className="block text-[10px] uppercase tracking-widest text-white/40 mb-2 font-medium">Cutting Price (MRP)</label>
-                                <input
-                                    type="number"
-                                    name="originalPrice"
-                                    value={formData.originalPrice}
-                                    onChange={handleChange}
-                                    className="w-full bg-transparent border-b border-white/20 py-2 text-sm text-white focus:outline-none focus:border-white transition-colors font-light"
-                                    placeholder="2999"
-                                />
+                        {/* Base Price Section - Hidden when variants have prices */}
+                        {(structuredSizes.length === 0 && structuredColors.length === 0) ? (
+                            <div className="grid grid-cols-2 gap-4">
+                                <div className="group">
+                                    <label className="block text-[10px] uppercase tracking-widest text-white/40 mb-2 font-medium">Cutting Price (MRP)</label>
+                                    <input
+                                        type="number"
+                                        name="originalPrice"
+                                        value={formData.originalPrice}
+                                        onChange={handleChange}
+                                        className="w-full bg-transparent border-b border-white/20 py-2 text-sm text-white focus:outline-none focus:border-white transition-colors font-light"
+                                        placeholder="2999"
+                                    />
+                                </div>
+                                <div className="group">
+                                    <label className="block text-[10px] uppercase tracking-widest text-white/40 mb-2 font-medium">Base Price (Selling)</label>
+                                    <input
+                                        type="number"
+                                        name="price"
+                                        value={formData.price}
+                                        onChange={handleChange}
+                                        required
+                                        className="w-full bg-transparent border-b border-white/20 py-2 text-sm text-white focus:outline-none focus:border-white transition-colors font-light"
+                                        placeholder="2499"
+                                    />
+                                </div>
                             </div>
-                            <div className="group">
-                                <label className="block text-[10px] uppercase tracking-widest text-white/40 mb-2 font-medium">Base Price (Selling)</label>
-                                <input
-                                    type="number"
-                                    name="price"
-                                    value={formData.price}
-                                    onChange={handleChange}
-                                    required
-                                    className="w-full bg-transparent border-b border-white/20 py-2 text-sm text-white focus:outline-none focus:border-white transition-colors font-light"
-                                    placeholder="2499"
-                                />
+                        ) : (
+                            <div className="border border-emerald-500/30 bg-emerald-500/5 p-4 rounded-sm">
+                                <p className="text-[10px] uppercase tracking-widest text-emerald-400/80">
+                                    Prices are set per variant (Size/Color). The first variant's price will be shown by default.
+                                </p>
                             </div>
-                        </div>
+                        )}
 
                         <div className="group relative">
                             <label className="block text-[10px] uppercase tracking-widest text-white/40 mb-2 font-medium">

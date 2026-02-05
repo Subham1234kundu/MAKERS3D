@@ -78,6 +78,56 @@ export default function ProductCard({ id, image, alt, secondImage, secondAlt, ti
                         {/* Border - Black by default, Gray on hover */}
                         <div className={`absolute inset-0 border transition-colors duration-300 ${isHovered ? 'border-gray-500' : 'border-white/5'
                             }`}></div>
+
+                        {/* Plus Icon - Inside image container for consistent positioning */}
+                        <button
+                            type="button"
+                            className={`absolute bottom-2 right-2 sm:bottom-3 sm:right-3
+                                w-9 h-9 sm:w-11 sm:h-11
+                                bg-white flex items-center justify-center
+                                transition-all duration-300 cursor-pointer
+                                lg:opacity-0 lg:-translate-x-4
+                                group-hover:opacity-100 group-hover:translate-x-0
+                                hover:scale-105 active:scale-90
+                                z-30 touch-manipulation
+                                ${isPlusHovered ? 'bg-gray-100' : ''}
+                                `}
+                            onMouseEnter={() => setIsPlusHovered(true)}
+                            onMouseLeave={() => setIsPlusHovered(false)}
+                            suppressHydrationWarning
+                            onClick={(e) => {
+                                handleAddToCart(e);
+                                const icon = e.currentTarget.querySelector('.plus-icon');
+                                if (icon) {
+                                    icon.animate([
+                                        { transform: 'rotate(0deg)' },
+                                        { transform: 'rotate(360deg)' }
+                                    ], {
+                                        duration: 700,
+                                        easing: 'cubic-bezier(0.23, 1, 0.32, 1)'
+                                    });
+                                }
+                            }}
+                            aria-label="Add to cart"
+                            style={{ WebkitTapHighlightColor: 'transparent' }}
+                        >
+                            <svg
+                                width="16"
+                                height="16"
+                                viewBox="0 0 24 24"
+                                fill="none"
+                                xmlns="http://www.w3.org/2000/svg"
+                                className={`plus-icon transition-transform duration-300 sm:w-[18px] sm:h-[18px] ${isPlusHovered ? 'scale-110' : 'scale-100'}`}
+                            >
+                                <path
+                                    d="M12 5V19M5 12H19"
+                                    stroke="black"
+                                    strokeWidth="2"
+                                    strokeLinecap="round"
+                                    strokeLinejoin="round"
+                                />
+                            </svg>
+                        </button>
                     </div>
 
                     {/* Text Content - Centered with padding */}
@@ -99,56 +149,6 @@ export default function ProductCard({ id, image, alt, secondImage, secondAlt, ti
                     </div>
                 </div>
             </Link>
-
-            {/* Plus Icon - Outside Link to avoid nesting issue, always visible on mobile */}
-            <button
-                type="button"
-                className={`absolute bottom-[90px] right-3 sm:right-4 
-                    w-12 h-12 sm:w-14 sm:h-14 
-                    bg-white flex items-center justify-center 
-                    transition-all duration-300 cursor-pointer 
-                    lg:opacity-0 lg:-translate-x-4 
-                    group-hover:opacity-100 group-hover:translate-x-0 
-                    hover:translate-y-2 active:scale-90 
-                    z-30 touch-manipulation
-                    ${isPlusHovered ? 'bg-gray-100' : ''}
-                    `}
-                onMouseEnter={() => setIsPlusHovered(true)}
-                onMouseLeave={() => setIsPlusHovered(false)}
-                suppressHydrationWarning
-                onClick={(e) => {
-                    handleAddToCart(e);
-                    const icon = e.currentTarget.querySelector('.plus-icon');
-                    if (icon) {
-                        icon.animate([
-                            { transform: 'rotate(0deg)' },
-                            { transform: 'rotate(360deg)' }
-                        ], {
-                            duration: 700,
-                            easing: 'cubic-bezier(0.23, 1, 0.32, 1)'
-                        });
-                    }
-                }}
-                aria-label="Add to cart"
-                style={{ WebkitTapHighlightColor: 'transparent' }}
-            >
-                <svg
-                    width="20"
-                    height="20"
-                    viewBox="0 0 24 24"
-                    fill="none"
-                    xmlns="http://www.w3.org/2000/svg"
-                    className={`plus-icon transition-transform duration-300 ${isPlusHovered ? 'scale-110' : 'scale-100'}`}
-                >
-                    <path
-                        d="M12 5V19M5 12H19"
-                        stroke="black"
-                        strokeWidth="2"
-                        strokeLinecap="round"
-                        strokeLinejoin="round"
-                    />
-                </svg>
-            </button>
         </div>
     );
 }

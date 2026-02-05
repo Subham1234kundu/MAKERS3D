@@ -68,8 +68,8 @@ export default function ProductsPage() {
                 <div className="max-w-7xl mx-auto">
 
                     {/* Header */}
-                    <div className="text-center mb-16 page-title">
-                        <h1 className="text-4xl md:text-6xl font-thin tracking-wider text-white mb-4">
+                    <div className="text-center  page-title">
+                        <h1 className="text-3xl sm:text-4xl md:text-5xl lg:text-6xl font-thin tracking-tight bg-clip-text text-transparent bg-gradient-to-b  from-white to-white/60">
                             OUR COLLECTIONS
                         </h1>
                         <p className="text-white/40 font-light tracking-widest text-sm uppercase">
