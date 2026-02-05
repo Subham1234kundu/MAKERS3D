@@ -74,26 +74,75 @@ export default function ProductDetailPage() {
 
         const ctx = gsap.context(() => {
             gsap.fromTo(imageRef.current,
-                { opacity: 0, x: -50, filter: 'blur(10px)' },
-                { opacity: 1, x: 0, filter: 'blur(0px)', duration: 1, ease: 'power3.out' }
+                { opacity: 0, y: 20 },
+                { opacity: 1, y: 0, duration: 0.6, ease: 'power2.out' }
             );
 
             gsap.fromTo(contentRef.current?.children || [],
-                { opacity: 0, x: 50, filter: 'blur(10px)' },
-                { opacity: 1, x: 0, filter: 'blur(0px)', duration: 1, stagger: 0.1, ease: 'power3.out', delay: 0.2 }
+                { opacity: 0, y: 15 },
+                { opacity: 1, y: 0, duration: 0.5, stagger: 0.05, ease: 'power2.out', delay: 0.1 }
             );
         }, containerRef);
 
         return () => ctx.revert();
     }, [isLoading, product]);
 
-    if (!hasMounted || isLoading) {
+    if (!hasMounted) {
+        return null;
+    }
+
+    if (isLoading) {
         return (
-            <div
-                className="bg-black min-h-screen text-white flex items-center justify-center"
-                suppressHydrationWarning
-            >
-                <div className="text-xl font-thin tracking-widest animate-pulse">LOADING MASTERPIECE...</div>
+            <div className="bg-black min-h-screen text-white font-['Helvetica_Neue',Arial,sans-serif] animate-fadeIn">
+                <Navbar />
+                <main className="max-w-7xl mx-auto px-4 sm:px-6 pt-24 md:pt-32 pb-12 md:pb-20">
+                    {/* Skeleton Breadcrumb */}
+                    <nav className="mb-8 md:mb-12 flex items-center gap-2">
+                        <div className="h-3 w-12 bg-white/5 rounded" />
+                        <span className="text-white/20">/</span>
+                        <div className="h-3 w-16 bg-white/5 rounded" />
+                        <span className="text-white/20">/</span>
+                        <div className="h-3 w-32 bg-white/5 rounded" />
+                    </nav>
+
+                    <div className="grid grid-cols-1 lg:grid-cols-2 gap-10 md:gap-16 lg:gap-24 items-start">
+                        {/* Skeleton Image */}
+                        <div className="space-y-4">
+                            <div className="relative aspect-[3/4] bg-white/5 overflow-hidden">
+                                <div className="absolute inset-0 bg-gradient-to-r from-transparent via-white/5 to-transparent skeleton-shimmer" />
+                            </div>
+                        </div>
+
+                        {/* Skeleton Content */}
+                        <div className="flex flex-col">
+                            <div className="h-3 w-20 bg-white/5 rounded mb-4" />
+                            <div className="h-12 w-3/4 bg-white/5 rounded mb-6" />
+                            <div className="h-8 w-32 bg-white/5 rounded mb-8" />
+                            <div className="space-y-3 mb-10">
+                                <div className="h-4 w-full bg-white/5 rounded" />
+                                <div className="h-4 w-5/6 bg-white/5 rounded" />
+                                <div className="h-4 w-4/6 bg-white/5 rounded" />
+                            </div>
+                            <div className="flex gap-4 mb-4">
+                                <div className="h-14 w-14 bg-white/5 rounded" />
+                                <div className="h-14 flex-1 bg-white/5 rounded" />
+                            </div>
+                            <div className="h-14 w-full bg-white/5 rounded" />
+                        </div>
+                    </div>
+                </main>
+                <Footer />
+                <style jsx>{`
+                    @keyframes shimmer {
+                        0% { transform: translateX(-100%); }
+                        100% { transform: translateX(100%); }
+                    }
+                    .skeleton-shimmer {
+                        animation: shimmer 1.5s infinite;
+                    }
+                    @keyframes fadeIn { from { opacity: 0; } to { opacity: 1; } }
+                    .animate-fadeIn { animation: fadeIn 0.3s ease forwards; }
+                `}</style>
             </div>
         );
     }
@@ -115,7 +164,7 @@ export default function ProductDetailPage() {
 
     return (
         <div
-            className="bg-black min-h-screen text-white font-['Helvetica_Neue',Arial,sans-serif]"
+            className="bg-black min-h-screen text-white font-['Helvetica_Neue',Arial,sans-serif] animate-contentFadeIn"
             ref={containerRef}
             suppressHydrationWarning
         >
@@ -123,18 +172,18 @@ export default function ProductDetailPage() {
 
             <main className="max-w-7xl mx-auto px-4 sm:px-6 pt-24 md:pt-32 pb-12 md:pb-20">
                 {/* Breadcrumb */}
-                <nav className="mb-8 md:mb-12 flex items-center gap-2 text-[10px] sm:text-xs uppercase tracking-widest text-white/40">
-                    <Link href="/" className="hover:text-white transition-colors whitespace-nowrap flex-shrink-0">Home</Link>
-                    <span className="flex-shrink-0">/</span>
+                <nav className="mb-8 md:mb-12 flex items-baseline gap-1.5 sm:gap-2 text-[10px] sm:text-xs uppercase tracking-widest text-white/40 w-full overflow-hidden">
+                    <Link href="/" className="hover:text-white transition-colors flex-shrink-0 leading-none">Home</Link>
+                    <span className="flex-shrink-0 leading-none">/</span>
                     {product.category ? (
-                        <Link href={`/products?category=${product.category}`} className="hover:text-white transition-colors whitespace-nowrap flex-shrink-0">
+                        <Link href={`/products?category=${product.category}`} className="hover:text-white transition-colors flex-shrink-0 leading-none">
                             {product.category}
                         </Link>
                     ) : (
-                        <Link href="/products" className="hover:text-white transition-colors whitespace-nowrap flex-shrink-0">Products</Link>
+                        <Link href="/products" className="hover:text-white transition-colors flex-shrink-0 leading-none">Products</Link>
                     )}
-                    <span className="flex-shrink-0">/</span>
-                    <span className="text-white/80 truncate min-w-0">{product.name || product.title}</span>
+                    <span className="flex-shrink-0 leading-none">/</span>
+                    <span className="text-white/80 truncate leading-none">{product.name || product.title}</span>
                 </nav>
 
                 <div className="grid grid-cols-1 lg:grid-cols-2 gap-10 md:gap-16 lg:gap-24 items-start">
@@ -499,6 +548,8 @@ export default function ProductDetailPage() {
                 .animate-expand { animation: expand 0.4s ease forwards; transform-origin: left; }
                 @keyframes fadeIn { from { opacity: 0; transform: translateY(10px); } to { opacity: 1; transform: translateY(0); } }
                 .animate-fadeIn { animation: fadeIn 0.5s ease forwards; }
+                @keyframes contentFadeIn { from { opacity: 0; } to { opacity: 1; } }
+                .animate-contentFadeIn { animation: contentFadeIn 0.4s ease forwards; }
             `}</style>
         </div>
     );

@@ -731,6 +731,12 @@ export default function DashboardPage() {
                                                 </div>
                                                 <div className="flex-1">
                                                     <div className="text-sm font-light text-white mb-1">{order.product}</div>
+                                                    {order.items && order.items.length > 0 && (order.items[0].selectedSize || order.items[0].selectedColor) && (
+                                                        <div className="flex gap-2 text-[9px] text-white/50 uppercase tracking-wider mb-1">
+                                                            {order.items[0].selectedSize && <span className="bg-white/5 px-1.5 py-0.5 rounded-sm">Size: {order.items[0].selectedSize}</span>}
+                                                            {order.items[0].selectedColor && <span className="bg-white/5 px-1.5 py-0.5 rounded-sm">Color: {order.items[0].selectedColor}</span>}
+                                                        </div>
+                                                    )}
                                                     <div className="text-xs text-white/60 mb-1">{order.customer}</div>
                                                     <div className="text-[10px] text-white/40 uppercase tracking-widest">{order.payment_method?.toUpperCase()}</div>
                                                 </div>
