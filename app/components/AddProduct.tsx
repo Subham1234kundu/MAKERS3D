@@ -25,6 +25,7 @@ interface ProductData {
     sizes: string | any[];
     colors: string | any[];
     images: ProductImage[];
+    video?: { url: string; alt: string };
 }
 
 interface AddProductProps {
@@ -56,7 +57,7 @@ export default function AddProduct({ initialData, onSubmit, onCancel }: AddProdu
     const [newColor, setNewColor] = useState({ name: '', price: '', originalPrice: '' });
 
     const [isCategoryOpen, setIsCategoryOpen] = useState(false);
-    const [isUploading, setIsUploading] = useState<number | null>(null);
+    const [isUploading, setIsUploading] = useState<number | string | null>(null);
     const [collections, setCollections] = useState<Collection[]>([]);
     const [isLoadingCollections, setIsLoadingCollections] = useState(true);
 
@@ -64,7 +65,7 @@ export default function AddProduct({ initialData, onSubmit, onCancel }: AddProdu
     useEffect(() => {
         const fetchCollections = async () => {
             try {
-                const res = await fetch('/api/collections');
+                const res = await fetch(`/api/collections?t=${Date.now()}`, { cache: 'no-store' });
                 if (res.ok) {
                     const data = await res.json();
                     setCollections(data);
@@ -155,7 +156,8 @@ export default function AddProduct({ initialData, onSubmit, onCancel }: AddProdu
     };
 
 
-    const handleImageUpload = async (e: React.ChangeEvent<HTMLInputElement>, index: number) => {
+
+    const handleImageUpload = async (e: React.ChangeEvent<HTMLInputElement>, index: number | 'video') => {
         const file = e.target.files?.[0];
         if (file) {
             setIsUploading(index);
@@ -170,17 +172,20 @@ export default function AddProduct({ initialData, onSubmit, onCancel }: AddProdu
                     return;
                 }
 
-                console.log('🚀 Starting Cloudinary upload...');
+                const isVideo = index === 'video' || file.type.startsWith('video/');
+                const resourceType = isVideo ? 'video' : 'image';
+
+                console.log(`🚀 Starting Cloudinary ${resourceType} upload...`);
                 console.log('Cloud Name:', cloudName);
                 console.log('Upload Preset:', uploadPreset);
-                console.log('File:', file.name, '(' + (file.size / 1024).toFixed(2) + ' KB)');
+                console.log('File:', file.name, '(' + (file.size / (1024 * 1024)).toFixed(2) + ' MB)');
 
                 // Cloudinary upload logic
                 const formDataCloud = new FormData();
                 formDataCloud.append('file', file);
                 formDataCloud.append('upload_preset', uploadPreset);
 
-                const uploadUrl = `https://api.cloudinary.com/v1_1/${cloudName}/image/upload`;
+                const uploadUrl = `https://api.cloudinary.com/v1_1/${cloudName}/${resourceType}/upload`;
                 console.log('Upload URL:', uploadUrl);
 
                 const res = await fetch(uploadUrl, {
@@ -195,17 +200,27 @@ export default function AddProduct({ initialData, onSubmit, onCancel }: AddProdu
                     console.log('✅ Upload successful!');
                     console.log('Secure URL:', data.secure_url);
 
-                    const newImages = [...formData.images];
-                    newImages[index] = {
-                        url: data.secure_url,
-                        alt: formData.name || 'Product Image'
-                    };
-                    setFormData(prev => ({ ...prev, images: newImages }));
+                    if (index === 'video') {
+                        setFormData(prev => ({
+                            ...prev,
+                            video: {
+                                url: data.secure_url,
+                                alt: formData.name || 'Product Video'
+                            }
+                        }));
+                    } else {
+                        const newImages = [...formData.images];
+                        newImages[index as number] = {
+                            url: data.secure_url,
+                            alt: formData.name || 'Product Image'
+                        };
+                        setFormData(prev => ({ ...prev, images: newImages }));
+                    }
                 } else {
                     const errorData = await res.json().catch(() => ({}));
                     console.error('❌ Upload failed:', errorData);
 
-                    let errorMessage = 'Cloudinary upload failed.\n\n';
+                    let errorMessage = `Cloudinary ${resourceType} upload failed.\n\n`;
                     if (errorData.error?.message) {
                         errorMessage += 'Error: ' + errorData.error.message + '\n\n';
                     }
@@ -227,43 +242,81 @@ export default function AddProduct({ initialData, onSubmit, onCancel }: AddProdu
     };
 
     const removeImage = (index: number) => {
-        const newImages = formData.images.filter((_, i) => i !== index);
+        const newImages = [...formData.images];
+        newImages.splice(index, 1);
         setFormData(prev => ({ ...prev, images: newImages }));
     };
 
-    const handleAltChange = (index: number, alt: string) => {
-        const newImages = [...formData.images];
-        if (newImages[index]) {
-            newImages[index] = { ...newImages[index], alt };
-            setFormData(prev => ({ ...prev, images: newImages }));
+    const removeVideo = () => {
+        setFormData(prev => ({ ...prev, video: undefined }));
+    };
+
+    const handleAltChange = (index: number | 'video', alt: string) => {
+        if (index === 'video') {
+            if (formData.video) {
+                setFormData(prev => ({ ...prev, video: { ...prev.video!, alt } }));
+            }
+        } else {
+            const newImages = [...formData.images];
+            if (newImages[index as number]) {
+                newImages[index as number] = { ...newImages[index as number], alt };
+                setFormData(prev => ({ ...prev, images: newImages }));
+            }
         }
     };
 
-    const handleUrlChange = (index: number, url: string) => {
-        const newImages = [...formData.images];
-        newImages[index] = {
-            url,
-            alt: newImages[index]?.alt || formData.name || 'Product Image'
-        };
-        setFormData(prev => ({ ...prev, images: newImages }));
+    const handleUrlChange = (index: number | 'video', url: string) => {
+        if (index === 'video') {
+            setFormData(prev => ({
+                ...prev,
+                video: {
+                    url,
+                    alt: prev.video?.alt || formData.name || 'Product Video'
+                }
+            }));
+        } else {
+            const newImages = [...formData.images];
+            newImages[index as number] = {
+                url,
+                alt: newImages[index as number]?.alt || formData.name || 'Product Image'
+            };
+            setFormData(prev => ({ ...prev, images: newImages }));
+        }
     };
 
     const handleSubmit = (e: React.FormEvent) => {
         e.preventDefault();
 
+        // 1. Filter out empty/invalid image slots
+        const validImages = formData.images.filter(img => img && img.url);
+
+        // 2. Ensure price is present for API validation
+        // If using variants, we might not have a base price in formData.price
+        let submitPrice = formData.price;
+        if (!submitPrice) {
+            if (structuredSizes.length > 0 && structuredSizes[0].price) {
+                submitPrice = structuredSizes[0].price;
+            } else if (structuredColors.length > 0 && structuredColors[0].price) {
+                submitPrice = structuredColors[0].price;
+            } else {
+                submitPrice = '0'; // Last resort fallback
+            }
+        }
+
+        let submitOriginalPrice = formData.originalPrice || submitPrice;
+        if (formData.originalPrice === '' && structuredSizes.length > 0 && structuredSizes[0].originalPrice) {
+            submitOriginalPrice = structuredSizes[0].originalPrice;
+        }
+
         // Prepare final data with structured variants
         const finalData = {
             ...formData,
-            sizes: structuredSizes, // Send as array of objects
-            colors: structuredColors // Send as array of objects
+            price: submitPrice,
+            originalPrice: submitOriginalPrice,
+            images: validImages,
+            sizes: structuredSizes,
+            colors: structuredColors
         };
-
-        // Careful: The ProductData interface defined sizes/colors as 'string' originally.
-        // We are bypassing this type restriction at runtime, assuming backend handles flexible JSON.
-        // If the backend strictly expects strings, we might need to JSON.stringify these.
-        // However, standard MongoDB usage in this app seems schema-less for these fields or flexible.
-        // If needed, we can do: sizes: JSON.stringify(structuredSizes)
-        // Let's assume sending the Object is correct for upgrading the system.
 
         onSubmit(finalData as any);
     };
@@ -275,9 +328,10 @@ export default function AddProduct({ initialData, onSubmit, onCancel }: AddProdu
             </h3>
 
             <form onSubmit={handleSubmit} className="space-y-8">
-                {/* Images Section */}
+                {/* Images & Video Section */}
                 <div className="grid grid-cols-2 md:grid-cols-3 lg:grid-cols-4 gap-6 mb-8">
-                    {Array.from({ length: 4 }).map((_, index) => (
+                    {/* 6 Image Slots */}
+                    {Array.from({ length: 6 }).map((_, index) => (
                         <div key={index} className="space-y-3">
                             <div className="aspect-square bg-white/5 border border-white/10 relative group hover:border-white/30 transition-all flex items-center justify-center overflow-hidden rounded-sm">
                                 {formData.images[index]?.url ? (
@@ -305,8 +359,8 @@ export default function AddProduct({ initialData, onSubmit, onCancel }: AddProdu
                                         ) : (
                                             <>
                                                 <span className="text-2xl font-thin">+</span>
-                                                <span className="text-[9px] uppercase tracking-widest mt-2 font-light">
-                                                    {index < 4 ? 'Main Image' : 'Variant Image'}
+                                                <span className="text-[9px] uppercase tracking-widest mt-2 font-light text-center px-2">
+                                                    {index === 0 ? 'Featured Image' : `Image ${index + 1}`}
                                                 </span>
                                                 <input
                                                     type="file"
@@ -338,6 +392,70 @@ export default function AddProduct({ initialData, onSubmit, onCancel }: AddProdu
                             </div>
                         </div>
                     ))}
+
+                    {/* 1 Video Slot */}
+                    <div className="space-y-3">
+                        <div className="aspect-square bg-white/5 border border-white/10 relative group hover:border-white/30 transition-all flex items-center justify-center overflow-hidden rounded-sm">
+                            {formData.video?.url ? (
+                                <>
+                                    <video
+                                        src={formData.video.url}
+                                        className="w-full h-full object-cover"
+                                        autoPlay
+                                        muted
+                                        loop
+                                        playsInline
+                                    />
+                                    <button
+                                        type="button"
+                                        onClick={removeVideo}
+                                        className="absolute top-2 right-2 bg-red-500/80 hover:bg-red-500 text-white w-6 h-6 flex items-center justify-center rounded-sm opacity-0 group-hover:opacity-100 transition-opacity z-10"
+                                    >
+                                        ×
+                                    </button>
+                                </>
+                            ) : (
+                                <label className="cursor-pointer w-full h-full flex flex-col items-center justify-center text-white/20 hover:text-white/40 transition-colors">
+                                    {isUploading === 'video' ? (
+                                        <div className="flex flex-col items-center">
+                                            <div className="w-5 h-5 border-2 border-white/20 border-t-white animate-spin rounded-full mb-2" />
+                                            <span className="text-[8px] uppercase tracking-widest">Uploading...</span>
+                                        </div>
+                                    ) : (
+                                        <>
+                                            <span className="text-2xl font-thin">+</span>
+                                            <span className="text-[9px] uppercase tracking-widest mt-2 font-light text-center px-2">
+                                                Product Video
+                                            </span>
+                                            <input
+                                                type="file"
+                                                className="hidden"
+                                                accept="video/*"
+                                                onChange={(e) => handleImageUpload(e, 'video')}
+                                            />
+                                        </>
+                                    )}
+                                </label>
+                            )}
+                        </div>
+
+                        <div className="space-y-2">
+                            <input
+                                type="text"
+                                placeholder="VIDEO URL..."
+                                value={formData.video?.url || ''}
+                                onChange={(e) => handleUrlChange('video', e.target.value)}
+                                className="w-full bg-white/5 border border-white/10 px-3 py-2 text-[9px] text-white/80 focus:outline-none focus:border-white/40 transition-all tracking-widest uppercase placeholder:text-white/20"
+                            />
+                            <input
+                                type="text"
+                                placeholder="ALT TEXT (SEO)..."
+                                value={formData.video?.alt || ''}
+                                onChange={(e) => handleAltChange('video', e.target.value)}
+                                className="w-full bg-white/5 border border-white/10 px-3 py-2 text-[9px] text-white/80 focus:outline-none focus:border-white/40 transition-all tracking-widest uppercase placeholder:text-white/20"
+                            />
+                        </div>
+                    </div>
                 </div>
 
                 <div className="grid grid-cols-1 md:grid-cols-2 gap-8">
@@ -510,25 +628,11 @@ export default function AddProduct({ initialData, onSubmit, onCancel }: AddProdu
                             </div>
 
                             <div className={`absolute left-0 right-0 top-full mt-2 bg-black border border-white/10 z-50 overflow-y-auto max-h-60 transition-all duration-300 origin-top shadow-2xl ${isCategoryOpen ? 'opacity-100 scale-y-100 translate-y-0' : 'opacity-0 scale-y-95 -translate-y-2 pointer-events-none'}`}>
-                                {/* Default Collections */}
-                                {['DIVINE', 'LOVE', 'ASH_AND_STONE'/*, 'AURA', 'MOTION', 'BOX'*/].map((cat) => (
-                                    <div
-                                        key={cat}
-                                        onClick={() => {
-                                            setFormData(prev => ({ ...prev, category: cat }));
-                                            setIsCategoryOpen(false);
-                                        }}
-                                        className="px-4 py-3 text-[10px] uppercase tracking-widest text-white/40 hover:text-white hover:bg-white/5 cursor-pointer transition-all border-b border-white/5"
-                                    >
-                                        {cat.replace(/_/g, ' ')}
-                                    </div>
-                                ))}
-
                                 {/* Custom Collections from Database */}
-                                {!isLoadingCollections && collections.length > 0 && (
+                                {!isLoadingCollections && collections.length > 0 ? (
                                     <>
                                         <div className="px-4 py-2 text-[9px] uppercase tracking-widest text-white/60 bg-white/5 border-b border-white/10">
-                                            Custom Collections
+                                            Select Collections
                                         </div>
                                         {collections.map((collection) => (
                                             <div
@@ -543,6 +647,11 @@ export default function AddProduct({ initialData, onSubmit, onCancel }: AddProdu
                                             </div>
                                         ))}
                                     </>
+                                ) : (
+                                    <div className="px-4 py-6 text-center">
+                                        <p className="text-[10px] uppercase tracking-widest text-white/20 mb-2">No collections found</p>
+                                        <p className="text-[8px] uppercase tracking-widest text-white/10">Please add collections first</p>
+                                    </div>
                                 )}
                             </div>
                         </div>

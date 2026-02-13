@@ -546,7 +546,12 @@ export default function ProfilePage() {
                     <div className="flex items-center gap-6">
                         <div className="w-20 h-20 md:w-24 md:h-24 rounded-full bg-neutral-900 border border-white/10 flex items-center justify-center text-3xl font-thin text-white/50 overflow-hidden">
                             {session?.user?.image ? (
-                                <img src={session.user.image} alt="Profile" className="w-full h-full object-cover" />
+                                <img
+                                    src={session.user.image}
+                                    alt="Profile"
+                                    referrerPolicy="no-referrer"
+                                    className="w-full h-full object-cover"
+                                />
                             ) : (
                                 session?.user?.name?.charAt(0) || 'U'
                             )}

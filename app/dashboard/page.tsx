@@ -61,7 +61,7 @@ export default function DashboardPage() {
     const fetchProducts = async () => {
         setIsLoadingProducts(true);
         try {
-            const res = await fetch('/api/admin/products');
+            const res = await fetch(`/api/admin/products?t=${Date.now()}`, { cache: 'no-store' });
             if (res.ok) {
                 const data = await res.json();
                 setProducts(data);
@@ -205,7 +205,7 @@ export default function DashboardPage() {
     const fetchCollections = async () => {
         setIsLoadingCollections(true);
         try {
-            const res = await fetch('/api/admin/collections');
+            const res = await fetch(`/api/admin/collections?t=${Date.now()}`, { cache: 'no-store' });
             if (res.ok) {
                 const data = await res.json();
                 setCollections(data);

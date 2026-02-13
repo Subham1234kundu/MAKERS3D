@@ -7,19 +7,38 @@ import Footer from '../components/Footer';
 import { gsap } from 'gsap';
 
 export default function ProductsPage() {
-    const [activeCategory, setActiveCategory] = useState('ALL');
+    const [activeCategory, setActiveCategory] = useState<string>('ALL');
+    const [categoryData, setCategoryData] = useState<any[]>([
+        { id: 'ALL', label: 'SHOP', image: '/categories/all.png' }
+    ]);
+    const [isCategoriesLoading, setIsCategoriesLoading] = useState(true);
 
-    // Categories aligned with Home Page
-    const categoryData = [
-        { id: 'ALL', label: 'SHOP', image: '/categories/all.png' },
-        { id: 'DIVINE', label: 'DIVINE', image: '/categories/divine.png' },
-        { id: 'LOVE', label: 'LOVE', image: '/categories/love.png' },
-        { id: 'ASH_AND_STONE', label: 'ASH & STONE', image: '/categories/ash_and_stone.png' },
-        // { id: 'AURA', label: 'AURA', image: '/categories/aura.png' },
-        // { id: 'MOTION', label: 'MOTION', image: '/categories/motion.png' },
-        // { id: 'BOX', label: 'BOX', image: '/categories/box.png' },
-        { id: 'CUSTOM', label: 'CUSTOM', image: '/categories/custom.png' },
-    ];
+    useEffect(() => {
+        const fetchCategories = async () => {
+            try {
+                const res = await fetch('/api/collections');
+                if (res.ok) {
+                    const data = await res.json();
+                    if (data && data.length > 0) {
+                        const formatted = data.map((c: any) => ({
+                            id: c.slug.toUpperCase(),
+                            label: c.name.toUpperCase(),
+                            image: c.image || '/placeholder.png'
+                        }));
+                        setCategoryData([
+                            { id: 'ALL', label: 'SHOP', image: '/categories/all.png' },
+                            ...formatted
+                        ]);
+                    }
+                }
+            } catch (error) {
+                console.error('Error fetching categories:', error);
+            } finally {
+                setIsCategoriesLoading(false);
+            }
+        };
+        fetchCategories();
+    }, []);
 
     const [products, setProducts] = useState<any[]>([]);
     const [isLoading, setIsLoading] = useState(true);
@@ -27,7 +46,7 @@ export default function ProductsPage() {
     useEffect(() => {
         const fetchProducts = async () => {
             try {
-                const res = await fetch('/api/products');
+                const res = await fetch(`/api/products?t=${Date.now()}`, { cache: 'no-store' });
                 if (res.ok) {
                     const data = await res.json();
                     setProducts(data);

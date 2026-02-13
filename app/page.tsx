@@ -42,15 +42,7 @@ export default function HomePage() {
     };
   }, []);
 
-  const categories = [
-    { id: 'ALL', label: 'SHOP', image: '/categories/all.png' },
-    { id: 'DIVINE', label: 'DIVINE', image: '/categories/divine.png' },
-    { id: 'LOVE', label: 'LOVE', image: '/categories/love.png' },
-    // { id: 'AURA', label: 'AURA', image: '/categories/aura.png' },
-    // { id: 'MOTION', label: 'MOTION', image: '/categories/motion.png' },
-    // { id: 'BOX', label: 'BOX', image: '/categories/box.png' },
-    { id: 'CUSTOM', label: 'CUSTOM', image: '/categories/custom.png' },
-  ];
+  // Categories array removed as it was unused and non-dynamic
 
   const handleCategoryClick = (category: string) => {
     setActiveCategory(category);
@@ -62,7 +54,7 @@ export default function HomePage() {
   useEffect(() => {
     const fetchProducts = async () => {
       try {
-        const res = await fetch('/api/products');
+        const res = await fetch(`/api/products?t=${Date.now()}`, { cache: 'no-store' });
         if (res.ok) {
           const data = await res.json();
           setProducts(data);

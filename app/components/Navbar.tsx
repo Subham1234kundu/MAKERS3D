@@ -118,7 +118,12 @@ const NavIcons = ({
           suppressHydrationWarning
         >
           {session?.user?.image ? (
-            <img src={session.user.image} alt={session.user.name || 'User'} className={`user-avatar ${isMobileNav && isProfileActive ? 'border-white' : ''} w-[22px] h-[22px]`} />
+            <img
+              src={session.user.image}
+              alt={session.user.name || 'User'}
+              referrerPolicy="no-referrer"
+              className={`user-avatar ${isMobileNav && isProfileActive ? 'border-white' : ''} w-[22px] h-[22px] object-cover`}
+            />
           ) : (
             <svg fill="none" stroke="currentColor" viewBox="0 0 24 24" className="w-[19px] h-[19px] opacity-60 hover:opacity-100 transition-opacity">
               <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={1.2} d="M16 7a4 4 0 11-8 0 4 4 0 018 0zM12 14a7 7 0 00-7 7h14a7 7 0 00-7-7z" />

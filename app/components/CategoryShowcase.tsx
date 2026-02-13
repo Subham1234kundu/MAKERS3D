@@ -22,17 +22,35 @@ interface CategoryShowcaseProps {
 }
 
 export default function CategoryShowcase({ products }: CategoryShowcaseProps) {
-    const categories = [
-        { id: 'DIVINE', label: 'DIVINE', image: '/categories/divine.png' },
-        { id: 'LOVE', label: 'LOVE', image: '/categories/love.png' },
-        { id: 'ASH_AND_STONE', label: 'ASH & STONE', image: '/categories/ash_and_stone.png' },
-        // { id: 'AURA', label: 'AURA', image: '/categories/aura.png' },
-        // { id: 'MOTION', label: 'MOTION', image: '/categories/motion.png' },
-        // { id: 'BOX', label: 'BOX', image: '/categories/box.png' },
-        { id: 'CUSTOM', label: 'CUSTOM', image: '/categories/custom.png' },
-    ];
+    const [categories, setCategories] = useState<any[]>([]);
+    const [isLoading, setIsLoading] = useState(true);
+    const [activeCategory, setActiveCategory] = useState<string>('');
 
-    const [activeCategory, setActiveCategory] = useState(categories[0].id);
+    useEffect(() => {
+        const fetchCollections = async () => {
+            try {
+                const res = await fetch('/api/collections');
+                if (res.ok) {
+                    const data = await res.json();
+                    if (data && data.length > 0) {
+                        const formatted = data.map((c: any) => ({
+                            id: c.slug.toUpperCase(),
+                            label: c.name.toUpperCase(),
+                            image: c.image || '/placeholder.png'
+                        }));
+                        setCategories(formatted);
+                        setActiveCategory(formatted[0].id);
+                    }
+                }
+            } catch (error) {
+                console.error('Error fetching collections:', error);
+            } finally {
+                setIsLoading(false);
+            }
+        };
+        fetchCollections();
+    }, []);
+
     const activeIndex = categories.findIndex(cat => cat.id === activeCategory);
     const sectionRef = useRef<HTMLElement>(null);
     const productRef = useRef<HTMLDivElement>(null);
@@ -136,6 +154,8 @@ export default function CategoryShowcase({ products }: CategoryShowcaseProps) {
             }
         };
     }, [activeCategory, categories]);
+
+    if (isLoading || categories.length === 0) return null;
 
     return (
         <section ref={sectionRef} className="bg-black pt-16 pb-8 lg:py-24 overflow-hidden" suppressHydrationWarning>

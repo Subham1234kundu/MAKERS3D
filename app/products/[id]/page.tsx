@@ -39,6 +39,22 @@ export default function ProductDetailPage() {
     const [selectedSize, setSelectedSize] = useState('');
     const [selectedColor, setSelectedColor] = useState('');
 
+    // Pre-calculate media items for helper functions
+    const mediaItems = product ? [
+        ...(product.images || [product.image]),
+        ...(product.video?.url ? [{ ...product.video, type: 'video' }] : [])
+    ] : [];
+
+    const nextMedia = () => {
+        if (!mediaItems.length) return;
+        setActiveImageIndex((prev) => (prev + 1) % mediaItems.length);
+    };
+
+    const prevMedia = () => {
+        if (!mediaItems.length) return;
+        setActiveImageIndex((prev) => (prev - 1 + mediaItems.length) % mediaItems.length);
+    };
+
     const containerRef = useRef<HTMLDivElement>(null);
     const imageRef = useRef<HTMLDivElement>(null);
     const contentRef = useRef<HTMLDivElement>(null);
@@ -62,7 +78,7 @@ export default function ProductDetailPage() {
             const fetchProducts = async () => {
                 setIsLoading(true);
                 try {
-                    const res = await fetch('/api/products');
+                    const res = await fetch(`/api/products?t=${Date.now()}`, { cache: 'no-store' });
                     if (res.ok) {
                         const data = await res.json();
                         // Filter by category (case-insensitive, handle ash_and_stone)
@@ -88,7 +104,7 @@ export default function ProductDetailPage() {
                 setIsLoading(true);
 
                 try {
-                    const res = await fetch(`/api/products/${id}`);
+                    const res = await fetch(`/api/products/${id}?t=${Date.now()}`, { cache: 'no-store' });
                     if (res.ok) {
                         const data = await res.json();
                         setProduct(data);
@@ -107,7 +123,7 @@ export default function ProductDetailPage() {
 
                         // Check if liked if logged in
                         if (session?.user?.email) {
-                            const likesRes = await fetch('/api/likes');
+                            const likesRes = await fetch('/api/likes', { cache: 'no-store' });
                             if (likesRes.ok) {
                                 const likedProducts = await likesRes.json();
                                 const liked = likedProducts.some((p: any) => p.id === id || p._id === id);
@@ -216,11 +232,10 @@ export default function ProductDetailPage() {
         );
     }
 
-    // Get all images
-    const allImages = product.images || [product.image];
-    const currentImageData = allImages[activeImageIndex];
-    const currentImageUrl = typeof currentImageData === 'string' ? currentImageData : currentImageData?.url;
-    const currentImageAlt = typeof currentImageData === 'string' ? product.name : currentImageData?.alt || product.name;
+    const currentMedia = mediaItems[activeImageIndex];
+    const isVideo = typeof currentMedia === 'object' && 'type' in currentMedia && currentMedia.type === 'video';
+    const currentImageUrl = typeof currentMedia === 'string' ? currentMedia : (currentMedia as any)?.url;
+    const currentImageAlt = typeof currentMedia === 'string' ? product.name : (currentMedia as any)?.alt || product.name;
 
     return (
         <div
@@ -248,59 +263,103 @@ export default function ProductDetailPage() {
 
                 <div className="grid grid-cols-1 lg:grid-cols-2 gap-10 md:gap-16 lg:gap-24 items-start">
                     {/* Image Gallery Section */}
-                    <div ref={imageRef} className="space-y-4">
-                        {/* Main Image */}
-                        <div className="relative aspect-[3/4] bg-neutral-900 overflow-hidden group">
-                            <Image
-                                src={currentImageUrl}
-                                alt={currentImageAlt}
-                                fill
-                                className="object-cover transition-transform duration-700 group-hover:scale-105"
-                                priority
-                                quality={90}
-                                loading="eager"
-                            />
+                    <div ref={imageRef} className="flex flex-col lg:flex-row gap-4 h-fit">
+                        {/* Main Media View */}
+                        <div className="relative aspect-[3/4] bg-neutral-900 overflow-hidden group flex-grow order-1 lg:order-1">
+                            {isVideo ? (
+                                <video
+                                    src={currentImageUrl}
+                                    className="w-full h-full object-cover"
+                                    autoPlay
+                                    muted
+                                    loop
+                                    playsInline
+                                    controls
+                                />
+                            ) : (
+                                <Image
+                                    src={currentImageUrl}
+                                    alt={currentImageAlt}
+                                    fill
+                                    className="object-cover transition-transform duration-700 group-hover:scale-105"
+                                    priority
+                                    quality={90}
+                                    loading="eager"
+                                />
+                            )}
                             <div className="absolute inset-0 border border-white/10 pointer-events-none" />
 
-                            {/* Image Counter */}
-                            {allImages.length > 1 && (
+                            {/* Arrow Navigation (Laptop Only) */}
+                            {mediaItems.length > 1 && (
+                                <div className="absolute inset-0 flex items-center justify-between px-4 opacity-0 group-hover:opacity-100 transition-opacity pointer-events-none">
+                                    <button
+                                        onClick={(e) => { e.stopPropagation(); prevMedia(); }}
+                                        className="w-10 h-10 bg-black/40 backdrop-blur-md border border-white/10 flex items-center justify-center hover:bg-white hover:text-black transition-all rounded-full pointer-events-auto"
+                                        aria-label="Previous image"
+                                    >
+                                        <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2">
+                                            <polyline points="15 18 9 12 15 6"></polyline>
+                                        </svg>
+                                    </button>
+                                    <button
+                                        onClick={(e) => { e.stopPropagation(); nextMedia(); }}
+                                        className="w-10 h-10 bg-black/40 backdrop-blur-md border border-white/10 flex items-center justify-center hover:bg-white hover:text-black transition-all rounded-full pointer-events-auto"
+                                        aria-label="Next image"
+                                    >
+                                        <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2">
+                                            <polyline points="9 18 15 12 9 6"></polyline>
+                                        </svg>
+                                    </button>
+                                </div>
+                            )}
+
+                            {/* media Counter */}
+                            {mediaItems.length > 1 && (
                                 <div className="absolute top-4 right-4 bg-black/60 backdrop-blur-sm px-3 py-1.5 text-[10px] tracking-wider border border-white/20">
-                                    {activeImageIndex + 1} / {allImages.length}
+                                    {activeImageIndex + 1} / {mediaItems.length}
                                 </div>
                             )}
                         </div>
 
                         {/* Thumbnail Gallery */}
-                        {allImages.length > 1 && (
-                            <div className="flex gap-2 sm:gap-3 justify-start sm:justify-center overflow-x-auto overflow-y-visible no-scrollbar py-2 scroll-smooth -mx-4 px-4 sm:mx-0 sm:px-0 [scrollbar-width:none] [-ms-overflow-style:none] [&::-webkit-scrollbar]:hidden">
-                                {allImages.map((img: any, idx: number, arr: any[]) => {
-                                    const imgUrl = typeof img === 'string' ? img : img.url;
-                                    const imgAlt = typeof img === 'string' ? `${product.name} view ${idx + 1}` : img.alt;
+                        {mediaItems.length > 1 && (
+                            <div className="flex lg:flex-col gap-2 sm:gap-3 justify-start overflow-x-auto lg:overflow-x-hidden lg:overflow-y-auto no-scrollbar py-2 lg:py-0 scroll-smooth -mx-4 px-4 sm:mx-0 sm:px-0 lg:w-20 lg:max-h-[min(600px,calc(100vh-200px))] order-2 lg:order-2">
+                                {mediaItems.map((item: any, idx: number, arr: any[]) => {
+                                    const itemUrl = typeof item === 'string' ? item : item.url;
+                                    const itemAlt = typeof item === 'string' ? `${product.name} view ${idx + 1}` : item.alt;
+                                    const isItemVideo = typeof item === 'object' && item.type === 'video';
                                     const isLast = idx === arr.length - 1;
+
                                     return (
                                         <button
                                             key={idx}
                                             onClick={() => setActiveImageIndex(idx)}
-                                            onTouchEnd={(e) => {
-                                                e.preventDefault();
-                                                setActiveImageIndex(idx);
-                                            }}
-                                            className={`relative flex-shrink-0 w-14 h-14 min-w-[56px] min-h-[56px] sm:w-16 sm:h-16 sm:min-w-[64px] sm:min-h-[64px] border transition-all duration-300 touch-manipulation cursor-pointer active:scale-95 [-webkit-tap-highlight-color:transparent] ${isLast ? 'mr-16 sm:mr-0' : ''} ${activeImageIndex === idx
+                                            className={`relative flex-shrink-0 w-14 h-14 min-w-[56px] min-h-[56px] sm:w-16 sm:h-16 sm:min-w-[64px] sm:min-h-[64px] lg:w-full lg:h-auto lg:aspect-square border transition-all duration-300 touch-manipulation cursor-pointer active:scale-95 [-webkit-tap-highlight-color:transparent] ${isLast ? 'mr-16 sm:mr-0 lg:mr-0 lg:mb-4' : ''} ${activeImageIndex === idx
                                                 ? 'border-white shadow-lg shadow-white/20 opacity-100'
                                                 : 'border-white/20 opacity-60 hover:opacity-100 hover:border-white/40'
                                                 }`}
                                             type="button"
-                                            aria-label={`View ${imgAlt}`}
                                         >
-                                            <Image
-                                                src={imgUrl}
-                                                alt={imgAlt}
-                                                fill
-                                                className="object-cover pointer-events-none select-none"
-                                                quality={75}
-                                                sizes="64px"
-                                                draggable={false}
-                                            />
+                                            {isItemVideo ? (
+                                                <div className="w-full h-full relative">
+                                                    <video src={itemUrl} className="w-full h-full object-cover pointer-events-none" muted />
+                                                    <div className="absolute inset-0 flex items-center justify-center bg-black/20">
+                                                        <svg width="20" height="20" viewBox="0 0 24 24" fill="white" className="opacity-80">
+                                                            <path d="M8 5v14l11-7z" />
+                                                        </svg>
+                                                    </div>
+                                                </div>
+                                            ) : (
+                                                <Image
+                                                    src={itemUrl}
+                                                    alt={itemAlt}
+                                                    fill
+                                                    className="object-cover pointer-events-none select-none"
+                                                    quality={75}
+                                                    sizes="64px"
+                                                    draggable={false}
+                                                />
+                                            )}
                                         </button>
                                     );
                                 })}
@@ -311,7 +370,7 @@ export default function ProductDetailPage() {
                     {/* Product Info Section */}
                     <div ref={contentRef} className="flex flex-col">
                         <span className="text-[10px] sm:text-xs font-light uppercase tracking-[0.4em] text-white/40 mb-3 sm:mb-4">{product.category}</span>
-                        <h1 className="text-3xl sm:text-4xl md:text-5xl lg:text-6xl font-thin leading-tight mb-4 sm:mb-6 tracking-tight bg-clip-text text-transparent bg-gradient-to-b from-white to-white/60">
+                        <h1 className="text-3xl sm:text-4xl md:text-5xl lg:text-5xl font-thin leading-tight mb-4 sm:mb-6 tracking-tight bg-clip-text text-transparent bg-gradient-to-b from-white to-white/60">
                             {product.name || product.title}
                         </h1>
 
@@ -367,9 +426,7 @@ export default function ProductDetailPage() {
                             </span>
                         </div>
 
-                        <p className="text-white/60 font-thin leading-relaxed tracking-wide mb-8 sm:mb-10 text-base sm:text-lg">
-                            {product.description}
-                        </p>
+
 
                         {/* Variants Section */}
                         <div className="space-y-8 mb-12">

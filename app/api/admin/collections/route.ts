@@ -3,6 +3,10 @@ import { getDatabase } from '@/lib/mongodb';
 import { getServerSession } from 'next-auth';
 import { authOptions } from '@/lib/auth';
 import { ObjectId } from 'mongodb';
+import { revalidatePath } from 'next/cache';
+
+export const dynamic = 'force-dynamic';
+export const revalidate = 0;
 
 // Get all collections (admin view)
 export async function GET(request: NextRequest) {
@@ -23,7 +27,13 @@ export async function GET(request: NextRequest) {
             id: c._id.toString()
         }));
 
-        return NextResponse.json(formattedCollections);
+        return NextResponse.json(formattedCollections, {
+            headers: {
+                'Cache-Control': 'no-store, max-age=0, must-revalidate',
+                'Pragma': 'no-cache',
+                'Expires': '0',
+            },
+        });
     } catch (error: any) {
         return NextResponse.json({ message: error.message }, { status: 500 });
     }
@@ -61,6 +71,10 @@ export async function POST(request: NextRequest) {
             createdAt: new Date(),
             updatedAt: new Date()
         });
+
+        // Revalidate frontend pages
+        revalidatePath('/');
+        revalidatePath('/products');
 
         return NextResponse.json({ message: 'Collection created', id: result.insertedId }, { status: 201 });
     } catch (error: any) {
@@ -115,6 +129,10 @@ export async function PUT(request: NextRequest) {
             return NextResponse.json({ message: 'Collection not found' }, { status: 404 });
         }
 
+        // Revalidate frontend pages
+        revalidatePath('/');
+        revalidatePath('/products');
+
         return NextResponse.json({ message: 'Collection updated' });
     } catch (error: any) {
         return NextResponse.json({ message: error.message }, { status: 500 });
@@ -142,6 +160,10 @@ export async function DELETE(request: NextRequest) {
         if (result.deletedCount === 0) {
             return NextResponse.json({ message: 'Collection not found' }, { status: 404 });
         }
+
+        // Revalidate frontend pages
+        revalidatePath('/');
+        revalidatePath('/products');
 
         return NextResponse.json({ message: 'Collection deleted' });
     } catch (error: any) {
