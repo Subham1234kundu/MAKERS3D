@@ -108,6 +108,11 @@ export async function PATCH(request: NextRequest) {
             updateData.tracking_number = trackingNumber;
         }
 
+        // Set deliveredAt when status becomes delivered
+        if (status.toLowerCase() === 'delivered') {
+            updateData.deliveredAt = new Date();
+        }
+
         const updateResult = await db.collection('orders').updateOne(
             { client_txn_id: orderId },
             { $set: updateData }

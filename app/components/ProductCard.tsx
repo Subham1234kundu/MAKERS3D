@@ -3,6 +3,7 @@
 import Image from 'next/image';
 import Link from 'next/link';
 import { useState } from 'react';
+import { useRouter } from 'next/navigation';
 import { useCart } from '../providers/CartProvider';
 
 interface ProductCardProps {
@@ -21,12 +22,20 @@ interface ProductCardProps {
 export default function ProductCard({ id, image, alt, secondImage, secondAlt, title, price, originalPrice, category = 'ALL', fixedMobileHeight = false }: ProductCardProps) {
     const [isHovered, setIsHovered] = useState(false);
     const [isPlusHovered, setIsPlusHovered] = useState(false);
+    const router = useRouter();
     const { addToCart } = useCart();
 
-    const handleAddToCart = (e: React.MouseEvent) => {
+    const handleAddToCart = async (e: React.MouseEvent) => {
         e.preventDefault();
         e.stopPropagation();
+        
+        // Add to cart
         addToCart({ id, image, title, price, originalPrice, category });
+        
+        // Navigate to cart page after a brief delay for smooth UX
+        setTimeout(() => {
+            router.push('/cart');
+        }, 300);
     };
 
     return (
@@ -38,10 +47,10 @@ export default function ProductCard({ id, image, alt, secondImage, secondAlt, ti
             onTouchEnd={() => setTimeout(() => setIsHovered(false), 300)}
             suppressHydrationWarning
         >
-            <Link href={`/products/${id}`}>
-                <div className="cursor-pointer" suppressHydrationWarning>
-                    {/* Image Container */}
-                    <div className={`relative ${fixedMobileHeight ? 'h-[320px] sm:h-auto sm:aspect-[3/4]' : 'aspect-[3/4]'} mb-3 sm:mb-4 overflow-hidden transition-all duration-300 bg-black`}>
+            {/* Image Container */}
+            <div className={`relative ${fixedMobileHeight ? 'h-[320px] sm:h-auto sm:aspect-[3/4]' : 'aspect-[3/4]'} mb-3 sm:mb-4 overflow-hidden transition-all duration-300 bg-black`}>
+                <Link href={`/products/${id}`} className="absolute inset-0 z-10" suppressHydrationWarning>
+                    <div className="w-full h-full cursor-pointer" suppressHydrationWarning>
                         {/* First Image */}
                         {image && (
                             <Image
@@ -78,74 +87,80 @@ export default function ProductCard({ id, image, alt, secondImage, secondAlt, ti
                         {/* Border - Black by default, Gray on hover */}
                         <div className={`absolute inset-0 border transition-colors duration-300 ${isHovered ? 'border-gray-500' : 'border-white/5'
                             }`}></div>
-
-                        {/* Plus Icon - Inside image container for consistent positioning */}
-                        <button
-                            type="button"
-                            className={`absolute bottom-2 right-2 sm:bottom-3 sm:right-3
-                                w-9 h-9 sm:w-11 sm:h-11
-                                bg-white flex items-center justify-center
-                                transition-all duration-300 cursor-pointer
-                                lg:opacity-0 lg:-translate-x-4
-                                group-hover:opacity-100 group-hover:translate-x-0
-                                hover:scale-105 active:scale-90
-                                z-30 touch-manipulation
-                                ${isPlusHovered ? 'bg-gray-100' : ''}
-                                `}
-                            onMouseEnter={() => setIsPlusHovered(true)}
-                            onMouseLeave={() => setIsPlusHovered(false)}
-                            suppressHydrationWarning
-                            onClick={(e) => {
-                                handleAddToCart(e);
-                                const icon = e.currentTarget.querySelector('.plus-icon');
-                                if (icon) {
-                                    icon.animate([
-                                        { transform: 'rotate(0deg)' },
-                                        { transform: 'rotate(360deg)' }
-                                    ], {
-                                        duration: 700,
-                                        easing: 'cubic-bezier(0.23, 1, 0.32, 1)'
-                                    });
-                                }
-                            }}
-                            aria-label="Add to cart"
-                            style={{ WebkitTapHighlightColor: 'transparent' }}
-                        >
-                            <svg
-                                width="16"
-                                height="16"
-                                viewBox="0 0 24 24"
-                                fill="none"
-                                xmlns="http://www.w3.org/2000/svg"
-                                className={`plus-icon transition-transform duration-300 sm:w-[18px] sm:h-[18px] ${isPlusHovered ? 'scale-110' : 'scale-100'}`}
-                            >
-                                <path
-                                    d="M12 5V19M5 12H19"
-                                    stroke="black"
-                                    strokeWidth="2"
-                                    strokeLinecap="round"
-                                    strokeLinejoin="round"
-                                />
-                            </svg>
-                        </button>
                     </div>
+                </Link>
 
-                    {/* Text Content - Centered with padding */}
-                    <div className="px-2" suppressHydrationWarning>
-                        {/* Product Title */}
-                        <h3 className="text-white font-thin text-base mb-2 tracking-wide text-center" suppressHydrationWarning>
-                            {title}
-                        </h3>
+                {/* Plus Icon - Outside Link, positioned absolutely */}
+                <button
+                    type="button"
+                    className={`absolute bottom-2 right-2 sm:bottom-3 sm:right-3
+                        w-9 h-9 sm:w-11 sm:h-11
+                        bg-white flex items-center justify-center
+                        transition-all duration-300 cursor-pointer
+                        lg:opacity-0 lg:-translate-x-4
+                        group-hover:opacity-100 group-hover:translate-x-0
+                        hover:scale-110 hover:bg-gray-100 active:scale-95
+                        z-[60] touch-manipulation
+                        ${isPlusHovered ? 'bg-gray-100 scale-110' : ''}
+                        `}
+                    onMouseEnter={() => setIsPlusHovered(true)}
+                    onMouseLeave={() => setIsPlusHovered(false)}
+                    suppressHydrationWarning
+                    onClick={(e) => {
+                        e.preventDefault();
+                        e.stopPropagation();
+                        handleAddToCart(e);
+                        const icon = e.currentTarget.querySelector('.plus-icon');
+                        if (icon) {
+                            icon.animate([
+                                { transform: 'rotate(0deg) scale(1)' },
+                                { transform: 'rotate(360deg) scale(1.2)' },
+                                { transform: 'rotate(360deg) scale(1)' }
+                            ], {
+                                duration: 600,
+                                easing: 'cubic-bezier(0.34, 1.56, 0.64, 1)'
+                            });
+                        }
+                    }}
+                    aria-label="Add to cart"
+                    style={{ WebkitTapHighlightColor: 'transparent', pointerEvents: 'auto' }}
+                >
+                    <svg
+                        width="16"
+                        height="16"
+                        viewBox="0 0 24 24"
+                        fill="none"
+                        xmlns="http://www.w3.org/2000/svg"
+                        className={`plus-icon transition-transform duration-500 ease-out sm:w-[18px] sm:h-[18px] ${isPlusHovered ? 'rotate-90 scale-110' : 'rotate-0 scale-100'}`}
+                        style={{ transformOrigin: 'center' }}
+                    >
+                        <path
+                            d="M12 5V19M5 12H19"
+                            stroke="black"
+                            strokeWidth="2"
+                            strokeLinecap="round"
+                            strokeLinejoin="round"
+                        />
+                    </svg>
+                </button>
+            </div>
 
-                        {/* Price Section */}
-                        <div className="flex items-center gap-3 justify-center" suppressHydrationWarning>
-                            <span className="text-white font-normal text-sm" suppressHydrationWarning>
-                                ₹{price.toLocaleString('en-IN')}
-                            </span>
-                            <span className="text-gray-500 font-normal text-sm line-through">
-                                ₹{originalPrice.toLocaleString('en-IN')}
-                            </span>
-                        </div>
+            {/* Text Content - Centered with padding */}
+            <Link href={`/products/${id}`} className="block" suppressHydrationWarning>
+                <div className="px-2 cursor-pointer" suppressHydrationWarning>
+                    {/* Product Title */}
+                    <h3 className="text-white font-thin text-base mb-2 tracking-wide text-center" suppressHydrationWarning>
+                        {title}
+                    </h3>
+
+                    {/* Price Section */}
+                    <div className="flex items-center gap-3 justify-center" suppressHydrationWarning>
+                        <span className="text-white font-normal text-sm" suppressHydrationWarning>
+                            ₹{price.toLocaleString('en-IN')}
+                        </span>
+                        <span className="text-gray-500 font-normal text-sm line-through">
+                            ₹{originalPrice.toLocaleString('en-IN')}
+                        </span>
                     </div>
                 </div>
             </Link>

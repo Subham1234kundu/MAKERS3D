@@ -10,6 +10,7 @@ import Footer from '../components/Footer';
 interface OrderItem {
     name: string;
     image: string;
+    id?: string;
 }
 
 interface Address {
@@ -168,13 +169,23 @@ export default function OrdersPage() {
                                 <p className="text-[10px] uppercase tracking-[0.2em] text-white/40 mb-4">Items Ordered</p>
                                 <div className="space-y-3">
                                     {selectedOrder.items.length > 0 ? (
-                                        selectedOrder.items.map((item, i) => (
-                                            <div key={i} className="flex items-center gap-4 bg-white/5 p-4 border border-white/5">
-                                                <div className="w-16 h-16 bg-neutral-800 flex-shrink-0">
-                                                    <img src={item.image} alt={item.name} className="w-full h-full object-cover" />
+                                        selectedOrder.items.map((item: any, i: number) => (
+                                            item.id ? (
+                                                <Link key={i} href={`/products/${item.id}`} className="flex items-center gap-4 bg-white/5 p-4 border border-white/5 hover:border-white/20 transition-colors">
+                                                    <div className="w-16 h-16 bg-neutral-800 flex-shrink-0">
+                                                        <img src={item.image} alt={item.name} className="w-full h-full object-cover" />
+                                                    </div>
+                                                    <span className="text-white/80">{item.name}</span>
+                                                    <span className="ml-auto text-[9px] text-white/40 uppercase">View →</span>
+                                                </Link>
+                                            ) : (
+                                                <div key={i} className="flex items-center gap-4 bg-white/5 p-4 border border-white/5">
+                                                    <div className="w-16 h-16 bg-neutral-800 flex-shrink-0">
+                                                        <img src={item.image} alt={item.name} className="w-full h-full object-cover" />
+                                                    </div>
+                                                    <span className="text-white/80">{item.name}</span>
                                                 </div>
-                                                <span className="text-white/80">{item.name}</span>
-                                            </div>
+                                            )
                                         ))
                                     ) : (
                                         <p className="text-white/40 text-sm">{selectedOrder.itemsText || 'No items'}</p>
@@ -219,9 +230,12 @@ export default function OrdersPage() {
                                 Close
                             </button>
                             {selectedOrder.status === 'Delivered' && (
-                                <button className="flex-1 bg-white text-black py-3 text-[10px] uppercase tracking-[0.2em] hover:bg-gray-200 transition-all">
+                                <Link
+                                    href="/profile"
+                                    className="flex-1 bg-white text-black py-3 text-[10px] uppercase tracking-[0.2em] hover:bg-gray-200 transition-all text-center block"
+                                >
                                     Request Return
-                                </button>
+                                </Link>
                             )}
                         </div>
                     </div>

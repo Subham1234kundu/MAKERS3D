@@ -21,7 +21,7 @@ export default function DashboardPage() {
     const { data: session, status } = useSession();
     const router = useRouter();
     const containerRef = useRef<HTMLDivElement>(null);
-    const [activeView, setActiveView] = useState<'overview' | 'products' | 'collections' | 'orders' | 'requests' | 'customers' | 'settings'>('overview');
+    const [activeView, setActiveView] = useState<'overview' | 'products' | 'collections' | 'orders' | 'returns' | 'requests' | 'customers' | 'settings'>('overview');
     const [customers, setCustomers] = useState<any[]>([]);
     const [searchQuery, setSearchQuery] = useState('');
 
@@ -29,6 +29,8 @@ export default function DashboardPage() {
     const [isLoadingOrders, setIsLoadingOrders] = useState(false);
 
     const [requests, setRequests] = useState<any[]>([]);
+    const [returnRequests, setReturnRequests] = useState<any[]>([]);
+    const [isLoadingReturns, setIsLoadingReturns] = useState(false);
 
     useEffect(() => {
         try {
@@ -85,6 +87,21 @@ export default function DashboardPage() {
             console.error('Error fetching orders:', error);
         } finally {
             setIsLoadingOrders(false);
+        }
+    };
+
+    const fetchReturnRequests = async () => {
+        setIsLoadingReturns(true);
+        try {
+            const res = await fetch('/api/admin/returns');
+            if (res.ok) {
+                const data = await res.json();
+                setReturnRequests(data);
+            }
+        } catch (error) {
+            console.error('Error fetching returns:', error);
+        } finally {
+            setIsLoadingReturns(false);
         }
     };
 
@@ -280,6 +297,9 @@ export default function DashboardPage() {
         if (activeView === 'orders' && orders.length === 0) {
             fetchOrders();
         }
+        if (activeView === 'returns') {
+            fetchReturnRequests();
+        }
         if (activeView === 'overview') {
             fetchOrders();
             fetchCustomers();
@@ -414,6 +434,12 @@ export default function DashboardPage() {
                         className={`text-[10px] uppercase tracking-[0.2em] px-4 py-2 transition-all ${activeView === 'orders' ? 'text-white border-b border-white' : 'text-white/40 hover:text-white'}`}
                     >
                         Orders
+                    </button>
+                    <button
+                        onClick={() => setActiveView('returns')}
+                        className={`text-[10px] uppercase tracking-[0.2em] px-4 py-2 transition-all ${activeView === 'returns' ? 'text-white border-b border-white' : 'text-white/40 hover:text-white'}`}
+                    >
+                        Returns
                     </button>
                     <button
                         onClick={() => setActiveView('requests')}
@@ -864,6 +890,119 @@ export default function DashboardPage() {
                             order={selectedOrder}
                             onUpdateStatus={handleStatusUpdate}
                         />
+                    </div>
+                )}
+
+                {activeView === 'returns' && (
+                    <div className="space-y-8 animate-in fade-in duration-500">
+                        <div className="flex justify-between items-center">
+                            <h2 className="text-xl font-thin tracking-widest">RETURN REQUESTS</h2>
+                        </div>
+
+                        <div className="bg-neutral-900/30 border border-white/5 p-8">
+                            {isLoadingReturns ? (
+                                <div className="text-center py-12">
+                                    <div className="w-8 h-8 border-2 border-white/20 border-t-white rounded-full animate-spin mx-auto mb-4" />
+                                    <p className="text-[10px] uppercase tracking-widest text-white/40">Loading returns...</p>
+                                </div>
+                            ) : returnRequests.length === 0 ? (
+                                <div className="text-center py-12">
+                                    <p className="text-[10px] uppercase tracking-widest text-white/40">No return requests found</p>
+                                </div>
+                            ) : (
+                                <div className="space-y-6">
+                                    {returnRequests.map((ret: any) => (
+                                        <div key={ret.id} className="border border-white/10 p-6 bg-black/20">
+                                            <div className="flex flex-col md:flex-row md:items-start justify-between gap-4 mb-4">
+                                                <div>
+                                                    <p className="text-[10px] uppercase tracking-[0.2em] text-white/40 mb-1">Order ID</p>
+                                                    <p className="text-lg font-mono text-white">{ret.orderId}</p>
+                                                </div>
+                                                <span className={`px-3 py-1.5 text-[9px] uppercase tracking-widest border ${ret.status === 'pending' ? 'border-yellow-500/30 text-yellow-400 bg-yellow-500/10' : ret.status === 'approved' ? 'border-green-500/30 text-green-400 bg-green-500/10' : 'border-red-500/30 text-red-400 bg-red-500/10'}`}>
+                                                    {ret.status}
+                                                </span>
+                                            </div>
+                                            <div className="grid grid-cols-1 md:grid-cols-2 gap-4 mb-4">
+                                                <div>
+                                                    <p className="text-[10px] uppercase tracking-[0.2em] text-white/40 mb-1">Customer</p>
+                                                    <p className="text-white">{ret.customerName}</p>
+                                                    <p className="text-white/60 text-sm">{ret.customerEmail}</p>
+                                                    {ret.customerMobile && <p className="text-white/50 text-sm">{ret.customerMobile}</p>}
+                                                </div>
+                                                {ret.reason && (
+                                                    <div>
+                                                        <p className="text-[10px] uppercase tracking-[0.2em] text-white/40 mb-1">Reason</p>
+                                                        <p className="text-white/80 text-sm">{ret.reason}</p>
+                                                    </div>
+                                                )}
+                                            </div>
+                                            {ret.images && ret.images.length > 0 && (
+                                                <div className="mb-4">
+                                                    <p className="text-[10px] uppercase tracking-[0.2em] text-white/40 mb-2">Product Images</p>
+                                                    <div className="flex flex-wrap gap-3">
+                                                        {ret.images.map((url: string, i: number) => (
+                                                            <a key={i} href={url} target="_blank" rel="noreferrer" className="block">
+                                                                <img src={url} alt={`Return ${i + 1}`} className="w-24 h-24 object-cover border border-white/10 hover:border-white/30 transition-colors" />
+                                                            </a>
+                                                        ))}
+                                                    </div>
+                                                </div>
+                                            )}
+                                            {ret.status === 'pending' && (
+                                                <div className="flex gap-3 pt-4 border-t border-white/5">
+                                                    <button
+                                                        onClick={async () => {
+                                                            try {
+                                                                const res = await fetch('/api/admin/returns', {
+                                                                    method: 'PATCH',
+                                                                    headers: { 'Content-Type': 'application/json' },
+                                                                    body: JSON.stringify({ returnId: ret.id, action: 'approve' })
+                                                                });
+                                                                if (res.ok) {
+                                                                    fetchReturnRequests();
+                                                                    alert('Return approved! Customer will receive confirmation email.');
+                                                                } else {
+                                                                    const d = await res.json();
+                                                                    alert(d.message || 'Failed to approve');
+                                                                }
+                                                            } catch (e) {
+                                                                alert('Network error');
+                                                            }
+                                                        }}
+                                                        className="px-4 py-2 bg-green-500/20 text-green-400 border border-green-500/30 hover:bg-green-500/30 text-[10px] uppercase tracking-widest transition-all"
+                                                    >
+                                                        Approve
+                                                    </button>
+                                                    <button
+                                                        onClick={async () => {
+                                                            try {
+                                                                const res = await fetch('/api/admin/returns', {
+                                                                    method: 'PATCH',
+                                                                    headers: { 'Content-Type': 'application/json' },
+                                                                    body: JSON.stringify({ returnId: ret.id, action: 'reject' })
+                                                                });
+                                                                if (res.ok) {
+                                                                    fetchReturnRequests();
+                                                                    alert('Return rejected.');
+                                                                } else {
+                                                                    const d = await res.json();
+                                                                    alert(d.message || 'Failed to reject');
+                                                                }
+                                                            } catch (e) {
+                                                                alert('Network error');
+                                                            }
+                                                        }}
+                                                        className="px-4 py-2 bg-red-500/20 text-red-400 border border-red-500/30 hover:bg-red-500/30 text-[10px] uppercase tracking-widest transition-all"
+                                                    >
+                                                        Reject
+                                                    </button>
+                                                </div>
+                                            )}
+                                        </div>
+                                    ))}
+                                </div>
+                            )}
+                        </div>
                     </div>
                 )}
 

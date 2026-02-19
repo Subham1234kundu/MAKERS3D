@@ -19,13 +19,16 @@ const geistMono = Geist_Mono({
   subsets: ["latin"],
 });
 
+const SITE_URL = "https://makers3d.in";
+
 export const metadata: Metadata = {
+  metadataBase: new URL(SITE_URL),
   title: {
-    default: "MAKERS3D | Premium 3D Creations",
+    default: "MAKERS3D | Premium 3D Creations – India's #1 3D Printing Studio",
     template: "%s | MAKERS3D"
   },
   description: "MAKERS3D is India's premier 3D printing studio. Shop high-quality, professional 3D printed creations, architectural models, and elite desktop accessories. We deliver unmatched industrial-grade precision for every masterpiece.",
-  keywords: ["MAKERS3D", "Premium 3D Prints", "3D Printing India", "Architectural 3D Models", "High-Quality 3D Printing", "Desktop Accessories", "Home Decors", "Makers 3D Studio", "Elite 3D Art"],
+  keywords: ["MAKERS3D", "Premium 3D Prints", "3D Printing India", "Architectural 3D Models", "High-Quality 3D Printing", "Desktop Accessories", "Home Decors", "Makers 3D Studio", "Elite 3D Art", "3D printed gifts", "custom 3D printing", "3D models India", "buy 3D prints online"],
   authors: [{ name: "MAKERS3D Team" }],
   openGraph: {
     type: "website",
@@ -60,6 +63,9 @@ export const metadata: Metadata = {
       'max-snippet': -1,
     },
   },
+  alternates: {
+    canonical: "https://makers3d.in",
+  },
   icons: {
     icon: [
       { url: "/favicon.ico" },
@@ -78,7 +84,6 @@ export default function RootLayout({
   return (
     <html lang="en" suppressHydrationWarning>
       <head suppressHydrationWarning>
-        <link rel="canonical" href="https://makers3d.in" />
         <script
           suppressHydrationWarning
           dangerouslySetInnerHTML={{

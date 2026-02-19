@@ -8,9 +8,12 @@ import Footer from '../components/Footer';
 import { useSession } from 'next-auth/react';
 
 export default function CheckoutPage() {
-    const { cartItems, cartTotal, cartSubtotal, discount, clearCart } = useCart();
+    const { cartItems, cartTotal, cartSubtotal, discount, clearCart, applyCoupon, activeCoupon } = useCart();
     const { data: session, status } = useSession();
     const router = useRouter();
+    const [couponCode, setCouponCode] = useState('');
+    const [couponMessage, setCouponMessage] = useState<{ type: 'success' | 'error', text: string } | null>(null);
+    const [isApplying, setIsApplying] = useState(false);
 
     useEffect(() => {
         if (status === 'unauthenticated') {
@@ -39,6 +42,25 @@ export default function CheckoutPage() {
 
     const codCharge = paymentMethod === 'cod' ? Math.round(cartTotal * 0.1) : 0;
     const finalTotal = cartTotal + codCharge;
+
+    const handleApplyCoupon = async () => {
+        if (!couponCode.trim()) return;
+
+        setIsApplying(true);
+        setCouponMessage(null);
+
+        await new Promise(resolve => setTimeout(resolve, 800));
+
+        applyCoupon(couponCode);
+
+        const upperCode = couponCode.toUpperCase();
+        if (upperCode === 'MAKERS10' || upperCode === 'MAHADEV') {
+            setCouponMessage({ type: 'success', text: `Coupon ${upperCode} applied successfully!` });
+        } else {
+            setCouponMessage({ type: 'error', text: 'Invalid coupon code' });
+        }
+        setIsApplying(false);
+    };
 
     useEffect(() => {
         if (!cartItems.length) {
@@ -507,6 +529,39 @@ export default function CheckoutPage() {
                                 <span className="text-white/40 font-light tracking-wide">Subtotal</span>
                                 <span className="font-light text-white">₹{cartSubtotal.toLocaleString('en-IN')}</span>
                             </div>
+
+                            {/* Coupon Section */}
+                            <div className="pt-2">
+                                <div className="flex gap-2">
+                                    <input
+                                        type="text"
+                                        placeholder="COUPON CODE"
+                                        value={couponCode}
+                                        onChange={(e) => setCouponCode(e.target.value)}
+                                        onKeyDown={(e) => {
+                                            if (e.key === 'Enter') {
+                                                e.preventDefault();
+                                                handleApplyCoupon();
+                                            }
+                                        }}
+                                        className="w-full bg-white/5 border border-white/10 px-4 py-3 text-[11px] text-white tracking-widest placeholder:text-white/20 focus:outline-none focus:border-white/30 transition-colors uppercase"
+                                    />
+                                    <button
+                                        type="button"
+                                        onClick={handleApplyCoupon}
+                                        className="bg-white/10 border border-white/10 px-4 py-3 text-[10px] text-white tracking-widest hover:bg-white hover:text-black transition-all uppercase disabled:opacity-50 disabled:cursor-not-allowed min-w-[80px] cursor-pointer relative z-10"
+                                        disabled={!couponCode.trim() || isApplying}
+                                    >
+                                        {isApplying ? '...' : 'Apply'}
+                                    </button>
+                                </div>
+                                {couponMessage && (
+                                    <p className={`text-[9px] mt-2 tracking-wide ${couponMessage.type === 'success' ? 'text-green-400' : 'text-red-400'}`}>
+                                        {couponMessage.text}
+                                    </p>
+                                )}
+                            </div>
+
                             {discount > 0 && (
                                 <div className="flex justify-between text-sm text-green-400">
                                     <span className="font-light tracking-wide">Discount</span>
@@ -571,6 +626,20 @@ export default function CheckoutPage() {
                 .checkout-input:-ms-input-placeholder {
                     color: #999999 !important;
                     opacity: 1 !important;
+                }
+                .checkout-input::selection {
+                    background-color: rgba(255, 255, 255, 0.3);
+                    color: white;
+                }
+                /* Override browser autofill styles */
+                .checkout-input:-webkit-autofill,
+                .checkout-input:-webkit-autofill:hover, 
+                .checkout-input:-webkit-autofill:focus, 
+                .checkout-input:-webkit-autofill:active {
+                    -webkit-box-shadow: 0 0 0 1000px #080808 inset !important;
+                    -webkit-text-fill-color: white !important;
+                    caret-color: white !important;
+                    transition: background-color 5000s ease-in-out 0s;
                 }
             `}</style>
         </div>

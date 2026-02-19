@@ -87,7 +87,7 @@ export default function CollectionsPage() {
                             {collections.map((collection) => (
                                 <Link
                                     key={collection.id}
-                                    href={`/products?category=${collection.slug.toUpperCase()}`}
+                                    href={`/products/${collection.slug}`}
                                     className="collection-card group"
                                 >
                                     <div className="relative overflow-hidden bg-neutral-900/30 border border-white/[0.08] hover:border-white/20 transition-all duration-700">

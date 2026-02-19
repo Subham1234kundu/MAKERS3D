@@ -280,36 +280,97 @@ export default function ProfilePage() {
         });
     };
 
-    const handleImageUpload = (e: React.ChangeEvent<HTMLInputElement>) => {
-        if (e.target.files) {
-            const files = Array.from(e.target.files);
-            if (files.length + returnImages.length > 3) {
-                alert('Maximum 3 images allowed');
-                return;
-            }
-            const newImageUrls = files.map(file => URL.createObjectURL(file));
-            setReturnImages(prev => [...prev, ...newImageUrls]);
+    const [returnReason, setReturnReason] = useState('');
+    const [isSubmittingReturn, setIsSubmittingReturn] = useState(false);
+
+    const uploadToCloudinary = async (file: File): Promise<string> => {
+        const cloudName = process.env.NEXT_PUBLIC_CLOUDINARY_CLOUD_NAME || 'dy2btgrbh';
+        const uploadPreset = process.env.NEXT_PUBLIC_CLOUDINARY_UPLOAD_PRESET;
+        if (!uploadPreset) {
+            throw new Error('Upload preset not configured');
         }
+        const formData = new FormData();
+        formData.append('file', file);
+        formData.append('upload_preset', uploadPreset);
+        const res = await fetch(`https://api.cloudinary.com/v1_1/${cloudName}/image/upload`, {
+            method: 'POST',
+            body: formData
+        });
+        if (!res.ok) {
+            const err = await res.json();
+            throw new Error(err.error?.message || 'Upload failed');
+        }
+        const data = await res.json();
+        return data.secure_url;
+    };
+
+    const handleImageUpload = async (e: React.ChangeEvent<HTMLInputElement>) => {
+        const files = e.target.files;
+        if (!files) return;
+        const fileList = Array.from(files);
+        if (fileList.length + returnImages.length > 3) {
+            alert('Maximum 3 images allowed');
+            return;
+        }
+        for (const file of fileList) {
+            try {
+                const url = await uploadToCloudinary(file);
+                setReturnImages(prev => [...prev, url]);
+            } catch (err) {
+                console.error('Upload error:', err);
+                alert('Failed to upload image. Please try again.');
+            }
+        }
+        e.target.value = '';
     };
 
     const removeReturnImage = (index: number) => {
-        const urlToRevoke = returnImages[index];
-        if (urlToRevoke?.startsWith('blob:')) {
-            URL.revokeObjectURL(urlToRevoke);
-        }
         setReturnImages(prev => prev.filter((_, i) => i !== index));
     };
 
-    // Cleanup all blobs on unmount or tab change
-    useEffect(() => {
-        return () => {
-            returnImages.forEach(img => {
-                if (img?.startsWith('blob:')) {
-                    URL.revokeObjectURL(img);
-                }
+    const canReturnOrder = (order: any) => {
+        if (order.status !== 'Delivered' || order.returnStatus) return false;
+        const deliveredAt = order.deliveredAt;
+        if (!deliveredAt) return false; // Need delivery date for 4-day window
+        const delivered = new Date(deliveredAt);
+        const days = Math.floor((Date.now() - delivered.getTime()) / (1000 * 60 * 60 * 24));
+        return days <= 4;
+    };
+
+    const handleSubmitReturn = async () => {
+        if (!selectedOrderId || returnImages.length === 0) {
+            alert('Please upload at least one image');
+            return;
+        }
+        setIsSubmittingReturn(true);
+        try {
+            const res = await fetch('/api/returns', {
+                method: 'POST',
+                headers: { 'Content-Type': 'application/json' },
+                body: JSON.stringify({
+                    orderId: selectedOrderId,
+                    reason: returnReason,
+                    images: returnImages
+                })
             });
-        };
-    }, [returnImages]);
+            const data = await res.json();
+            if (res.ok) {
+                setReturnModalOpen(false);
+                setReturnImages([]);
+                setReturnReason('');
+                setSelectedOrderId(null);
+                fetchOrders();
+                alert('Return request submitted successfully! Our support team will review it. You will receive an email once approved.');
+            } else {
+                alert(data.message || 'Failed to submit return request');
+            }
+        } catch (err) {
+            console.error('Return submit error:', err);
+            alert('Something went wrong. Please try again.');
+        } finally {
+            setIsSubmittingReturn(false);
+        }
+    };
 
     if (isLoading) return <div className="min-h-screen bg-black text-white flex items-center justify-center">Loading...</div>;
 
@@ -337,8 +398,9 @@ export default function ProfilePage() {
                                 <div key={i} className="aspect-square relative border border-white/20">
                                     <img src={img} alt="Return Proof" className="w-full h-full object-cover" />
                                     <button
+                                        type="button"
                                         onClick={() => removeReturnImage(i)}
-                                        className="absolute -top-2 -right-2 bg-red-500 w-5 h-5 rounded-full flex items-center justify-center text-[10px]"
+                                        className="absolute -top-2 -right-2 bg-red-500 w-5 h-5 rounded-full flex items-center justify-center text-[10px] hover:bg-red-600"
                                     >✕</button>
                                 </div>
                             ))}
@@ -353,20 +415,19 @@ export default function ProfilePage() {
 
                         <div className="space-y-3">
                             <textarea
-                                placeholder="Reason for return..."
+                                placeholder="Reason for return (optional)..."
                                 rows={3}
+                                value={returnReason}
+                                onChange={(e) => setReturnReason(e.target.value)}
                                 className="w-full bg-black border border-white/20 p-3 text-sm text-white placeholder-white/30 focus:outline-none focus:border-white transition-colors"
-                            ></textarea>
+                            />
                             <button
-                                onClick={() => {
-                                    // Mock Submission
-                                    setReturnModalOpen(false);
-                                    setReturnImages([]);
-                                    alert(`Return processed for ${selectedOrderId}`);
-                                }}
-                                className="w-full bg-white text-black py-4 text-xs font-bold uppercase tracking-widest hover:bg-gray-200"
+                                type="button"
+                                onClick={handleSubmitReturn}
+                                disabled={isSubmittingReturn || returnImages.length === 0}
+                                className="w-full bg-white text-black py-4 text-xs font-bold uppercase tracking-widest hover:bg-gray-200 disabled:opacity-50 disabled:cursor-not-allowed"
                             >
-                                Submit Request
+                                {isSubmittingReturn ? 'Submitting...' : 'Submit Request'}
                             </button>
                         </div>
                     </div>
@@ -627,9 +688,10 @@ export default function ProfilePage() {
                                             <div className="space-y-4">
                                                 <div className="flex items-center justify-between">
                                                     <p className="text-[10px] uppercase tracking-[0.2em] text-white/40">Items</p>
-                                                    {order.status === 'Delivered' && !order.returnStatus && (
+                                                    {order.status === 'Delivered' && canReturnOrder(order) && (
                                                         <button
-                                                            onClick={() => { setSelectedOrderId(order.id); setReturnModalOpen(true); }}
+                                                            type="button"
+                                                            onClick={() => { setSelectedOrderId(order.id); setReturnModalOpen(true); setReturnImages([]); setReturnReason(''); }}
                                                             className="text-[10px] uppercase tracking-[0.2em] text-white border border-white/20 px-4 py-2 hover:bg-white hover:text-black transition-all"
                                                         >
                                                             Return Order
@@ -637,26 +699,43 @@ export default function ProfilePage() {
                                                     )}
                                                     {order.returnStatus && (
                                                         <div className="flex items-center gap-2">
-                                                            <span className={`w-2 h-2 rounded-full ${order.returnStatus === 'Approved' ? 'bg-green-500' : 'bg-yellow-500'}`}></span>
+                                                            <span className={`w-2 h-2 rounded-full ${order.returnStatus === 'approved' ? 'bg-green-500' : order.returnStatus === 'rejected' ? 'bg-red-500' : 'bg-yellow-500'}`}></span>
                                                             <span className="text-[10px] uppercase tracking-[0.2em] text-white/60">Return {order.returnStatus}</span>
                                                         </div>
                                                     )}
                                                 </div>
                                                 <div className="grid gap-4">
                                                     {order.items?.map((item: any, i: number) => (
-                                                        <div key={i} className="flex items-center gap-4 bg-black/40 p-3 border border-white/5">
-                                                            <div className="w-12 h-12 bg-neutral-800 relative flex-shrink-0">
-                                                                <img src={item.image} alt={item.name} className="w-full h-full object-cover" />
+                                                        item.id ? (
+                                                            <Link
+                                                                key={i}
+                                                                href={`/products/${item.id}`}
+                                                                className="flex items-center gap-4 bg-black/40 p-3 border border-white/5 hover:border-white/20 transition-colors cursor-pointer"
+                                                            >
+                                                                <div className="w-12 h-12 bg-neutral-800 relative flex-shrink-0">
+                                                                    <img src={item.image} alt={item.name} className="w-full h-full object-cover" />
+                                                                </div>
+                                                                <span className="text-sm font-thin text-white/80">{item.name}</span>
+                                                                <span className="ml-auto text-[9px] text-white/40 uppercase tracking-widest">View →</span>
+                                                            </Link>
+                                                        ) : (
+                                                            <div key={i} className="flex items-center gap-4 bg-black/40 p-3 border border-white/5">
+                                                                <div className="w-12 h-12 bg-neutral-800 relative flex-shrink-0">
+                                                                    <img src={item.image} alt={item.name} className="w-full h-full object-cover" />
+                                                                </div>
+                                                                <span className="text-sm font-thin text-white/80">{item.name}</span>
                                                             </div>
-                                                            <span className="text-sm font-thin text-white/80">{item.name}</span>
-                                                        </div>
+                                                        )
                                                     ))}
                                                 </div>
                                             </div>
                                             <div className="mt-6 pt-6 border-t border-white/5 flex justify-end">
-                                                <button className="text-[10px] uppercase tracking-[0.2em] text-white/60 hover:text-white border-b border-transparent hover:border-white transition-all pb-1">
+                                                <Link
+                                                    href="/orders"
+                                                    className="text-[10px] uppercase tracking-[0.2em] text-white/60 hover:text-white border-b border-transparent hover:border-white transition-all pb-1"
+                                                >
                                                     View Details
-                                                </button>
+                                                </Link>
                                             </div>
                                         </div>
                                     ))

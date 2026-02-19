@@ -33,7 +33,7 @@ export default function ProductDetailPage() {
     const [activeTab, setActiveTab] = useState('description');
     const [isLiked, setIsLiked] = useState(false);
     const [activeImageIndex, setActiveImageIndex] = useState(0);
-    const { addToCart, cartCount } = useCart();
+    const { addToCart, cartCount, applyCoupon } = useCart();
     const { data: session } = useSession();
     const [isLiking, setIsLiking] = useState(false);
     const [selectedSize, setSelectedSize] = useState('');
@@ -64,12 +64,49 @@ export default function ProductDetailPage() {
     }, []);
 
     // Helper to parse variants
-    const parseVariants = (variants: any) => {
-        if (Array.isArray(variants)) return variants;
+    const parseVariants = (variants: any): { name: string; price?: number; originalPrice?: number }[] => {
+        if (!variants) return [];
+        if (Array.isArray(variants)) {
+            return variants.map((v: any) => ({
+                name: typeof v === 'string' ? v : (v?.name ?? String(v)),
+                price: Number(v?.price) || 0,
+                originalPrice: Number(v?.originalPrice) || 0
+            }));
+        }
         if (typeof variants === 'string' && variants.length > 0) {
             return variants.split(',').map(s => ({ name: s.trim(), price: 0 }));
         }
         return [];
+    };
+
+    const getFinalPrice = () => {
+        let finalPrice = Number(product?.price) || 0;
+        let finalOriginal = Number(product?.originalPrice) || finalPrice;
+        const sizes = parseVariants(product?.sizes);
+        const colors = parseVariants(product?.colors);
+        const sizeObj = sizes.find(s => s.name === selectedSize);
+        const colorObj = colors.find(c => c.name === selectedColor);
+        if (sizeObj && sizeObj.price > 0) {
+            finalPrice = sizeObj.price;
+            if (sizeObj.originalPrice) finalOriginal = sizeObj.originalPrice;
+        }
+        if (colorObj && colorObj.price > 0) {
+            finalPrice = colorObj.price;
+            if (colorObj.originalPrice) finalOriginal = colorObj.originalPrice;
+        }
+        return { finalPrice, finalOriginal };
+    };
+
+    const canAddToCart = () => {
+        const sizes = parseVariants(product?.sizes);
+        const colors = parseVariants(product?.colors);
+        const needsSize = sizes.length > 0;
+        const needsColor = colors.length > 0;
+        const hasSize = selectedSize && sizes.some(s => s.name === selectedSize);
+        const hasColor = selectedColor && colors.some(c => c.name === selectedColor);
+        if (needsSize && !hasSize) return false;
+        if (needsColor && !hasColor) return false;
+        return true;
     };
 
     useEffect(() => {
@@ -108,6 +145,12 @@ export default function ProductDetailPage() {
                     if (res.ok) {
                         const data = await res.json();
                         setProduct(data);
+
+                        // Auto-apply MAHADEV discount if product name contains "mahadev"
+                        const productName = (data.name || data.title || '').toLowerCase();
+                        if (productName.includes('mahadev')) {
+                            applyCoupon('MAHADEV');
+                        }
 
                         // Auto-select first size if available
                         const sizes = parseVariants(data.sizes);
@@ -251,7 +294,7 @@ export default function ProductDetailPage() {
                     <Link href="/" className="hover:text-white transition-colors flex-shrink-0 leading-none">Home</Link>
                     <span className="flex-shrink-0 leading-none">/</span>
                     {product.category ? (
-                        <Link href={`/products?category=${product.category}`} className="hover:text-white transition-colors flex-shrink-0 leading-none">
+                        <Link href={`/products/${String(product.category).toLowerCase().replace(/\s+/g, '_')}`} className="hover:text-white transition-colors flex-shrink-0 leading-none">
                             {product.category}
                         </Link>
                     ) : (
@@ -287,14 +330,15 @@ export default function ProductDetailPage() {
                                     loading="eager"
                                 />
                             )}
-                            <div className="absolute inset-0 border border-white/10 pointer-events-none" />
+                            <div className="absolute inset-0 border border-white/10 pointer-events-none z-0" />
 
-                            {/* Arrow Navigation (Laptop Only) */}
+                            {/* Arrow Navigation - visible on mobile, hover on desktop */}
                             {mediaItems.length > 1 && (
-                                <div className="absolute inset-0 flex items-center justify-between px-4 opacity-0 group-hover:opacity-100 transition-opacity pointer-events-none">
+                                <div className="absolute inset-0 flex items-center justify-between px-2 sm:px-4 opacity-100 lg:opacity-0 lg:group-hover:opacity-100 transition-opacity z-20">
                                     <button
-                                        onClick={(e) => { e.stopPropagation(); prevMedia(); }}
-                                        className="w-10 h-10 bg-black/40 backdrop-blur-md border border-white/10 flex items-center justify-center hover:bg-white hover:text-black transition-all rounded-full pointer-events-auto"
+                                        type="button"
+                                        onClick={(e) => { e.preventDefault(); e.stopPropagation(); prevMedia(); }}
+                                        className="w-10 h-10 min-w-[40px] min-h-[40px] bg-black/50 backdrop-blur-md border border-white/20 flex items-center justify-center hover:bg-white hover:text-black transition-all rounded-full cursor-pointer touch-manipulation active:scale-95"
                                         aria-label="Previous image"
                                     >
                                         <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2">
@@ -302,8 +346,9 @@ export default function ProductDetailPage() {
                                         </svg>
                                     </button>
                                     <button
-                                        onClick={(e) => { e.stopPropagation(); nextMedia(); }}
-                                        className="w-10 h-10 bg-black/40 backdrop-blur-md border border-white/10 flex items-center justify-center hover:bg-white hover:text-black transition-all rounded-full pointer-events-auto"
+                                        type="button"
+                                        onClick={(e) => { e.preventDefault(); e.stopPropagation(); nextMedia(); }}
+                                        className="w-10 h-10 min-w-[40px] min-h-[40px] bg-black/50 backdrop-blur-md border border-white/20 flex items-center justify-center hover:bg-white hover:text-black transition-all rounded-full cursor-pointer touch-manipulation active:scale-95"
                                         aria-label="Next image"
                                     >
                                         <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2">
@@ -430,69 +475,58 @@ export default function ProductDetailPage() {
 
                         {/* Variants Section */}
                         <div className="space-y-8 mb-12">
-                            {product.sizes && (product.sizes.length > 0) && (
+                            {parseVariants(product.sizes).length > 0 && (
                                 <div className="space-y-4">
                                     <div className="flex justify-between items-end">
                                         <label className="text-[10px] uppercase tracking-[0.3em] text-white/40 font-medium">Select Size</label>
                                         <span className="text-[9px] uppercase tracking-widest text-white/20">{selectedSize || 'Required'}</span>
                                     </div>
                                     <div className="flex flex-wrap gap-3">
-                                        {(() => {
-                                            const variants = Array.isArray(product.sizes)
-                                                ? product.sizes
-                                                : (typeof product.sizes === 'string' ? product.sizes.split(',').map((s: any) => ({ name: s.trim(), price: 0 })) : []);
-
-                                            return variants.map((size: any) => {
-                                                const s = size.name || size; // Handle obj or string
-                                                const price = Number(size.price || 0);
+                                        {parseVariants(product.sizes).map((size: any) => {
+                                                const s = size.name || size;
                                                 return (
                                                     <button
                                                         key={s}
+                                                        type="button"
                                                         onClick={() => setSelectedSize(s)}
-                                                        className={`min-w-[50px] h-[50px] px-4 flex items-center justify-center border text-[10px] tracking-widest uppercase transition-all duration-300 ${selectedSize === s
+                                                        className={`min-w-[50px] min-h-[48px] h-[50px] px-4 flex items-center justify-center border text-[10px] tracking-widest uppercase transition-all duration-300 cursor-pointer touch-manipulation active:scale-95 ${selectedSize === s
                                                             ? 'bg-white text-black border-white shadow-[0_0_20px_rgba(255,255,255,0.15)]'
                                                             : 'border-white/10 text-white/40 hover:border-white/30 hover:text-white'
                                                             }`}
                                                     >
                                                         {s}
                                                     </button>
-                                                )
-                                            });
-                                        })()}
+                                                );
+                                            })}
                                     </div>
                                 </div>
                             )}
 
-                            {product.colors && (product.colors.length > 0) && (
+                            {parseVariants(product.colors).length > 0 && (
                                 <div className="space-y-4">
                                     <div className="flex justify-between items-end">
                                         <label className="text-[10px] uppercase tracking-[0.3em] text-white/40 font-medium">Select Color</label>
                                         <span className="text-[9px] uppercase tracking-widest text-white/20">{selectedColor || 'Required'}</span>
                                     </div>
                                     <div className="flex flex-wrap gap-3">
-                                        {(() => {
-                                            const variants = Array.isArray(product.colors)
-                                                ? product.colors
-                                                : (typeof product.colors === 'string' ? product.colors.split(',').map((c: any) => ({ name: c.trim(), price: 0 })) : []);
-
-                                            return variants.map((color: any) => {
+                                        {parseVariants(product.colors).map((color: any) => {
                                                 const c = color.name || color;
                                                 const price = Number(color.price || 0);
 
                                                 return (
                                                     <button
                                                         key={c}
+                                                        type="button"
                                                         onClick={() => setSelectedColor(c)}
-                                                        className={`px-6 h-[50px] flex items-center justify-center border text-[10px] tracking-widest uppercase transition-all duration-300 ${selectedColor === c
+                                                        className={`px-6 min-h-[48px] h-[50px] flex items-center justify-center border text-[10px] tracking-widest uppercase transition-all duration-300 cursor-pointer touch-manipulation active:scale-95 ${selectedColor === c
                                                             ? 'bg-white text-black border-white shadow-[0_0_20px_rgba(255,255,255,0.15)]'
                                                             : 'border-white/10 text-white/40 hover:border-white/30 hover:text-white'
                                                             }`}
                                                     >
                                                         {c}
                                                     </button>
-                                                )
-                                            });
-                                        })()}
+                                                );
+                                            })}
                                     </div>
                                 </div>
                             )}
@@ -503,6 +537,7 @@ export default function ProductDetailPage() {
                             <div className="flex gap-3 sm:gap-4">
                                 {/* Like Button */}
                                 <button
+                                    type="button"
                                     onClick={async () => {
                                         if (!session) {
                                             router.push('/login');
@@ -524,7 +559,7 @@ export default function ProductDetailPage() {
                                             setIsLiking(false);
                                         }
                                     }}
-                                    className={`border border-white/20 text-white py-4 sm:py-5 px-6 sm:px-8 hover:bg-white/5 transition-all duration-300 group touch-manipulation active:scale-95 ${isLiking ? 'opacity-50' : ''}`}
+                                    className={`border border-white/20 text-white py-4 sm:py-5 px-6 sm:px-8 hover:bg-white/5 transition-all duration-300 group touch-manipulation active:scale-[0.98] min-h-[48px] min-w-[48px] cursor-pointer ${isLiking ? 'opacity-50 cursor-wait' : ''}`}
                                     aria-label="Like product"
                                     disabled={isLiking}
                                 >
@@ -547,29 +582,34 @@ export default function ProductDetailPage() {
 
                                 {/* Add to Cart Button */}
                                 <button
+                                    type="button"
+                                    disabled={!canAddToCart()}
                                     onClick={() => {
-                                        if (product.sizes && product.sizes.length > 0 && !selectedSize) {
-                                            alert('Please select a size');
+                                        if (!canAddToCart()) {
+                                            const sizes = parseVariants(product?.sizes);
+                                            const colors = parseVariants(product?.colors);
+                                            if (sizes.length > 0 && !selectedSize) alert('Please select a size');
+                                            else if (colors.length > 0 && !selectedColor) alert('Please select a color');
                                             return;
                                         }
-                                        if (product.colors && product.colors.length > 0 && !selectedColor) {
-                                            alert('Please select a color');
-                                            return;
-                                        }
-
-                                        // Calculate final price for cart
-                                        let finalPrice = Number(product.price);
-                                        const variants = (arr: any) => Array.isArray(arr) ? arr : (typeof arr === 'string' ? arr.split(',').map((x: any) => ({ name: x.trim(), price: 0 })) : []);
-                                        const sizeObj = variants(product.sizes).find((s: any) => s.name === selectedSize);
-                                        const colorObj = variants(product.colors).find((c: any) => c.name === selectedColor);
-
-                                        if (sizeObj && Number(sizeObj.price) > 0) finalPrice = Number(sizeObj.price);
-                                        if (colorObj && Number(colorObj.price) > 0) finalPrice = Number(colorObj.price);
-
-                                        addToCart({ ...product, price: finalPrice, selectedSize, selectedColor });
+                                        const { finalPrice } = getFinalPrice();
+                                        const img = product.images?.[0] || product.image;
+                                        const imageUrl = typeof img === 'object' && img?.url ? img.url : (img || '');
+                                        const cartItem = {
+                                            id: product.id || product._id,
+                                            image: imageUrl,
+                                            title: product.name || product.title,
+                                            price: finalPrice,
+                                            originalPrice: product.originalPrice || finalPrice,
+                                            category: product.category || 'ALL',
+                                            selectedSize,
+                                            selectedColor
+                                        };
+                                        addToCart(cartItem);
                                         router.push('/cart');
                                     }}
-                                    className="flex-1 bg-white text-black py-4 sm:py-5 px-6 text-[11px] sm:text-xs font-bold uppercase tracking-[0.2em] border border-white hover:bg-gray-100 transition-all duration-300 flex items-center justify-center gap-3 relative touch-manipulation active:scale-95"
+                                    className="flex-1 bg-white text-black py-4 sm:py-5 px-6 text-[11px] sm:text-xs font-bold uppercase tracking-[0.2em] border border-white hover:bg-gray-100 transition-all duration-300 flex items-center justify-center gap-3 relative touch-manipulation active:scale-[0.98] disabled:opacity-50 disabled:cursor-not-allowed disabled:hover:bg-white min-h-[48px] cursor-pointer"
+                                    style={{ WebkitTapHighlightColor: 'transparent' }}
                                 >
                                     <div className="relative">
                                         <svg fill="none" stroke="currentColor" viewBox="0 0 24 24" className="w-5 h-5">
@@ -587,29 +627,34 @@ export default function ProductDetailPage() {
 
                             {/* Buy Now Button */}
                             <button
+                                type="button"
+                                disabled={!canAddToCart()}
                                 onClick={() => {
-                                    if (product.sizes && product.sizes.length > 0 && !selectedSize) {
-                                        alert('Please select a size');
+                                    if (!canAddToCart()) {
+                                        const sizes = parseVariants(product?.sizes);
+                                        const colors = parseVariants(product?.colors);
+                                        if (sizes.length > 0 && !selectedSize) alert('Please select a size');
+                                        else if (colors.length > 0 && !selectedColor) alert('Please select a color');
                                         return;
                                     }
-                                    if (product.colors && product.colors.length > 0 && !selectedColor) {
-                                        alert('Please select a color');
-                                        return;
-                                    }
-
-                                    // Calculate final price for cart
-                                    let finalPrice = Number(product.price);
-                                    const variants = (arr: any) => Array.isArray(arr) ? arr : (typeof arr === 'string' ? arr.split(',').map((x: any) => ({ name: x.trim(), price: 0 })) : []);
-                                    const sizeObj = variants(product.sizes).find((s: any) => s.name === selectedSize);
-                                    const colorObj = variants(product.colors).find((c: any) => c.name === selectedColor);
-
-                                    if (sizeObj && Number(sizeObj.price) > 0) finalPrice = Number(sizeObj.price);
-                                    if (colorObj && Number(colorObj.price) > 0) finalPrice = Number(colorObj.price);
-
-                                    addToCart({ ...product, price: finalPrice, selectedSize, selectedColor });
+                                    const { finalPrice } = getFinalPrice();
+                                    const img = product.images?.[0] || product.image;
+                                    const imageUrl = typeof img === 'object' && img?.url ? img.url : (img || '');
+                                    const cartItem = {
+                                        id: product.id || product._id,
+                                        image: imageUrl,
+                                        title: product.name || product.title,
+                                        price: finalPrice,
+                                        originalPrice: product.originalPrice || finalPrice,
+                                        category: product.category || 'ALL',
+                                        selectedSize,
+                                        selectedColor
+                                    };
+                                    addToCart(cartItem);
                                     router.push('/checkout');
                                 }}
-                                className="w-full border-2 border-white text-white py-4 sm:py-5 text-[11px] sm:text-xs font-bold uppercase tracking-[0.2em] hover:bg-white hover:text-black transition-all duration-300 touch-manipulation active:scale-95"
+                                className="w-full border-2 border-white text-white py-4 sm:py-5 text-[11px] sm:text-xs font-bold uppercase tracking-[0.2em] hover:bg-white hover:text-black transition-all duration-300 touch-manipulation active:scale-[0.98] disabled:opacity-50 disabled:cursor-not-allowed disabled:hover:bg-transparent min-h-[48px] cursor-pointer"
+                                style={{ WebkitTapHighlightColor: 'transparent' }}
                             >
                                 Buy Now
                             </button>
@@ -621,8 +666,9 @@ export default function ProductDetailPage() {
                                 {['description', 'specifications', 'shipping'].map((tab) => (
                                     <button
                                         key={tab}
+                                        type="button"
                                         onClick={() => setActiveTab(tab)}
-                                        className={`text-[9px] sm:text-[10px] uppercase tracking-[0.3em] transition-all relative pb-4 whitespace-nowrap touch-manipulation ${activeTab === tab ? 'text-white' : 'text-white/30 hover:text-white/60'}`}
+                                        className={`text-[9px] sm:text-[10px] uppercase tracking-[0.3em] transition-all relative pb-4 whitespace-nowrap touch-manipulation min-h-[44px] flex items-center cursor-pointer ${activeTab === tab ? 'text-white' : 'text-white/30 hover:text-white/60'}`}
                                     >
                                         {tab}
                                         {activeTab === tab && <div className="absolute bottom-0 left-0 w-full h-[1px] bg-white animate-expand" />}

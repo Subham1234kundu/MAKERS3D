@@ -192,9 +192,10 @@ export default function CartPage() {
                         className="w-full bg-white/5 border border-white/10 px-4 py-3 text-[11px] text-white tracking-widest placeholder:text-white/20 focus:outline-none focus:border-white/30 transition-colors uppercase"
                       />
                       <button
+                        type="button"
                         onClick={handleApplyCoupon}
-                        className="bg-white/10 border border-white/10 px-4 py-3 text-[10px] text-white tracking-widest hover:bg-white hover:text-black transition-all uppercase disabled:opacity-50 min-w-[80px]"
-                        disabled={!couponCode || isApplying}
+                        className="bg-white/10 border border-white/10 px-4 py-3 text-[10px] text-white tracking-widest hover:bg-white hover:text-black transition-all uppercase disabled:opacity-50 disabled:cursor-not-allowed min-w-[80px] cursor-pointer relative z-10"
+                        disabled={!couponCode.trim() || isApplying}
                       >
                         {isApplying ? '...' : 'Apply'}
                       </button>
