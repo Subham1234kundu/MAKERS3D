@@ -91,7 +91,14 @@ export async function GET(request: NextRequest) {
                     id: item.id || item._id
                 }));
             } else if (order.p_info) {
-                const nameToId = new Map(products.map((p: any) => [(p.name || p.title || '').toLowerCase().trim(), p._id?.toString()]).filter(([k]) => k));
+                const nameToId = new Map<string, string>();
+                products.forEach((p: any) => {
+                    const key = (p.name || p.title || '').toLowerCase().trim();
+                    const val = p._id?.toString();
+                    if (key) {
+                        nameToId.set(key, val || '');
+                    }
+                });
                 items = order.p_info.split(', ').map((name: string) => {
                     const trimmedName = name.trim();
                     const lower = trimmedName.toLowerCase();

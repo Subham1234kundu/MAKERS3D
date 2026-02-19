@@ -64,7 +64,7 @@ export default function ProductDetailPage() {
     }, []);
 
     // Helper to parse variants
-    const parseVariants = (variants: any): { name: string; price?: number; originalPrice?: number }[] => {
+    const parseVariants = (variants: any): { name: string; price: number; originalPrice: number }[] => {
         if (!variants) return [];
         if (Array.isArray(variants)) {
             return variants.map((v: any) => ({
@@ -74,7 +74,7 @@ export default function ProductDetailPage() {
             }));
         }
         if (typeof variants === 'string' && variants.length > 0) {
-            return variants.split(',').map(s => ({ name: s.trim(), price: 0 }));
+            return variants.split(',').map(s => ({ name: s.trim(), price: 0, originalPrice: 0 }));
         }
         return [];
     };
@@ -155,13 +155,13 @@ export default function ProductDetailPage() {
                         // Auto-select first size if available
                         const sizes = parseVariants(data.sizes);
                         if (sizes.length > 0) {
-                            setSelectedSize(sizes[0].name || sizes[0]);
+                            setSelectedSize(sizes[0].name);
                         }
 
                         // Auto-select first color if available
                         const colors = parseVariants(data.colors);
                         if (colors.length > 0) {
-                            setSelectedColor(colors[0].name || colors[0]);
+                            setSelectedColor(colors[0].name);
                         }
 
                         // Check if liked if logged in
@@ -483,21 +483,21 @@ export default function ProductDetailPage() {
                                     </div>
                                     <div className="flex flex-wrap gap-3">
                                         {parseVariants(product.sizes).map((size: any) => {
-                                                const s = size.name || size;
-                                                return (
-                                                    <button
-                                                        key={s}
-                                                        type="button"
-                                                        onClick={() => setSelectedSize(s)}
-                                                        className={`min-w-[50px] min-h-[48px] h-[50px] px-4 flex items-center justify-center border text-[10px] tracking-widest uppercase transition-all duration-300 cursor-pointer touch-manipulation active:scale-95 ${selectedSize === s
-                                                            ? 'bg-white text-black border-white shadow-[0_0_20px_rgba(255,255,255,0.15)]'
-                                                            : 'border-white/10 text-white/40 hover:border-white/30 hover:text-white'
-                                                            }`}
-                                                    >
-                                                        {s}
-                                                    </button>
-                                                );
-                                            })}
+                                            const s = size.name || size;
+                                            return (
+                                                <button
+                                                    key={s}
+                                                    type="button"
+                                                    onClick={() => setSelectedSize(s)}
+                                                    className={`min-w-[50px] min-h-[48px] h-[50px] px-4 flex items-center justify-center border text-[10px] tracking-widest uppercase transition-all duration-300 cursor-pointer touch-manipulation active:scale-95 ${selectedSize === s
+                                                        ? 'bg-white text-black border-white shadow-[0_0_20px_rgba(255,255,255,0.15)]'
+                                                        : 'border-white/10 text-white/40 hover:border-white/30 hover:text-white'
+                                                        }`}
+                                                >
+                                                    {s}
+                                                </button>
+                                            );
+                                        })}
                                     </div>
                                 </div>
                             )}
@@ -510,23 +510,23 @@ export default function ProductDetailPage() {
                                     </div>
                                     <div className="flex flex-wrap gap-3">
                                         {parseVariants(product.colors).map((color: any) => {
-                                                const c = color.name || color;
-                                                const price = Number(color.price || 0);
+                                            const c = color.name || color;
+                                            const price = Number(color.price || 0);
 
-                                                return (
-                                                    <button
-                                                        key={c}
-                                                        type="button"
-                                                        onClick={() => setSelectedColor(c)}
-                                                        className={`px-6 min-h-[48px] h-[50px] flex items-center justify-center border text-[10px] tracking-widest uppercase transition-all duration-300 cursor-pointer touch-manipulation active:scale-95 ${selectedColor === c
-                                                            ? 'bg-white text-black border-white shadow-[0_0_20px_rgba(255,255,255,0.15)]'
-                                                            : 'border-white/10 text-white/40 hover:border-white/30 hover:text-white'
-                                                            }`}
-                                                    >
-                                                        {c}
-                                                    </button>
-                                                );
-                                            })}
+                                            return (
+                                                <button
+                                                    key={c}
+                                                    type="button"
+                                                    onClick={() => setSelectedColor(c)}
+                                                    className={`px-6 min-h-[48px] h-[50px] flex items-center justify-center border text-[10px] tracking-widest uppercase transition-all duration-300 cursor-pointer touch-manipulation active:scale-95 ${selectedColor === c
+                                                        ? 'bg-white text-black border-white shadow-[0_0_20px_rgba(255,255,255,0.15)]'
+                                                        : 'border-white/10 text-white/40 hover:border-white/30 hover:text-white'
+                                                        }`}
+                                                >
+                                                    {c}
+                                                </button>
+                                            );
+                                        })}
                                     </div>
                                 </div>
                             )}
