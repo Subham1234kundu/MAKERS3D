@@ -28,10 +28,10 @@ export default function ProductCard({ id, image, alt, secondImage, secondAlt, ti
     const handleAddToCart = async (e: React.MouseEvent) => {
         e.preventDefault();
         e.stopPropagation();
-        
+
         // Add to cart
         addToCart({ id, image, title, price, originalPrice, category });
-        
+
         // Navigate to cart page after a brief delay for smooth UX
         setTimeout(() => {
             router.push('/cart');
@@ -49,7 +49,7 @@ export default function ProductCard({ id, image, alt, secondImage, secondAlt, ti
         >
             {/* Image Container */}
             <div className={`relative ${fixedMobileHeight ? 'h-[320px] sm:h-auto sm:aspect-[3/4]' : 'aspect-[3/4]'} mb-3 sm:mb-4 overflow-hidden transition-all duration-300 bg-black`}>
-                <Link href={`/products/${id}`} className="absolute inset-0 z-10" suppressHydrationWarning>
+                <Link href={`/products/${id}`} className="absolute inset-0 z-0" suppressHydrationWarning>
                     <div className="w-full h-full cursor-pointer" suppressHydrationWarning>
                         {/* First Image */}
                         {image && (
@@ -109,15 +109,19 @@ export default function ProductCard({ id, image, alt, secondImage, secondAlt, ti
                     onClick={(e) => {
                         e.preventDefault();
                         e.stopPropagation();
+                        e.nativeEvent.stopImmediatePropagation(); // Ensure absolute stop
                         handleAddToCart(e);
+
+                        // Rotate animation
                         const icon = e.currentTarget.querySelector('.plus-icon');
                         if (icon) {
                             icon.animate([
                                 { transform: 'rotate(0deg) scale(1)' },
-                                { transform: 'rotate(360deg) scale(1.2)' },
-                                { transform: 'rotate(360deg) scale(1)' }
+                                { transform: 'rotate(90deg) scale(1.2)' }, // Rotate 90 as requested
+                                { transform: 'rotate(90deg) scale(1)' }
                             ], {
-                                duration: 600,
+                                duration: 400,
+                                fill: 'forwards',
                                 easing: 'cubic-bezier(0.34, 1.56, 0.64, 1)'
                             });
                         }
@@ -131,7 +135,7 @@ export default function ProductCard({ id, image, alt, secondImage, secondAlt, ti
                         viewBox="0 0 24 24"
                         fill="none"
                         xmlns="http://www.w3.org/2000/svg"
-                        className={`plus-icon transition-transform duration-500 ease-out sm:w-[18px] sm:h-[18px] ${isPlusHovered ? 'rotate-90 scale-110' : 'rotate-0 scale-100'}`}
+                        className={`plus-icon transition-transform duration-500 ease-out sm:w-[18px] sm:h-[18px] pointer-events-none ${isPlusHovered ? 'rotate-90 scale-110' : 'rotate-0 scale-100'}`}
                         style={{ transformOrigin: 'center' }}
                     >
                         <path
