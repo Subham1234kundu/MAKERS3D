@@ -25,6 +25,10 @@ interface CartContextType {
     clearCart: () => void;
     cartCount: number;
     cartTotal: number;
+    cartSubtotal: number;
+    activeCoupon: string | null;
+    applyCoupon: (code: string) => void;
+    discount: number;
     showToast: boolean;
     lastAddedItem: CartItem | null;
 }
@@ -149,8 +153,34 @@ export function CartProvider({ children }: { children: React.ReactNode }) {
 
     const clearCart = () => setCartItems([]);
 
+    const [activeCoupon, setActiveCoupon] = useState<string | null>(null);
+    const [discount, setDiscount] = useState(0);
+
+    const applyCoupon = (code: string) => {
+        const upperCode = code.toUpperCase();
+        if (upperCode === 'MAKERS10') {
+            setActiveCoupon('MAKERS10');
+        } else if (upperCode === 'MAHADEV') {
+            setActiveCoupon('MAHADEV');
+        } else {
+            setActiveCoupon(null);
+        }
+    };
+
     const cartCount = cartItems.reduce((acc, item) => acc + item.quantity, 0);
-    const cartTotal = cartItems.reduce((acc, item) => acc + (item.price * item.quantity), 0);
+    const cartSubtotal = cartItems.reduce((acc, item) => acc + (item.price * item.quantity), 0);
+
+    useEffect(() => {
+        if (activeCoupon === 'MAKERS10') {
+            setDiscount(Math.round(cartSubtotal * 0.10));
+        } else if (activeCoupon === 'MAHADEV') {
+            setDiscount(Math.round(cartSubtotal * 0.20));
+        } else {
+            setDiscount(0);
+        }
+    }, [activeCoupon, cartSubtotal]);
+
+    const cartTotal = cartSubtotal - discount;
 
     return (
         <CartContext.Provider value={{
@@ -161,6 +191,10 @@ export function CartProvider({ children }: { children: React.ReactNode }) {
             clearCart,
             cartCount,
             cartTotal,
+            cartSubtotal,
+            activeCoupon,
+            applyCoupon,
+            discount,
             showToast,
             lastAddedItem
         }}>

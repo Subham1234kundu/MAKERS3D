@@ -13,22 +13,15 @@ import { useCart } from '../providers/CartProvider';
 
 export default function CartPage() {
   const { data: session, status } = useSession();
-  const { cartItems: items, updateQuantity, removeFromCart, cartTotal: subtotal } = useCart();
+  const { cartItems: items, updateQuantity, removeFromCart, cartSubtotal: subtotal, cartTotal: total, discount, applyCoupon, activeCoupon } = useCart();
   const summaryRef = useRef<HTMLDivElement>(null);
   const checkoutBtnRef = useRef<HTMLButtonElement>(null);
-  // const filterRef = useRef<SVGFETurbulenceElement>(null); // Removed unused ref
   const containerRef = useRef<HTMLDivElement>(null);
   const itemsRef = useRef<HTMLDivElement>(null);
 
   const [couponCode, setCouponCode] = useState('');
-  const [activeCoupon, setActiveCoupon] = useState<string | null>(null);
   const [couponMessage, setCouponMessage] = useState<{ type: 'success' | 'error', text: string } | null>(null);
   const [isApplying, setIsApplying] = useState(false);
-
-  // Derived calculations ensures discount updates if cart subtotal changes
-  const discount = activeCoupon === 'MAKERS10' ? Math.round(subtotal * 0.10) : 0;
-  const shipping = 0; // Free delivery
-  const total = subtotal + shipping - discount;
 
   const handleApplyCoupon = async () => {
     if (!couponCode.trim()) return;
@@ -39,11 +32,12 @@ export default function CartPage() {
     // Simulate API delay for "estimating" feel
     await new Promise(resolve => setTimeout(resolve, 800));
 
-    if (couponCode.toUpperCase() === 'MAKERS10') {
-      setActiveCoupon('MAKERS10');
-      setCouponMessage({ type: 'success', text: 'Coupon applied successfully!' });
+    applyCoupon(couponCode);
+
+    const upperCode = couponCode.toUpperCase();
+    if (upperCode === 'MAKERS10' || upperCode === 'MAHADEV') {
+      setCouponMessage({ type: 'success', text: `Coupon ${upperCode} applied successfully!` });
     } else {
-      setActiveCoupon(null);
       setCouponMessage({ type: 'error', text: 'Invalid coupon code' });
     }
     setIsApplying(false);

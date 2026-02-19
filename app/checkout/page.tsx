@@ -8,7 +8,7 @@ import Footer from '../components/Footer';
 import { useSession } from 'next-auth/react';
 
 export default function CheckoutPage() {
-    const { cartItems, cartTotal, clearCart } = useCart();
+    const { cartItems, cartTotal, cartSubtotal, discount, clearCart } = useCart();
     const { data: session, status } = useSession();
     const router = useRouter();
 
@@ -505,8 +505,14 @@ export default function CheckoutPage() {
                         <div className="pt-8 border-t border-white/5 space-y-4">
                             <div className="flex justify-between text-sm">
                                 <span className="text-white/40 font-light tracking-wide">Subtotal</span>
-                                <span className="font-light text-white">₹{cartTotal.toLocaleString('en-IN')}</span>
+                                <span className="font-light text-white">₹{cartSubtotal.toLocaleString('en-IN')}</span>
                             </div>
+                            {discount > 0 && (
+                                <div className="flex justify-between text-sm text-green-400">
+                                    <span className="font-light tracking-wide">Discount</span>
+                                    <span className="font-light">-₹{discount.toLocaleString('en-IN')}</span>
+                                </div>
+                            )}
                             {paymentMethod === 'cod' && (
                                 <div className="flex justify-between text-sm animate-fadeIn">
                                     <span className="text-white/40 font-light tracking-wide">COD Handling Fee</span>
