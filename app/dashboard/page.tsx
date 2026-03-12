@@ -567,13 +567,31 @@ export default function DashboardPage() {
                         )}
 
                         <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6">
-                            {products.map((product) => (
+                            {products.map((product) => {
+                                let displayImageUrl = '/placeholder.png'; // Updated placeholder
+                                let displayImageAlt = product.name;
+
+                                if (product.images && product.images.length > 0 && product.images[0]?.url) {
+                                    const firstImg = product.images[0];
+                                    displayImageUrl = typeof firstImg === 'string' ? firstImg : firstImg.url;
+                                    if (typeof firstImg !== 'string' && firstImg.alt) displayImageAlt = firstImg.alt;
+                                } else if (Array.isArray(product.colors)) {
+                                    for (const color of product.colors) {
+                                        if (Array.isArray(color.images) && color.images.length > 0 && color.images[0]?.url) {
+                                            displayImageUrl = color.images[0].url;
+                                            displayImageAlt = color.images[0].alt || `${product.name} ${color.name}`;
+                                            break;
+                                        }
+                                    }
+                                }
+
+                                return (
                                 <div key={product.id} className="group relative border border-white/5 bg-neutral-900/20 p-4 hover:border-white/20 transition-all">
                                     <div className="aspect-square bg-neutral-800 mb-4 overflow-hidden relative">
                                         <div className="absolute inset-0 bg-black/40 opacity-0 group-hover:opacity-100 transition-opacity z-10 backdrop-blur-[2px]" />
                                         <img
-                                            src={typeof product.images[0] === 'string' ? product.images[0] : (product.images[0]?.url || '/images/placeholder.jpg')}
-                                            alt={typeof product.images[0] === 'string' ? product.name : (product.images[0]?.alt || product.name)}
+                                            src={displayImageUrl}
+                                            alt={displayImageAlt}
                                             className="w-full h-full object-cover opacity-80 group-hover:opacity-100 group-hover:scale-105 transition-all duration-700"
                                         />
 
@@ -608,7 +626,8 @@ export default function DashboardPage() {
                                         </div>
                                     </div>
                                 </div>
-                            ))}
+                                );
+                            })}
                         </div>
 
                         <DeleteProductModal

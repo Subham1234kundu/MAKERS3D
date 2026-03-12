@@ -41,13 +41,24 @@ export async function GET(request: NextRequest) {
                 }
             }
 
+            let finalImages = p.images || (p.image ? [p.image] : []);
+
+            if (finalImages.length === 0 && Array.isArray(p.colors)) {
+                for (const color of p.colors) {
+                    if (Array.isArray(color.images) && color.images.length > 0 && color.images[0]?.url) {
+                        finalImages = [color.images[0]];
+                        break;
+                    }
+                }
+            }
+
             return {
                 ...p,
                 id: p._id.toString(),
                 name: p.name || p.title,
                 price: activePrice,
                 originalPrice: activeOriginalPrice,
-                images: p.images || [p.image]
+                images: finalImages
             };
         });
 

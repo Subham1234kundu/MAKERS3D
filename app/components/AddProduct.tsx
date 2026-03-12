@@ -13,14 +13,22 @@ interface ProductImage {
     alt: string;
 }
 
+interface ColorVariant {
+    name: string;
+    price: string;
+    originalPrice: string;
+    images: ProductImage[];
+    video?: { url: string; alt: string };
+}
+
 interface ProductData {
     id?: string;
     name: string;
     subtitle: string;
     description: string;
     specifications: string;
-    originalPrice: string; // The "Cutting" price
-    price: string; // The "Fixed" price
+    originalPrice: string;
+    price: string;
     category: string;
     sizes: string | any[];
     colors: string | any[];
@@ -43,18 +51,21 @@ export default function AddProduct({ initialData, onSubmit, onCancel }: AddProdu
         originalPrice: '',
         price: '',
         category: '',
-        sizes: '', // Maintained as string for legacy, but we will treat as JSON if object
+        sizes: '',
         colors: '',
         images: []
     });
 
     // Local state for structured variants
     const [structuredSizes, setStructuredSizes] = useState<{ name: string; price: string; originalPrice: string }[]>([]);
-    const [structuredColors, setStructuredColors] = useState<{ name: string; price: string; originalPrice: string }[]>([]);
+    const [structuredColors, setStructuredColors] = useState<ColorVariant[]>([]);
 
     // Inputs for new variants
     const [newSize, setNewSize] = useState({ name: '', price: '', originalPrice: '' });
     const [newColor, setNewColor] = useState({ name: '', price: '', originalPrice: '' });
+
+    // Track which color is selected for image management
+    const [activeColorIndex, setActiveColorIndex] = useState<number | null>(null);
 
     const [isCategoryOpen, setIsCategoryOpen] = useState(false);
     const [isUploading, setIsUploading] = useState<number | string | null>(null);
@@ -82,7 +93,6 @@ export default function AddProduct({ initialData, onSubmit, onCancel }: AddProdu
     // Load initial data if editing
     useEffect(() => {
         if (initialData) {
-            // Transform legacy string images to objects if necessary
             const formattedImages = (initialData.images || []).map((img: any) =>
                 typeof img === 'string' ? { url: img, alt: initialData.name || '' } : img
             );
@@ -99,16 +109,26 @@ export default function AddProduct({ initialData, onSubmit, onCancel }: AddProdu
                 loadedSizes = initialData.sizes.split(',').map((s: string) => ({ name: s.trim(), price: '0', originalPrice: '' }));
             }
 
-            // Parse Colors
-            let loadedColors: { name: string; price: string; originalPrice: string }[] = [];
+            // Parse Colors (with images support)
+            let loadedColors: ColorVariant[] = [];
             if (Array.isArray(initialData.colors)) {
                 loadedColors = initialData.colors.map((c: any) => ({
                     name: c.name,
                     price: c.price.toString(),
-                    originalPrice: c.originalPrice ? c.originalPrice.toString() : ''
+                    originalPrice: c.originalPrice ? c.originalPrice.toString() : '',
+                    images: Array.isArray(c.images) ? c.images.map((img: any) =>
+                        typeof img === 'string' ? { url: img, alt: c.name || '' } : img
+                    ) : [],
+                    video: c.video || undefined
                 }));
             } else if (typeof initialData.colors === 'string' && initialData.colors.length > 0) {
-                loadedColors = initialData.colors.split(',').map((c: string) => ({ name: c.trim(), price: '0', originalPrice: '' }));
+                loadedColors = initialData.colors.split(',').map((c: string) => ({
+                    name: c.trim(),
+                    price: '0',
+                    originalPrice: '',
+                    images: [],
+                    video: undefined
+                }));
             }
 
             setStructuredSizes(loadedSizes);
@@ -146,95 +166,127 @@ export default function AddProduct({ initialData, onSubmit, onCancel }: AddProdu
         setStructuredColors(prev => [...prev, {
             name: newColor.name,
             price: newColor.price || '0',
-            originalPrice: newColor.originalPrice || ''
+            originalPrice: newColor.originalPrice || '',
+            images: [],
+            video: undefined
         }]);
         setNewColor({ name: '', price: '', originalPrice: '' });
     };
 
     const removeColor = (index: number) => {
         setStructuredColors(prev => prev.filter((_, i) => i !== index));
+        if (activeColorIndex === index) setActiveColorIndex(null);
+        else if (activeColorIndex !== null && activeColorIndex > index) {
+            setActiveColorIndex(activeColorIndex - 1);
+        }
     };
 
+    // Cloudinary upload helper
+    const uploadToCloudinary = async (file: File): Promise<string | null> => {
+        const cloudName = process.env.NEXT_PUBLIC_CLOUDINARY_CLOUD_NAME || 'dy2btgrbh';
+        const uploadPreset = process.env.NEXT_PUBLIC_CLOUDINARY_UPLOAD_PRESET;
 
+        if (!uploadPreset) {
+            alert('⚠️ Upload Preset Missing!\n\nPlease create an unsigned upload preset in Cloudinary and add it to your .env.local file.\n\nSee CLOUDINARY_SETUP.md for instructions.');
+            return null;
+        }
 
+        const isVideo = file.type.startsWith('video/');
+        const resourceType = isVideo ? 'video' : 'image';
+
+        const formDataCloud = new FormData();
+        formDataCloud.append('file', file);
+        formDataCloud.append('upload_preset', uploadPreset);
+
+        const uploadUrl = `https://api.cloudinary.com/v1_1/${cloudName}/${resourceType}/upload`;
+
+        const res = await fetch(uploadUrl, {
+            method: 'POST',
+            body: formDataCloud
+        });
+
+        if (res.ok) {
+            const data = await res.json();
+            return data.secure_url;
+        } else {
+            const errorData = await res.json().catch(() => ({}));
+            let errorMessage = `Cloudinary ${resourceType} upload failed.\n\n`;
+            if (errorData.error?.message) {
+                errorMessage += 'Error: ' + errorData.error.message + '\n\n';
+            }
+            alert(errorMessage);
+            return null;
+        }
+    };
+
+    // Handle image upload for DEFAULT product images (not color-specific)
     const handleImageUpload = async (e: React.ChangeEvent<HTMLInputElement>, index: number | 'video') => {
         const file = e.target.files?.[0];
         if (file) {
             setIsUploading(index);
             try {
-                // Check for required environment variables
-                const cloudName = process.env.NEXT_PUBLIC_CLOUDINARY_CLOUD_NAME || 'dy2btgrbh';
-                const uploadPreset = process.env.NEXT_PUBLIC_CLOUDINARY_UPLOAD_PRESET;
-
-                if (!uploadPreset) {
-                    alert('⚠️ Upload Preset Missing!\n\nPlease create an unsigned upload preset in Cloudinary and add it to your .env.local file.\n\nSee CLOUDINARY_SETUP.md for instructions.');
-                    setIsUploading(null);
-                    return;
-                }
-
-                const isVideo = index === 'video' || file.type.startsWith('video/');
-                const resourceType = isVideo ? 'video' : 'image';
-
-                console.log(`🚀 Starting Cloudinary ${resourceType} upload...`);
-                console.log('Cloud Name:', cloudName);
-                console.log('Upload Preset:', uploadPreset);
-                console.log('File:', file.name, '(' + (file.size / (1024 * 1024)).toFixed(2) + ' MB)');
-
-                // Cloudinary upload logic
-                const formDataCloud = new FormData();
-                formDataCloud.append('file', file);
-                formDataCloud.append('upload_preset', uploadPreset);
-
-                const uploadUrl = `https://api.cloudinary.com/v1_1/${cloudName}/${resourceType}/upload`;
-                console.log('Upload URL:', uploadUrl);
-
-                const res = await fetch(uploadUrl, {
-                    method: 'POST',
-                    body: formDataCloud
-                });
-
-                console.log('Response status:', res.status);
-
-                if (res.ok) {
-                    const data = await res.json();
-                    console.log('✅ Upload successful!');
-                    console.log('Secure URL:', data.secure_url);
-
+                const url = await uploadToCloudinary(file);
+                if (url) {
                     if (index === 'video') {
                         setFormData(prev => ({
                             ...prev,
                             video: {
-                                url: data.secure_url,
+                                url,
                                 alt: formData.name || 'Product Video'
                             }
                         }));
                     } else {
                         const newImages = [...formData.images];
                         newImages[index as number] = {
-                            url: data.secure_url,
+                            url,
                             alt: formData.name || 'Product Image'
                         };
                         setFormData(prev => ({ ...prev, images: newImages }));
                     }
-                } else {
-                    const errorData = await res.json().catch(() => ({}));
-                    console.error('❌ Upload failed:', errorData);
-
-                    let errorMessage = `Cloudinary ${resourceType} upload failed.\n\n`;
-                    if (errorData.error?.message) {
-                        errorMessage += 'Error: ' + errorData.error.message + '\n\n';
-                    }
-                    if (res.status === 400) {
-                        errorMessage += 'Possible causes:\n• Upload preset not found or incorrect\n• Upload preset is not set to "Unsigned" mode\n\nCheck CLOUDINARY_SETUP.md for help.';
-                    } else if (res.status === 401) {
-                        errorMessage += 'Authentication failed. Check your Cloudinary credentials.';
-                    }
-
-                    alert(errorMessage);
                 }
             } catch (error) {
                 console.error('❌ Upload error:', error);
-                alert('Connection error during upload.\n\nPlease check:\n• Your internet connection\n• Browser console for details');
+                alert('Connection error during upload.');
+            } finally {
+                setIsUploading(null);
+            }
+        }
+    };
+
+    // Handle image upload for a specific COLOR variant
+    const handleColorImageUpload = async (e: React.ChangeEvent<HTMLInputElement>, colorIndex: number, imageIndex: number | 'video') => {
+        const file = e.target.files?.[0];
+        if (file) {
+            const uploadKey = `color-${colorIndex}-${imageIndex}`;
+            setIsUploading(uploadKey);
+            try {
+                const url = await uploadToCloudinary(file);
+                if (url) {
+                    setStructuredColors(prev => {
+                        const updated = [...prev];
+                        const color = { ...updated[colorIndex] };
+
+                        if (imageIndex === 'video') {
+                            color.video = {
+                                url,
+                                alt: `${color.name} Video`
+                            };
+                        } else {
+                            const newImages = [...(color.images || [])];
+                            newImages[imageIndex as number] = {
+                                url,
+                                alt: `${color.name} - Image ${(imageIndex as number) + 1}`
+                            };
+                            color.images = newImages;
+                        }
+
+                        updated[colorIndex] = color;
+                        return updated;
+                    });
+                }
+            } catch (error) {
+                console.error('❌ Color image upload error:', error);
+                alert('Connection error during upload.');
             } finally {
                 setIsUploading(null);
             }
@@ -249,6 +301,28 @@ export default function AddProduct({ initialData, onSubmit, onCancel }: AddProdu
 
     const removeVideo = () => {
         setFormData(prev => ({ ...prev, video: undefined }));
+    };
+
+    const removeColorImage = (colorIndex: number, imageIndex: number) => {
+        setStructuredColors(prev => {
+            const updated = [...prev];
+            const color = { ...updated[colorIndex] };
+            const newImages = [...(color.images || [])];
+            newImages.splice(imageIndex, 1);
+            color.images = newImages;
+            updated[colorIndex] = color;
+            return updated;
+        });
+    };
+
+    const removeColorVideo = (colorIndex: number) => {
+        setStructuredColors(prev => {
+            const updated = [...prev];
+            const color = { ...updated[colorIndex] };
+            color.video = undefined;
+            updated[colorIndex] = color;
+            return updated;
+        });
     };
 
     const handleAltChange = (index: number | 'video', alt: string) => {
@@ -284,14 +358,57 @@ export default function AddProduct({ initialData, onSubmit, onCancel }: AddProdu
         }
     };
 
+    const handleColorImageUrlChange = (colorIndex: number, imageIndex: number | 'video', url: string) => {
+        setStructuredColors(prev => {
+            const updated = [...prev];
+            const color = { ...updated[colorIndex] };
+
+            if (imageIndex === 'video') {
+                color.video = {
+                    url,
+                    alt: color.video?.alt || `${color.name} Video`
+                };
+            } else {
+                const newImages = [...(color.images || [])];
+                newImages[imageIndex as number] = {
+                    url,
+                    alt: newImages[imageIndex as number]?.alt || `${color.name} - Image ${(imageIndex as number) + 1}`
+                };
+                color.images = newImages;
+            }
+
+            updated[colorIndex] = color;
+            return updated;
+        });
+    };
+
+    const handleColorImageAltChange = (colorIndex: number, imageIndex: number | 'video', alt: string) => {
+        setStructuredColors(prev => {
+            const updated = [...prev];
+            const color = { ...updated[colorIndex] };
+
+            if (imageIndex === 'video') {
+                if (color.video) {
+                    color.video = { ...color.video, alt };
+                }
+            } else {
+                const newImages = [...(color.images || [])];
+                if (newImages[imageIndex as number]) {
+                    newImages[imageIndex as number] = { ...newImages[imageIndex as number], alt };
+                    color.images = newImages;
+                }
+            }
+
+            updated[colorIndex] = color;
+            return updated;
+        });
+    };
+
     const handleSubmit = (e: React.FormEvent) => {
         e.preventDefault();
 
-        // 1. Filter out empty/invalid image slots
         const validImages = formData.images.filter(img => img && img.url);
 
-        // 2. Ensure price is present for API validation
-        // If using variants, we might not have a base price in formData.price
         let submitPrice = formData.price;
         if (!submitPrice) {
             if (structuredSizes.length > 0 && structuredSizes[0].price) {
@@ -299,7 +416,7 @@ export default function AddProduct({ initialData, onSubmit, onCancel }: AddProdu
             } else if (structuredColors.length > 0 && structuredColors[0].price) {
                 submitPrice = structuredColors[0].price;
             } else {
-                submitPrice = '0'; // Last resort fallback
+                submitPrice = '0';
             }
         }
 
@@ -308,14 +425,19 @@ export default function AddProduct({ initialData, onSubmit, onCancel }: AddProdu
             submitOriginalPrice = structuredSizes[0].originalPrice;
         }
 
-        // Prepare final data with structured variants
+        // Clean up color images (remove empty slots)
+        const cleanedColors = structuredColors.map(color => ({
+            ...color,
+            images: (color.images || []).filter(img => img && img.url)
+        }));
+
         const finalData = {
             ...formData,
             price: submitPrice,
             originalPrice: submitOriginalPrice,
             images: validImages,
             sizes: structuredSizes,
-            colors: structuredColors
+            colors: cleanedColors
         };
 
         onSubmit(finalData as any);
@@ -328,22 +450,98 @@ export default function AddProduct({ initialData, onSubmit, onCancel }: AddProdu
             </h3>
 
             <form onSubmit={handleSubmit} className="space-y-8">
-                {/* Images & Video Section */}
-                <div className="grid grid-cols-2 md:grid-cols-3 lg:grid-cols-4 gap-6 mb-8">
-                    {/* 6 Image Slots */}
-                    {Array.from({ length: 6 }).map((_, index) => (
-                        <div key={index} className="space-y-3">
+                {/* Default Images & Video Section */}
+                <div>
+                    <div className="flex items-center gap-3 mb-4">
+                        <div className="w-2 h-2 bg-white/60 rounded-full"></div>
+                        <h4 className="text-[11px] uppercase tracking-[0.2em] text-white/60 font-medium">
+                            Default Product Images
+                        </h4>
+                        <div className="flex-1 h-[1px] bg-white/10"></div>
+                    </div>
+                    <p className="text-[9px] uppercase tracking-widest text-white/30 mb-4">
+                        These images show when no color is selected, or as the main product gallery
+                    </p>
+                    <div className="grid grid-cols-2 md:grid-cols-3 lg:grid-cols-4 gap-6">
+                        {/* 6 Image Slots */}
+                        {Array.from({ length: 6 }).map((_, index) => (
+                            <div key={index} className="space-y-3">
+                                <div className="aspect-square bg-white/5 border border-white/10 relative group hover:border-white/30 transition-all flex items-center justify-center overflow-hidden rounded-sm">
+                                    {formData.images[index]?.url ? (
+                                        <>
+                                            <img
+                                                src={formData.images[index].url}
+                                                alt={formData.images[index].alt}
+                                                className="w-full h-full object-cover"
+                                            />
+                                            <button
+                                                type="button"
+                                                onClick={() => removeImage(index)}
+                                                className="absolute top-2 right-2 bg-red-500/80 hover:bg-red-500 text-white w-6 h-6 flex items-center justify-center rounded-sm opacity-0 group-hover:opacity-100 transition-opacity z-10"
+                                            >
+                                                ×
+                                            </button>
+                                        </>
+                                    ) : (
+                                        <label className="cursor-pointer w-full h-full flex flex-col items-center justify-center text-white/20 hover:text-white/40 transition-colors">
+                                            {isUploading === index ? (
+                                                <div className="flex flex-col items-center">
+                                                    <div className="w-5 h-5 border-2 border-white/20 border-t-white animate-spin rounded-full mb-2" />
+                                                    <span className="text-[8px] uppercase tracking-widest">Uploading...</span>
+                                                </div>
+                                            ) : (
+                                                <>
+                                                    <span className="text-2xl font-thin">+</span>
+                                                    <span className="text-[9px] uppercase tracking-widest mt-2 font-light text-center px-2">
+                                                        {index === 0 ? 'Featured Image' : `Image ${index + 1}`}
+                                                    </span>
+                                                    <input
+                                                        type="file"
+                                                        className="hidden"
+                                                        accept="image/*"
+                                                        onChange={(e) => handleImageUpload(e, index)}
+                                                    />
+                                                </>
+                                            )}
+                                        </label>
+                                    )}
+                                </div>
+
+                                <div className="space-y-2">
+                                    <input
+                                        type="text"
+                                        placeholder="IMAGE URL..."
+                                        value={formData.images[index]?.url || ''}
+                                        onChange={(e) => handleUrlChange(index, e.target.value)}
+                                        className="w-full bg-white/5 border border-white/10 px-3 py-2 text-[9px] text-white/80 focus:outline-none focus:border-white/40 transition-all tracking-widest uppercase placeholder:text-white/20"
+                                    />
+                                    <input
+                                        type="text"
+                                        placeholder="ALT TEXT (SEO)..."
+                                        value={formData.images[index]?.alt || ''}
+                                        onChange={(e) => handleAltChange(index, e.target.value)}
+                                        className="w-full bg-white/5 border border-white/10 px-3 py-2 text-[9px] text-white/80 focus:outline-none focus:border-white/40 transition-all tracking-widest uppercase placeholder:text-white/20"
+                                    />
+                                </div>
+                            </div>
+                        ))}
+
+                        {/* 1 Video Slot */}
+                        <div className="space-y-3">
                             <div className="aspect-square bg-white/5 border border-white/10 relative group hover:border-white/30 transition-all flex items-center justify-center overflow-hidden rounded-sm">
-                                {formData.images[index]?.url ? (
+                                {formData.video?.url ? (
                                     <>
-                                        <img
-                                            src={formData.images[index].url}
-                                            alt={formData.images[index].alt}
+                                        <video
+                                            src={formData.video.url}
                                             className="w-full h-full object-cover"
+                                            autoPlay
+                                            muted
+                                            loop
+                                            playsInline
                                         />
                                         <button
                                             type="button"
-                                            onClick={() => removeImage(index)}
+                                            onClick={removeVideo}
                                             className="absolute top-2 right-2 bg-red-500/80 hover:bg-red-500 text-white w-6 h-6 flex items-center justify-center rounded-sm opacity-0 group-hover:opacity-100 transition-opacity z-10"
                                         >
                                             ×
@@ -351,7 +549,7 @@ export default function AddProduct({ initialData, onSubmit, onCancel }: AddProdu
                                     </>
                                 ) : (
                                     <label className="cursor-pointer w-full h-full flex flex-col items-center justify-center text-white/20 hover:text-white/40 transition-colors">
-                                        {isUploading === index ? (
+                                        {isUploading === 'video' ? (
                                             <div className="flex flex-col items-center">
                                                 <div className="w-5 h-5 border-2 border-white/20 border-t-white animate-spin rounded-full mb-2" />
                                                 <span className="text-[8px] uppercase tracking-widest">Uploading...</span>
@@ -360,13 +558,13 @@ export default function AddProduct({ initialData, onSubmit, onCancel }: AddProdu
                                             <>
                                                 <span className="text-2xl font-thin">+</span>
                                                 <span className="text-[9px] uppercase tracking-widest mt-2 font-light text-center px-2">
-                                                    {index === 0 ? 'Featured Image' : `Image ${index + 1}`}
+                                                    Product Video
                                                 </span>
                                                 <input
                                                     type="file"
                                                     className="hidden"
-                                                    accept="image/*"
-                                                    onChange={(e) => handleImageUpload(e, index)}
+                                                    accept="video/*"
+                                                    onChange={(e) => handleImageUpload(e, 'video')}
                                                 />
                                             </>
                                         )}
@@ -377,83 +575,19 @@ export default function AddProduct({ initialData, onSubmit, onCancel }: AddProdu
                             <div className="space-y-2">
                                 <input
                                     type="text"
-                                    placeholder="IMAGE URL..."
-                                    value={formData.images[index]?.url || ''}
-                                    onChange={(e) => handleUrlChange(index, e.target.value)}
+                                    placeholder="VIDEO URL..."
+                                    value={formData.video?.url || ''}
+                                    onChange={(e) => handleUrlChange('video', e.target.value)}
                                     className="w-full bg-white/5 border border-white/10 px-3 py-2 text-[9px] text-white/80 focus:outline-none focus:border-white/40 transition-all tracking-widest uppercase placeholder:text-white/20"
                                 />
                                 <input
                                     type="text"
                                     placeholder="ALT TEXT (SEO)..."
-                                    value={formData.images[index]?.alt || ''}
-                                    onChange={(e) => handleAltChange(index, e.target.value)}
+                                    value={formData.video?.alt || ''}
+                                    onChange={(e) => handleAltChange('video', e.target.value)}
                                     className="w-full bg-white/5 border border-white/10 px-3 py-2 text-[9px] text-white/80 focus:outline-none focus:border-white/40 transition-all tracking-widest uppercase placeholder:text-white/20"
                                 />
                             </div>
-                        </div>
-                    ))}
-
-                    {/* 1 Video Slot */}
-                    <div className="space-y-3">
-                        <div className="aspect-square bg-white/5 border border-white/10 relative group hover:border-white/30 transition-all flex items-center justify-center overflow-hidden rounded-sm">
-                            {formData.video?.url ? (
-                                <>
-                                    <video
-                                        src={formData.video.url}
-                                        className="w-full h-full object-cover"
-                                        autoPlay
-                                        muted
-                                        loop
-                                        playsInline
-                                    />
-                                    <button
-                                        type="button"
-                                        onClick={removeVideo}
-                                        className="absolute top-2 right-2 bg-red-500/80 hover:bg-red-500 text-white w-6 h-6 flex items-center justify-center rounded-sm opacity-0 group-hover:opacity-100 transition-opacity z-10"
-                                    >
-                                        ×
-                                    </button>
-                                </>
-                            ) : (
-                                <label className="cursor-pointer w-full h-full flex flex-col items-center justify-center text-white/20 hover:text-white/40 transition-colors">
-                                    {isUploading === 'video' ? (
-                                        <div className="flex flex-col items-center">
-                                            <div className="w-5 h-5 border-2 border-white/20 border-t-white animate-spin rounded-full mb-2" />
-                                            <span className="text-[8px] uppercase tracking-widest">Uploading...</span>
-                                        </div>
-                                    ) : (
-                                        <>
-                                            <span className="text-2xl font-thin">+</span>
-                                            <span className="text-[9px] uppercase tracking-widest mt-2 font-light text-center px-2">
-                                                Product Video
-                                            </span>
-                                            <input
-                                                type="file"
-                                                className="hidden"
-                                                accept="video/*"
-                                                onChange={(e) => handleImageUpload(e, 'video')}
-                                            />
-                                        </>
-                                    )}
-                                </label>
-                            )}
-                        </div>
-
-                        <div className="space-y-2">
-                            <input
-                                type="text"
-                                placeholder="VIDEO URL..."
-                                value={formData.video?.url || ''}
-                                onChange={(e) => handleUrlChange('video', e.target.value)}
-                                className="w-full bg-white/5 border border-white/10 px-3 py-2 text-[9px] text-white/80 focus:outline-none focus:border-white/40 transition-all tracking-widest uppercase placeholder:text-white/20"
-                            />
-                            <input
-                                type="text"
-                                placeholder="ALT TEXT (SEO)..."
-                                value={formData.video?.alt || ''}
-                                onChange={(e) => handleAltChange('video', e.target.value)}
-                                className="w-full bg-white/5 border border-white/10 px-3 py-2 text-[9px] text-white/80 focus:outline-none focus:border-white/40 transition-all tracking-widest uppercase placeholder:text-white/20"
-                            />
                         </div>
                     </div>
                 </div>
@@ -558,15 +692,195 @@ export default function AddProduct({ initialData, onSubmit, onCancel }: AddProdu
 
                             <div className="flex flex-wrap gap-2">
                                 {structuredColors.map((color, idx) => (
-                                    <div key={idx} className="flex items-center gap-2 bg-white/10 px-3 py-1 rounded-sm border border-white/5">
+                                    <div
+                                        key={idx}
+                                        className={`flex items-center gap-2 px-3 py-1.5 rounded-sm border cursor-pointer transition-all ${activeColorIndex === idx
+                                            ? 'bg-white/20 border-white/40 shadow-[0_0_10px_rgba(255,255,255,0.1)]'
+                                            : 'bg-white/10 border-white/5 hover:border-white/20'
+                                            }`}
+                                        onClick={() => setActiveColorIndex(activeColorIndex === idx ? null : idx)}
+                                    >
                                         <span className="text-[10px] text-white uppercase tracking-wider">{color.name}</span>
                                         {color.originalPrice && <span className="text-[9px] text-white/40 line-through">₹{color.originalPrice}</span>}
                                         {Number(color.price) > 0 && <span className="text-[10px] text-emerald-400">₹{color.price}</span>}
-                                        <button type="button" onClick={() => removeColor(idx)} className="text-white/40 hover:text-red-400 ml-1">×</button>
+                                        {(color.images?.length > 0 || color.video) && (
+                                            <span className="text-[8px] bg-blue-500/20 text-blue-400 px-1.5 py-0.5 rounded-sm uppercase tracking-wider">
+                                                {color.images?.length || 0} img{color.video ? ' + vid' : ''}
+                                            </span>
+                                        )}
+                                        <button
+                                            type="button"
+                                            onClick={(e) => { e.stopPropagation(); removeColor(idx); }}
+                                            className="text-white/40 hover:text-red-400 ml-1"
+                                        >
+                                            ×
+                                        </button>
                                     </div>
                                 ))}
                             </div>
+
+                            {structuredColors.length > 0 && (
+                                <p className="text-[8px] uppercase tracking-widest text-white/20 mt-3">
+                                    Click a color to add/manage its specific images & video
+                                </p>
+                            )}
                         </div>
+
+                        {/* COLOR-SPECIFIC IMAGE UPLOAD SECTION */}
+                        {activeColorIndex !== null && structuredColors[activeColorIndex] && (
+                            <div className="border border-blue-500/30 bg-blue-500/5 p-5 rounded-sm space-y-4 animate-in fade-in duration-300">
+                                <div className="flex items-center justify-between">
+                                    <div className="flex items-center gap-3">
+                                        <div className="w-3 h-3 bg-blue-400 rounded-full animate-pulse" />
+                                        <h4 className="text-[11px] uppercase tracking-[0.2em] text-blue-400 font-medium">
+                                            Images for &quot;{structuredColors[activeColorIndex].name}&quot;
+                                        </h4>
+                                    </div>
+                                    <button
+                                        type="button"
+                                        onClick={() => setActiveColorIndex(null)}
+                                        className="text-[9px] uppercase tracking-widest text-white/40 hover:text-white border border-white/10 hover:border-white/30 px-3 py-1.5 transition-all"
+                                    >
+                                        Close
+                                    </button>
+                                </div>
+
+                                <p className="text-[9px] uppercase tracking-widest text-white/30">
+                                    These images will show when a customer selects the &quot;{structuredColors[activeColorIndex].name}&quot; color
+                                </p>
+
+                                <div className="grid grid-cols-2 md:grid-cols-3 gap-4">
+                                    {/* 6 Color Image Slots */}
+                                    {Array.from({ length: 6 }).map((_, imgIdx) => {
+                                        const colorImages = structuredColors[activeColorIndex]?.images || [];
+                                        const uploadKey = `color-${activeColorIndex}-${imgIdx}`;
+
+                                        return (
+                                            <div key={imgIdx} className="space-y-2">
+                                                <div className="aspect-square bg-blue-500/5 border border-blue-500/20 relative group hover:border-blue-500/40 transition-all flex items-center justify-center overflow-hidden rounded-sm">
+                                                    {colorImages[imgIdx]?.url ? (
+                                                        <>
+                                                            <img
+                                                                src={colorImages[imgIdx].url}
+                                                                alt={colorImages[imgIdx].alt}
+                                                                className="w-full h-full object-cover"
+                                                            />
+                                                            <button
+                                                                type="button"
+                                                                onClick={() => removeColorImage(activeColorIndex, imgIdx)}
+                                                                className="absolute top-1.5 right-1.5 bg-red-500/80 hover:bg-red-500 text-white w-5 h-5 flex items-center justify-center rounded-sm opacity-0 group-hover:opacity-100 transition-opacity z-10 text-xs"
+                                                            >
+                                                                ×
+                                                            </button>
+                                                        </>
+                                                    ) : (
+                                                        <label className="cursor-pointer w-full h-full flex flex-col items-center justify-center text-blue-400/30 hover:text-blue-400/60 transition-colors">
+                                                            {isUploading === uploadKey ? (
+                                                                <div className="flex flex-col items-center">
+                                                                    <div className="w-4 h-4 border-2 border-blue-400/20 border-t-blue-400 animate-spin rounded-full mb-1" />
+                                                                    <span className="text-[7px] uppercase tracking-widest">Uploading...</span>
+                                                                </div>
+                                                            ) : (
+                                                                <>
+                                                                    <span className="text-xl font-thin">+</span>
+                                                                    <span className="text-[8px] uppercase tracking-widest mt-1 font-light text-center px-1">
+                                                                        {imgIdx === 0 ? 'Main' : `Image ${imgIdx + 1}`}
+                                                                    </span>
+                                                                    <input
+                                                                        type="file"
+                                                                        className="hidden"
+                                                                        accept="image/*"
+                                                                        onChange={(e) => handleColorImageUpload(e, activeColorIndex, imgIdx)}
+                                                                    />
+                                                                </>
+                                                            )}
+                                                        </label>
+                                                    )}
+                                                </div>
+                                                <input
+                                                    type="text"
+                                                    placeholder="IMAGE URL..."
+                                                    value={colorImages[imgIdx]?.url || ''}
+                                                    onChange={(e) => handleColorImageUrlChange(activeColorIndex, imgIdx, e.target.value)}
+                                                    className="w-full bg-white/5 border border-white/10 px-2 py-1.5 text-[8px] text-white/80 focus:outline-none focus:border-blue-500/40 transition-all tracking-widest uppercase placeholder:text-white/15"
+                                                />
+                                                <input
+                                                    type="text"
+                                                    placeholder="ALT TEXT..."
+                                                    value={colorImages[imgIdx]?.alt || ''}
+                                                    onChange={(e) => handleColorImageAltChange(activeColorIndex, imgIdx, e.target.value)}
+                                                    className="w-full bg-white/5 border border-white/10 px-2 py-1.5 text-[8px] text-white/80 focus:outline-none focus:border-blue-500/40 transition-all tracking-widest uppercase placeholder:text-white/15"
+                                                />
+                                            </div>
+                                        );
+                                    })}
+
+                                    {/* Color Video Slot */}
+                                    <div className="space-y-2">
+                                        <div className="aspect-square bg-purple-500/5 border border-purple-500/20 relative group hover:border-purple-500/40 transition-all flex items-center justify-center overflow-hidden rounded-sm">
+                                            {structuredColors[activeColorIndex]?.video?.url ? (
+                                                <>
+                                                    <video
+                                                        src={structuredColors[activeColorIndex].video!.url}
+                                                        className="w-full h-full object-cover"
+                                                        autoPlay
+                                                        muted
+                                                        loop
+                                                        playsInline
+                                                    />
+                                                    <button
+                                                        type="button"
+                                                        onClick={() => removeColorVideo(activeColorIndex)}
+                                                        className="absolute top-1.5 right-1.5 bg-red-500/80 hover:bg-red-500 text-white w-5 h-5 flex items-center justify-center rounded-sm opacity-0 group-hover:opacity-100 transition-opacity z-10 text-xs"
+                                                    >
+                                                        ×
+                                                    </button>
+                                                </>
+                                            ) : (
+                                                <label className="cursor-pointer w-full h-full flex flex-col items-center justify-center text-purple-400/30 hover:text-purple-400/60 transition-colors">
+                                                    {isUploading === `color-${activeColorIndex}-video` ? (
+                                                        <div className="flex flex-col items-center">
+                                                            <div className="w-4 h-4 border-2 border-purple-400/20 border-t-purple-400 animate-spin rounded-full mb-1" />
+                                                            <span className="text-[7px] uppercase tracking-widest">Uploading...</span>
+                                                        </div>
+                                                    ) : (
+                                                        <>
+                                                            <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="1.5">
+                                                                <polygon points="23 7 16 12 23 17 23 7"></polygon>
+                                                                <rect x="1" y="5" width="15" height="14" rx="2" ry="2"></rect>
+                                                            </svg>
+                                                            <span className="text-[8px] uppercase tracking-widest mt-1.5 font-light text-center px-1">
+                                                                Color Video
+                                                            </span>
+                                                            <input
+                                                                type="file"
+                                                                className="hidden"
+                                                                accept="video/*"
+                                                                onChange={(e) => handleColorImageUpload(e, activeColorIndex, 'video')}
+                                                            />
+                                                        </>
+                                                    )}
+                                                </label>
+                                            )}
+                                        </div>
+                                        <input
+                                            type="text"
+                                            placeholder="VIDEO URL..."
+                                            value={structuredColors[activeColorIndex]?.video?.url || ''}
+                                            onChange={(e) => handleColorImageUrlChange(activeColorIndex, 'video', e.target.value)}
+                                            className="w-full bg-white/5 border border-white/10 px-2 py-1.5 text-[8px] text-white/80 focus:outline-none focus:border-purple-500/40 transition-all tracking-widest uppercase placeholder:text-white/15"
+                                        />
+                                        <input
+                                            type="text"
+                                            placeholder="ALT TEXT..."
+                                            value={structuredColors[activeColorIndex]?.video?.alt || ''}
+                                            onChange={(e) => handleColorImageAltChange(activeColorIndex, 'video', e.target.value)}
+                                            className="w-full bg-white/5 border border-white/10 px-2 py-1.5 text-[8px] text-white/80 focus:outline-none focus:border-purple-500/40 transition-all tracking-widest uppercase placeholder:text-white/15"
+                                        />
+                                    </div>
+                                </div>
+                            </div>
+                        )}
 
 
                         {/* Base Price Section - Hidden when variants have prices */}
@@ -599,7 +913,7 @@ export default function AddProduct({ initialData, onSubmit, onCancel }: AddProdu
                         ) : (
                             <div className="border border-emerald-500/30 bg-emerald-500/5 p-4 rounded-sm">
                                 <p className="text-[10px] uppercase tracking-widest text-emerald-400/80">
-                                    Prices are set per variant (Size/Color). The first variant's price will be shown by default.
+                                    Prices are set per variant (Size/Color). The first variant&#39;s price will be shown by default.
                                 </p>
                             </div>
                         )}
@@ -679,7 +993,7 @@ export default function AddProduct({ initialData, onSubmit, onCancel }: AddProdu
                                 onChange={handleChange}
                                 rows={4}
                                 className="w-full bg-white/5 border border-white/10 p-4 text-sm text-white focus:outline-none focus:border-white/30 transition-colors resize-none font-light placeholder:text-white/10"
-                                placeholder="• Material: PLA&#10;• Dimension: 10x10x10cm&#10;• Weight: 200g"
+                                placeholder={"• Material: PLA\n• Dimension: 10x10x10cm\n• Weight: 200g"}
                             />
                         </div>
                     </div>

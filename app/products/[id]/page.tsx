@@ -39,11 +39,49 @@ export default function ProductDetailPage() {
     const [selectedSize, setSelectedSize] = useState('');
     const [selectedColor, setSelectedColor] = useState('');
 
-    // Pre-calculate media items for helper functions
-    const mediaItems = product ? [
-        ...(product.images || [product.image]),
-        ...(product.video?.url ? [{ ...product.video, type: 'video' }] : [])
-    ] : [];
+    // Helper to parse variants
+    const parseVariants = (variants: any): { name: string; price: number; originalPrice: number; images?: any[]; video?: any }[] => {
+        if (!variants) return [];
+        if (Array.isArray(variants)) {
+            return variants.map((v: any) => ({
+                name: typeof v === 'string' ? v : (v?.name ?? String(v)),
+                price: Number(v?.price) || 0,
+                originalPrice: Number(v?.originalPrice) || 0,
+                images: Array.isArray(v?.images) ? v.images : [],
+                video: v?.video || undefined
+            }));
+        }
+        if (typeof variants === 'string' && variants.length > 0) {
+            return variants.split(',').map(s => ({ name: s.trim(), price: 0, originalPrice: 0, images: [], video: undefined }));
+        }
+        return [];
+    };
+
+    // Get the media items based on selected color
+    const getMediaItems = () => {
+        if (!product) return [];
+
+        const colors = parseVariants(product?.colors);
+        const selectedColorObj = colors.find(c => c.name === selectedColor);
+
+        // If a color is selected and it has its own images, use those
+        if (selectedColorObj && selectedColorObj.images && selectedColorObj.images.length > 0) {
+            const colorImages = selectedColorObj.images.filter((img: any) => img && img.url);
+            const colorVideo = selectedColorObj.video;
+            return [
+                ...colorImages,
+                ...(colorVideo?.url ? [{ ...colorVideo, type: 'video' }] : [])
+            ];
+        }
+
+        // Fall back to default product images
+        return [
+            ...(product.images || [product.image]),
+            ...(product.video?.url ? [{ ...product.video, type: 'video' }] : [])
+        ];
+    };
+
+    const mediaItems = getMediaItems();
 
     const nextMedia = () => {
         if (!mediaItems.length) return;
@@ -63,21 +101,10 @@ export default function ProductDetailPage() {
         setHasMounted(true);
     }, []);
 
-    // Helper to parse variants
-    const parseVariants = (variants: any): { name: string; price: number; originalPrice: number }[] => {
-        if (!variants) return [];
-        if (Array.isArray(variants)) {
-            return variants.map((v: any) => ({
-                name: typeof v === 'string' ? v : (v?.name ?? String(v)),
-                price: Number(v?.price) || 0,
-                originalPrice: Number(v?.originalPrice) || 0
-            }));
-        }
-        if (typeof variants === 'string' && variants.length > 0) {
-            return variants.split(',').map(s => ({ name: s.trim(), price: 0, originalPrice: 0 }));
-        }
-        return [];
-    };
+    // Reset active image index when color changes
+    useEffect(() => {
+        setActiveImageIndex(0);
+    }, [selectedColor]);
 
     const getFinalPrice = () => {
         let finalPrice = Number(product?.price) || 0;
@@ -427,7 +454,7 @@ export default function ProductDetailPage() {
                                     let currentOriginalPrice = Number(product.originalPrice);
 
                                     // Parse Variants
-                                    const parseVariants = (variants: any) => {
+                                    const parseVariantsLocal = (variants: any) => {
                                         if (Array.isArray(variants)) return variants;
                                         if (typeof variants === 'string' && variants.length > 0) {
                                             return variants.split(',').map(s => ({ name: s.trim(), price: 0 }));
@@ -435,8 +462,8 @@ export default function ProductDetailPage() {
                                         return [];
                                     };
 
-                                    const sizes = parseVariants(product.sizes);
-                                    const colors = parseVariants(product.colors);
+                                    const sizes = parseVariantsLocal(product.sizes);
+                                    const colors = parseVariantsLocal(product.colors);
 
                                     const sizeObj = sizes.find((s: any) => s.name === selectedSize);
                                     const colorObj = colors.find((c: any) => c.name === selectedColor);
@@ -447,8 +474,6 @@ export default function ProductDetailPage() {
                                         if (sizeObj.originalPrice) currentOriginalPrice = Number(sizeObj.originalPrice);
                                     }
 
-                                    // If color has price, it also overrides (or you can decide logic here, e.g. strictly override)
-                                    // Assuming strict override for now based on "Fixed Price" label
                                     if (colorObj && Number(colorObj.price) > 0) {
                                         currentPrice = Number(colorObj.price);
                                         if (colorObj.originalPrice) currentOriginalPrice = Number(colorObj.originalPrice);
@@ -511,19 +536,22 @@ export default function ProductDetailPage() {
                                     <div className="flex flex-wrap gap-3">
                                         {parseVariants(product.colors).map((color: any) => {
                                             const c = color.name || color;
-                                            const price = Number(color.price || 0);
+                                            const hasImages = color.images && color.images.length > 0;
 
                                             return (
                                                 <button
                                                     key={c}
                                                     type="button"
                                                     onClick={() => setSelectedColor(c)}
-                                                    className={`px-6 min-h-[48px] h-[50px] flex items-center justify-center border text-[10px] tracking-widest uppercase transition-all duration-300 cursor-pointer touch-manipulation active:scale-95 ${selectedColor === c
+                                                    className={`px-6 min-h-[48px] h-[50px] flex items-center justify-center gap-2 border text-[10px] tracking-widest uppercase transition-all duration-300 cursor-pointer touch-manipulation active:scale-95 ${selectedColor === c
                                                         ? 'bg-white text-black border-white shadow-[0_0_20px_rgba(255,255,255,0.15)]'
                                                         : 'border-white/10 text-white/40 hover:border-white/30 hover:text-white'
                                                         }`}
                                                 >
                                                     {c}
+                                                    {hasImages && (
+                                                        <span className={`w-1.5 h-1.5 rounded-full ${selectedColor === c ? 'bg-black/40' : 'bg-blue-400'}`} />
+                                                    )}
                                                 </button>
                                             );
                                         })}
@@ -593,11 +621,20 @@ export default function ProductDetailPage() {
                                             return;
                                         }
                                         const { finalPrice } = getFinalPrice();
-                                        const img = product.images?.[0] || product.image;
-                                        const imageUrl = typeof img === 'object' && img?.url ? img.url : (img || '');
+                                        // Get the right image for the cart based on selected color
+                                        const colors = parseVariants(product?.colors);
+                                        const selectedColorObj = colors.find(c => c.name === selectedColor);
+                                        let cartImage = '';
+                                        if (selectedColorObj && selectedColorObj.images && selectedColorObj.images.length > 0) {
+                                            const firstColorImg = selectedColorObj.images[0];
+                                            cartImage = typeof firstColorImg === 'object' && firstColorImg?.url ? firstColorImg.url : (firstColorImg || '');
+                                        } else {
+                                            const img = product.images?.[0] || product.image;
+                                            cartImage = typeof img === 'object' && img?.url ? img.url : (img || '');
+                                        }
                                         const cartItem = {
                                             id: product.id || product._id,
-                                            image: imageUrl,
+                                            image: cartImage,
                                             title: product.name || product.title,
                                             price: finalPrice,
                                             originalPrice: product.originalPrice || finalPrice,
@@ -638,11 +675,19 @@ export default function ProductDetailPage() {
                                         return;
                                     }
                                     const { finalPrice } = getFinalPrice();
-                                    const img = product.images?.[0] || product.image;
-                                    const imageUrl = typeof img === 'object' && img?.url ? img.url : (img || '');
+                                    const colors = parseVariants(product?.colors);
+                                    const selectedColorObj = colors.find(c => c.name === selectedColor);
+                                    let cartImage = '';
+                                    if (selectedColorObj && selectedColorObj.images && selectedColorObj.images.length > 0) {
+                                        const firstColorImg = selectedColorObj.images[0];
+                                        cartImage = typeof firstColorImg === 'object' && firstColorImg?.url ? firstColorImg.url : (firstColorImg || '');
+                                    } else {
+                                        const img = product.images?.[0] || product.image;
+                                        cartImage = typeof img === 'object' && img?.url ? img.url : (img || '');
+                                    }
                                     const cartItem = {
                                         id: product.id || product._id,
-                                        image: imageUrl,
+                                        image: cartImage,
                                         title: product.name || product.title,
                                         price: finalPrice,
                                         originalPrice: product.originalPrice || finalPrice,

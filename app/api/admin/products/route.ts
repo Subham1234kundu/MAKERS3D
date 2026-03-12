@@ -80,15 +80,20 @@ export async function POST(request: NextRequest) {
         const body = await request.json();
         const { name, price, originalPrice, category, images, description, specifications, sizes, colors } = body;
 
+        let hasValidImages = Array.isArray(images) && images.length > 0;
+        if (!hasValidImages && Array.isArray(colors)) {
+            hasValidImages = colors.some(c => Array.isArray(c.images) && c.images.length > 0 && c.images[0]?.url);
+        }
+
         // Be more specific about validation: price can be 0 (which is falsy)
-        if (!name || price === undefined || price === null || !category || !images || !Array.isArray(images) || images.length === 0) {
+        if (!name || price === undefined || price === null || !category || !hasValidImages) {
             return NextResponse.json({
                 message: 'Missing required fields',
                 details: {
                     name: !name ? 'Required' : 'OK',
                     price: (price === undefined || price === null) ? 'Required' : 'OK',
                     category: !category ? 'Required' : 'OK',
-                    images: (!images || !Array.isArray(images) || images.length === 0) ? 'Required' : 'OK'
+                    images: !hasValidImages ? 'Required (Main or Color)' : 'OK'
                 }
             }, { status: 400 });
         }
