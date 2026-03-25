@@ -97,6 +97,7 @@ export default function CollectionsPage() {
                                                 <img
                                                     src={collection.image}
                                                     alt={collection.name}
+                                                    referrerPolicy="no-referrer"
                                                     className="w-full h-full object-cover opacity-90 group-hover:opacity-100 group-hover:scale-105 transition-all duration-700 ease-out"
                                                 />
                                             ) : (

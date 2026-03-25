@@ -62,6 +62,8 @@ export default function ProductCard({ id, image, alt, secondImage, secondAlt, ti
                                 sizes="(max-width: 640px) 50vw, (max-width: 1024px) 33vw, 25vw"
                                 priority
                                 quality={85}
+                                unoptimized={image?.startsWith('http')}
+                                referrerPolicy="no-referrer"
                             />
                         )}
 
@@ -75,6 +77,8 @@ export default function ProductCard({ id, image, alt, secondImage, secondAlt, ti
                                     }`}
                                 sizes="(max-width: 640px) 50vw, (max-width: 1024px) 33vw, 25vw"
                                 quality={85}
+                                unoptimized={secondImage?.startsWith('http')}
+                                referrerPolicy="no-referrer"
                             />
                         )}
 

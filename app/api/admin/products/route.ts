@@ -78,7 +78,7 @@ export async function POST(request: NextRequest) {
         }
 
         const body = await request.json();
-        const { name, price, originalPrice, category, images, description, specifications, sizes, colors } = body;
+        const { name, price, originalPrice, category, subCategory, images, description, specifications, sizes, colors } = body;
 
         let hasValidImages = Array.isArray(images) && images.length > 0;
         if (!hasValidImages && Array.isArray(colors)) {
@@ -104,6 +104,7 @@ export async function POST(request: NextRequest) {
             price: Number(price),
             originalPrice: Number(originalPrice || price),
             category,
+            subCategory: subCategory || '',
             images: Array.isArray(images) ? images : [images],
             video: body.video || null,
             description: description || '',
@@ -134,7 +135,7 @@ export async function PUT(request: NextRequest) {
 
         const body = await request.json();
         console.log('📦 Updating product:', body.id, 'Data:', body);
-        const { id, name, price, originalPrice, category, images, description, specifications, sizes, colors } = body;
+        const { id, name, price, originalPrice, category, subCategory, images, description, specifications, sizes, colors } = body;
 
         if (!id) {
             return NextResponse.json({ message: 'Product ID required' }, { status: 400 });
@@ -150,6 +151,7 @@ export async function PUT(request: NextRequest) {
         if (originalPrice !== undefined) updateData.originalPrice = Number(originalPrice);
         console.log('🛠️ Final updateData:', updateData);
         if (category) updateData.category = category;
+        if (subCategory !== undefined) updateData.subCategory = subCategory;
         if (images) updateData.images = Array.isArray(images) ? images : [images];
         if (body.video !== undefined) updateData.video = body.video;
         if (description !== undefined) updateData.description = description;

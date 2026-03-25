@@ -9,6 +9,7 @@ interface CollectionData {
     image: string;
     slug: string;
     order: number;
+    subCollections?: { name: string; image: string; slug: string }[];
 }
 
 interface AddCollectionProps {
@@ -23,7 +24,8 @@ export default function AddCollection({ initialData, onSubmit, onCancel }: AddCo
         description: '',
         image: '',
         slug: '',
-        order: 0
+        order: 0,
+        subCollections: []
     });
 
     const [isUploading, setIsUploading] = useState(false);
@@ -92,6 +94,48 @@ export default function AddCollection({ initialData, onSubmit, onCancel }: AddCo
         }
     };
 
+    const handleSubImageUpload = async (e: React.ChangeEvent<HTMLInputElement>, index: number) => {
+        const file = e.target.files?.[0];
+        if (file) {
+            setIsUploading(true);
+            try {
+                const cloudName = process.env.NEXT_PUBLIC_CLOUDINARY_CLOUD_NAME || 'dy2btgrbh';
+                const uploadPreset = process.env.NEXT_PUBLIC_CLOUDINARY_UPLOAD_PRESET;
+
+                if (!uploadPreset) {
+                    alert('⚠️ Upload Preset Missing!\n\nPlease configure Cloudinary upload preset.');
+                    setIsUploading(false);
+                    return;
+                }
+
+                const formDataCloud = new FormData();
+                formDataCloud.append('file', file);
+                formDataCloud.append('upload_preset', uploadPreset);
+
+                const uploadUrl = `https://api.cloudinary.com/v1_1/${cloudName}/image/upload`;
+
+                const res = await fetch(uploadUrl, {
+                    method: 'POST',
+                    body: formDataCloud
+                });
+
+                if (res.ok) {
+                    const data = await res.json();
+                    const newSub = [...(formData.subCollections || [])];
+                    newSub[index].image = data.secure_url;
+                    setFormData(prev => ({ ...prev, subCollections: newSub }));
+                } else {
+                    alert('Upload failed. Please try again.');
+                }
+            } catch (error) {
+                console.error('Upload error:', error);
+                alert('Connection error during upload.');
+            } finally {
+                setIsUploading(false);
+            }
+        }
+    };
+
     const handleSubmit = (e: React.FormEvent) => {
         e.preventDefault();
         onSubmit(formData);
@@ -115,6 +159,7 @@ export default function AddCollection({ initialData, onSubmit, onCancel }: AddCo
                                 <img
                                     src={formData.image}
                                     alt="Collection preview"
+                                    referrerPolicy="no-referrer"
                                     className="w-full h-full object-cover"
                                 />
                                 <button
@@ -150,14 +195,7 @@ export default function AddCollection({ initialData, onSubmit, onCancel }: AddCo
                         )}
                     </div>
 
-                    {/* Manual URL Input */}
-                    <input
-                        type="text"
-                        placeholder="OR PASTE IMAGE URL..."
-                        value={formData.image}
-                        onChange={(e) => setFormData(prev => ({ ...prev, image: e.target.value }))}
-                        className="w-full bg-white/5 border border-white/10 px-4 py-3 text-[10px] text-white/80 focus:outline-none focus:border-white/40 transition-all tracking-widest uppercase placeholder:text-white/20"
-                    />
+
                 </div>
 
                 <div className="grid grid-cols-1 md:grid-cols-2 gap-8">
@@ -230,6 +268,112 @@ export default function AddCollection({ initialData, onSubmit, onCancel }: AddCo
                             />
                         </div>
                     </div>
+                </div>
+
+                {/* Sub-Collections */}
+                <div className="space-y-4 w-full mt-8 border-t border-white/10 pt-8">
+                    <div className="flex justify-between items-center mb-4">
+                        <label className="block text-sm uppercase tracking-widest text-white/60 font-medium">
+                            Sub Collections
+                        </label>
+                        <button
+                            type="button"
+                            onClick={() => setFormData(prev => ({
+                                ...prev,
+                                subCollections: [...(prev.subCollections || []), { name: '', image: '', slug: '' }]
+                            }))}
+                            className="text-[10px] uppercase tracking-widest bg-white/10 hover:bg-white/20 px-4 py-2 text-white"
+                        >
+                            + Add Sub-Collection
+                        </button>
+                    </div>
+                    
+                    {formData.subCollections?.map((sub, index) => (
+                        <div key={index} className="grid grid-cols-1 md:grid-cols-3 gap-4 p-6 border border-white/10 bg-white/5 relative">
+                            <button
+                                type="button"
+                                onClick={() => setFormData(prev => ({
+                                    ...prev,
+                                    subCollections: prev.subCollections?.filter((_, i) => i !== index)
+                                }))}
+                                className="absolute top-2 right-4 text-red-500 hover:text-red-400 font-bold text-lg"
+                                title="Remove sub-collection"
+                            >
+                                ×
+                            </button>
+                            
+                            <div className="group">
+                                <label className="block text-[10px] uppercase tracking-widest text-white/40 mb-2 font-medium">Name *</label>
+                                <input
+                                    type="text"
+                                    value={sub.name}
+                                    onChange={(e) => {
+                                        const newSub = [...(formData.subCollections || [])];
+                                        newSub[index].name = e.target.value;
+                                        // Auto-generate slug
+                                        if (e.target.value && !newSub[index].slug) {
+                                           newSub[index].slug = e.target.value.toLowerCase().trim().replace(/[^a-z0-9\s-]/g, '').replace(/\s+/g, '-').replace(/-+/g, '-');
+                                        }
+                                        setFormData(prev => ({ ...prev, subCollections: newSub }));
+                                    }}
+                                    required
+                                    className="w-full bg-transparent border-b border-white/20 py-2 text-sm text-white focus:outline-none focus:border-white transition-colors"
+                                />
+                            </div>
+                            
+                            <div className="group">
+                                <label className="block text-[10px] uppercase tracking-widest text-white/40 mb-2 font-medium">Slug *</label>
+                                <input
+                                    type="text"
+                                    value={sub.slug}
+                                    onChange={(e) => {
+                                        const newSub = [...(formData.subCollections || [])];
+                                        newSub[index].slug = e.target.value.toLowerCase().trim().replace(/[^a-z0-9\s-]/g, '').replace(/\s+/g, '-').replace(/-+/g, '-');
+                                        setFormData(prev => ({ ...prev, subCollections: newSub }));
+                                    }}
+                                    required
+                                    className="w-full bg-transparent border-b border-white/20 py-2 text-sm text-white focus:outline-none focus:border-white transition-colors"
+                                />
+                            </div>
+                            
+                            <div className="group">
+                                <label className="block text-[10px] uppercase tracking-widest text-white/40 mb-2 font-medium">Image Upload</label>
+                                {sub.image ? (
+                                    <div className="relative aspect-video w-full bg-white/5 border border-white/10 group-hover:border-white/30 transition-all flex xl:items-center justify-center overflow-hidden h-24">
+                                        <img src={sub.image} alt="Sub-collection preview" className="w-full h-full object-cover" referrerPolicy="no-referrer" />
+                                        <button
+                                            type="button"
+                                            onClick={() => {
+                                                const newSub = [...(formData.subCollections || [])];
+                                                newSub[index].image = '';
+                                                setFormData(prev => ({ ...prev, subCollections: newSub }));
+                                            }}
+                                            className="absolute top-1 right-1 bg-red-500 hover:bg-red-400 text-white w-6 h-6 flex items-center justify-center text-xs opacity-0 group-hover:opacity-100 transition-opacity"
+                                        >
+                                            ×
+                                        </button>
+                                    </div>
+                                ) : (
+                                    <div className="relative aspect-video w-full bg-white/5 border border-white/10 border-dashed hover:border-white/30 transition-all flex flex-col items-center justify-center p-2 h-24 cursor-pointer">
+                                        {isUploading ? (
+                                            <span className="text-[9px] uppercase tracking-widest text-white/40">Uploading...</span>
+                                        ) : (
+                                            <>
+                                                <span className="text-xl font-thin text-white/40">+</span>
+                                                <span className="text-[9px] uppercase tracking-widest text-white/40 mt-1">Select File</span>
+                                                <input
+                                                    type="file"
+                                                    accept="image/*"
+                                                    onChange={(e) => handleSubImageUpload(e, index)}
+                                                    className="absolute inset-0 w-full h-full opacity-0 cursor-pointer"
+                                                />
+                                            </>
+                                        )}
+                                    </div>
+                                )}
+                            </div>
+                        </div>
+                    ))}
                 </div>
 
                 {/* Actions */}

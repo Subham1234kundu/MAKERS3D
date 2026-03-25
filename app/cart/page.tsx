@@ -112,6 +112,8 @@ export default function CartPage() {
                       alt={typeof item.images?.[0] === 'object' ? item.images[0].alt : (item.name || item.title || 'Product')}
                       fill
                       className="object-cover transition-transform duration-500 group-hover:scale-110"
+                      unoptimized={true}
+                      referrerPolicy="no-referrer"
                     />
                     <div className="absolute inset-0 border border-white/5" />
                   </Link>

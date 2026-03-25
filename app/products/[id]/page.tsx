@@ -355,6 +355,8 @@ export default function ProductDetailPage() {
                                     priority
                                     quality={90}
                                     loading="eager"
+                                    unoptimized={currentImageUrl?.startsWith('http')}
+                                    referrerPolicy="no-referrer"
                                 />
                             )}
                             <div className="absolute inset-0 border border-white/10 pointer-events-none z-0" />
@@ -430,6 +432,8 @@ export default function ProductDetailPage() {
                                                     quality={75}
                                                     sizes="64px"
                                                     draggable={false}
+                                                    unoptimized={itemUrl?.startsWith('http')}
+                                                    referrerPolicy="no-referrer"
                                                 />
                                             )}
                                         </button>

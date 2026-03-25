@@ -48,7 +48,7 @@ export async function POST(request: NextRequest) {
         }
 
         const body = await request.json();
-        const { name, description, image, slug, order } = body;
+        const { name, description, image, slug, order, subCollections } = body;
 
         if (!name || !slug) {
             return NextResponse.json({ message: 'Name and slug are required' }, { status: 400 });
@@ -68,6 +68,7 @@ export async function POST(request: NextRequest) {
             image: image || '',
             slug,
             order: order || 0,
+            subCollections: Array.isArray(subCollections) ? subCollections : [],
             createdAt: new Date(),
             updatedAt: new Date()
         });
@@ -91,7 +92,7 @@ export async function PUT(request: NextRequest) {
         }
 
         const body = await request.json();
-        const { id, name, description, image, slug, order } = body;
+        const { id, name, description, image, slug, order, subCollections } = body;
 
         if (!id) {
             return NextResponse.json({ message: 'Collection ID required' }, { status: 400 });
@@ -119,6 +120,7 @@ export async function PUT(request: NextRequest) {
         if (image !== undefined) updateData.image = image;
         if (slug) updateData.slug = slug;
         if (order !== undefined) updateData.order = Number(order);
+        if (subCollections !== undefined) updateData.subCollections = Array.isArray(subCollections) ? subCollections : [];
 
         const result = await db.collection('collections').updateOne(
             { _id: new ObjectId(id) },

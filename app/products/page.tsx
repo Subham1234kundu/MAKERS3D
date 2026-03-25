@@ -7,7 +7,8 @@ import Footer from '../components/Footer';
 import { gsap } from 'gsap';
 
 export default function ProductsPage() {
-    const [activeCategory, setActiveCategory] = useState<string>('ALL');
+    const [activeSubCategory, setActiveSubCategory] = useState<string>('ALL');
+
     const [categoryData, setCategoryData] = useState<any[]>([
         { id: 'ALL', label: 'SHOP', image: '/categories/all.png' }
     ]);
@@ -20,14 +21,25 @@ export default function ProductsPage() {
                 if (res.ok) {
                     const data = await res.json();
                     if (data && data.length > 0) {
-                        const formatted = data.map((c: any) => ({
-                            id: c.slug.toUpperCase(),
-                            label: c.name.toUpperCase(),
-                            image: c.image || '/placeholder.png'
-                        }));
+                        const subCatMap = new Map();
+                        data.forEach((c: any) => {
+                            if (c.subCollections && Array.isArray(c.subCollections)) {
+                                c.subCollections.forEach((sub: any) => {
+                                    if (!subCatMap.has(sub.slug.toUpperCase())) {
+                                        subCatMap.set(sub.slug.toUpperCase(), {
+                                            id: sub.slug.toUpperCase(),
+                                            label: sub.name.toUpperCase(),
+                                            image: sub.image || '/categories/all.png'
+                                        });
+                                    }
+                                });
+                            }
+                        });
+
+                        const uniqueSubCats = Array.from(subCatMap.values());
                         setCategoryData([
                             { id: 'ALL', label: 'SHOP', image: '/categories/all.png' },
-                            ...formatted
+                            ...uniqueSubCats
                         ]);
                     }
                 }
@@ -75,9 +87,12 @@ export default function ProductsPage() {
     }, []);
 
     // Filter products
-    const filteredProducts = activeCategory === 'ALL'
-        ? products
-        : products.filter(p => p.category?.toUpperCase() === activeCategory);
+    const filteredProducts = products.filter(p => {
+        if (activeSubCategory !== 'ALL' && p.subCategory?.toUpperCase() !== activeSubCategory) {
+            return false;
+        }
+        return true;
+    });
 
     return (
         <>
@@ -102,22 +117,23 @@ export default function ProductsPage() {
                             {categoryData.map((cat) => (
                                 <button
                                     key={cat.id}
-                                    onClick={() => setActiveCategory(cat.id)}
+                                    onClick={() => setActiveSubCategory(cat.id)}
                                     className="flex-shrink-0 flex flex-col items-center gap-3 transition-all active:scale-95 group/cat"
                                 >
-                                    <div className={`w-[60px] h-[60px] sm:w-[75px] sm:h-[75px] rounded-full flex items-center justify-center transition-all duration-500 overflow-hidden relative ${activeCategory === cat.id
+                                    <div className={`w-[60px] h-[60px] sm:w-[75px] sm:h-[75px] rounded-full flex items-center justify-center transition-all duration-500 overflow-hidden relative ${activeSubCategory === cat.id
                                         ? 'bg-white border-[3px] border-white/20 shadow-[0_0_20px_rgba(255,255,255,0.15)] scale-110'
                                         : 'bg-white/5 border border-white/10 hover:border-white/20 hover:bg-white/10'
                                         }`}>
                                         <img
                                             src={cat.image}
                                             alt={cat.label}
-                                            className={`absolute inset-0 w-full h-full object-cover transition-all duration-700 grayscale hover:grayscale-0 ${activeCategory === cat.id ? 'grayscale-0 opacity-100 scale-110' : 'opacity-60 group-hover/cat:opacity-100'
+                                            referrerPolicy="no-referrer"
+                                            className={`absolute inset-0 w-full h-full object-cover transition-all duration-700 grayscale hover:grayscale-0 ${activeSubCategory === cat.id ? 'grayscale-0 opacity-100 scale-110' : 'opacity-60 group-hover/cat:opacity-100'
                                                 }`}
                                         />
                                         <div className="absolute inset-0 bg-gradient-to-tr from-white/10 to-transparent opacity-0 group-hover/cat:opacity-100 transition-opacity pointer-events-none"></div>
                                     </div>
-                                    <span className={`text-[9px] sm:text-[10px] font-bold tracking-[0.15em] uppercase transition-colors duration-300 ${activeCategory === cat.id ? 'text-white' : 'text-white/30 group-hover/cat:text-white/60'
+                                    <span className={`text-[9px] sm:text-[10px] font-bold tracking-[0.15em] uppercase transition-colors duration-300 ${activeSubCategory === cat.id ? 'text-white' : 'text-white/30 group-hover/cat:text-white/60'
                                         }`}>
                                         {cat.id}
                                     </span>

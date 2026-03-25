@@ -6,6 +6,7 @@ interface Collection {
     id: string;
     name: string;
     slug: string;
+    subCollections?: { name: string; slug: string }[];
 }
 
 interface ProductImage {
@@ -30,6 +31,7 @@ interface ProductData {
     originalPrice: string;
     price: string;
     category: string;
+    subCategory?: string;
     sizes: string | any[];
     colors: string | any[];
     images: ProductImage[];
@@ -51,6 +53,7 @@ export default function AddProduct({ initialData, onSubmit, onCancel }: AddProdu
         originalPrice: '',
         price: '',
         category: '',
+        subCategory: '',
         sizes: '',
         colors: '',
         images: []
@@ -68,6 +71,7 @@ export default function AddProduct({ initialData, onSubmit, onCancel }: AddProdu
     const [activeColorIndex, setActiveColorIndex] = useState<number | null>(null);
 
     const [isCategoryOpen, setIsCategoryOpen] = useState(false);
+    const [isSubCategoryOpen, setIsSubCategoryOpen] = useState(false);
     const [isUploading, setIsUploading] = useState<number | string | null>(null);
     const [collections, setCollections] = useState<Collection[]>([]);
     const [isLoadingCollections, setIsLoadingCollections] = useState(true);
@@ -510,13 +514,6 @@ export default function AddProduct({ initialData, onSubmit, onCancel }: AddProdu
                                 <div className="space-y-2">
                                     <input
                                         type="text"
-                                        placeholder="IMAGE URL..."
-                                        value={formData.images[index]?.url || ''}
-                                        onChange={(e) => handleUrlChange(index, e.target.value)}
-                                        className="w-full bg-white/5 border border-white/10 px-3 py-2 text-[9px] text-white/80 focus:outline-none focus:border-white/40 transition-all tracking-widest uppercase placeholder:text-white/20"
-                                    />
-                                    <input
-                                        type="text"
                                         placeholder="ALT TEXT (SEO)..."
                                         value={formData.images[index]?.alt || ''}
                                         onChange={(e) => handleAltChange(index, e.target.value)}
@@ -573,13 +570,6 @@ export default function AddProduct({ initialData, onSubmit, onCancel }: AddProdu
                             </div>
 
                             <div className="space-y-2">
-                                <input
-                                    type="text"
-                                    placeholder="VIDEO URL..."
-                                    value={formData.video?.url || ''}
-                                    onChange={(e) => handleUrlChange('video', e.target.value)}
-                                    className="w-full bg-white/5 border border-white/10 px-3 py-2 text-[9px] text-white/80 focus:outline-none focus:border-white/40 transition-all tracking-widest uppercase placeholder:text-white/20"
-                                />
                                 <input
                                     type="text"
                                     placeholder="ALT TEXT (SEO)..."
@@ -797,13 +787,7 @@ export default function AddProduct({ initialData, onSubmit, onCancel }: AddProdu
                                                         </label>
                                                     )}
                                                 </div>
-                                                <input
-                                                    type="text"
-                                                    placeholder="IMAGE URL..."
-                                                    value={colorImages[imgIdx]?.url || ''}
-                                                    onChange={(e) => handleColorImageUrlChange(activeColorIndex, imgIdx, e.target.value)}
-                                                    className="w-full bg-white/5 border border-white/10 px-2 py-1.5 text-[8px] text-white/80 focus:outline-none focus:border-blue-500/40 transition-all tracking-widest uppercase placeholder:text-white/15"
-                                                />
+
                                                 <input
                                                     type="text"
                                                     placeholder="ALT TEXT..."
@@ -863,13 +847,7 @@ export default function AddProduct({ initialData, onSubmit, onCancel }: AddProdu
                                                 </label>
                                             )}
                                         </div>
-                                        <input
-                                            type="text"
-                                            placeholder="VIDEO URL..."
-                                            value={structuredColors[activeColorIndex]?.video?.url || ''}
-                                            onChange={(e) => handleColorImageUrlChange(activeColorIndex, 'video', e.target.value)}
-                                            className="w-full bg-white/5 border border-white/10 px-2 py-1.5 text-[8px] text-white/80 focus:outline-none focus:border-purple-500/40 transition-all tracking-widest uppercase placeholder:text-white/15"
-                                        />
+
                                         <input
                                             type="text"
                                             placeholder="ALT TEXT..."
@@ -952,7 +930,7 @@ export default function AddProduct({ initialData, onSubmit, onCancel }: AddProdu
                                             <div
                                                 key={collection.id}
                                                 onClick={() => {
-                                                    setFormData(prev => ({ ...prev, category: collection.slug.toUpperCase() }));
+                                                    setFormData(prev => ({ ...prev, category: collection.slug.toUpperCase(), subCategory: '' }));
                                                     setIsCategoryOpen(false);
                                                 }}
                                                 className="px-4 py-3 text-[10px] uppercase tracking-widest text-white/40 hover:text-white hover:bg-white/5 cursor-pointer transition-all border-b border-white/5 last:border-0"
@@ -969,6 +947,57 @@ export default function AddProduct({ initialData, onSubmit, onCancel }: AddProdu
                                 )}
                             </div>
                         </div>
+
+                        {/* Sub Collection */}
+                        {formData.category && collections.find(c => c.slug.toUpperCase() === formData.category)?.subCollections?.length ? (
+                            <div className="group relative mt-6">
+                                <label className="block text-[10px] uppercase tracking-widest text-white/40 mb-2 font-medium">
+                                    Sub Collection
+                                </label>
+
+                                <div
+                                    onClick={() => setIsSubCategoryOpen(!isSubCategoryOpen)}
+                                    className="w-full bg-transparent border-b border-white/20 py-2 text-sm text-white cursor-pointer flex justify-between items-center hover:border-white transition-colors group-hover:border-white/50"
+                                >
+                                    <span className={`${formData.subCategory ? 'text-white' : 'text-white/40'} tracking-wide font-light`}>
+                                        {formData.subCategory || 'Select Sub Collection'}
+                                    </span>
+                                    <svg
+                                        width="10"
+                                        height="6"
+                                        viewBox="0 0 10 6"
+                                        fill="none"
+                                        className={`text-white/40 transition-transform duration-300 ${isSubCategoryOpen ? 'rotate-180' : ''}`}
+                                    >
+                                        <path d="M1 1L5 5L9 1" stroke="currentColor" strokeWidth="1.5" strokeLinecap="round" strokeLinejoin="round" />
+                                    </svg>
+                                </div>
+
+                                <div className={`absolute left-0 right-0 top-full mt-2 bg-black border border-white/10 z-40 overflow-y-auto max-h-40 transition-all duration-300 origin-top shadow-2xl ${isSubCategoryOpen ? 'opacity-100 scale-y-100 translate-y-0' : 'opacity-0 scale-y-95 -translate-y-2 pointer-events-none'}`}>
+                                    <div
+                                        onClick={() => {
+                                            setFormData(prev => ({ ...prev, subCategory: '' }));
+                                            setIsSubCategoryOpen(false);
+                                        }}
+                                        className="px-4 py-3 text-[10px] uppercase tracking-widest text-white/40 hover:text-white hover:bg-white/5 cursor-pointer transition-all border-b border-white/5"
+                                    >
+                                        None
+                                    </div>
+                                    {collections.find(c => c.slug.toUpperCase() === formData.category)?.subCollections?.map((sub, idx) => (
+                                        <div
+                                            key={idx}
+                                            onClick={() => {
+                                                setFormData(prev => ({ ...prev, subCategory: sub.slug.toUpperCase() }));
+                                                setIsSubCategoryOpen(false);
+                                            }}
+                                            className="px-4 py-3 text-[10px] uppercase tracking-widest text-white/40 hover:text-white hover:bg-white/5 cursor-pointer transition-all border-b border-white/5 last:border-0"
+                                        >
+                                            {sub.name}
+                                        </div>
+                                    ))}
+                                </div>
+                            </div>
+                        ) : null}
                     </div>
 
                     {/* Right Column */}
