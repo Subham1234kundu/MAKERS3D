@@ -6,8 +6,8 @@ import { CartProvider } from "./providers/CartProvider";
 import SessionProvider from "./providers/SessionProvider";
 import CustomCursor from "./components/CustomCursor";
 import ChatButton from "./components/ChatButton";
-import LoadingScreen from "./components/LoadingScreen";
 import "./globals.css";
+import { BRAND_ALIASES, HOME_DESCRIPTION, HOME_TITLE, SITE_URL, defaultOpenGraph, defaultTwitter, jsonLd } from './lib/seo';
 
 const geistSans = Geist({
   variable: "--font-geist-sans",
@@ -19,38 +19,24 @@ const geistMono = Geist_Mono({
   subsets: ["latin"],
 });
 
-const SITE_URL = "https://makers3d.in";
-
 export const metadata: Metadata = {
   metadataBase: new URL(SITE_URL),
   title: {
-    default: "MAKERS3D | Premium 3D Creations – India's #1 3D Printing Studio",
+    default: HOME_TITLE,
     template: "%s | MAKERS3D"
   },
-  description: "MAKERS3D is India's premier 3D printing studio. Shop high-quality, professional 3D printed creations, architectural models, and elite desktop accessories. We deliver unmatched industrial-grade precision for every masterpiece.",
-  keywords: ["MAKERS3D", "Premium 3D Prints", "3D Printing India", "Architectural 3D Models", "High-Quality 3D Printing", "Desktop Accessories", "Home Decors", "Makers 3D Studio", "Elite 3D Art", "3D printed gifts", "custom 3D printing", "3D models India", "buy 3D prints online"],
+  description: HOME_DESCRIPTION,
   authors: [{ name: "MAKERS3D Team" }],
   openGraph: {
-    type: "website",
-    locale: "en_IN",
-    url: "https://makers3d.in",
-    siteName: "MAKERS3D",
-    title: "MAKERS3D | Premium 3D Creations",
-    description: "Experience the pinnacle of 3D craftsmanship. We deliver premium, industrial-grade 3D printed products across India.",
-    images: [
-      {
-        url: "/images/logo.png",
-        width: 1200,
-        height: 630,
-        alt: "MAKERS3D Logo",
-      },
-    ],
+    ...defaultOpenGraph,
+    url: SITE_URL,
+    title: HOME_TITLE,
+    description: HOME_DESCRIPTION,
   },
   twitter: {
-    card: "summary_large_image",
-    title: "MAKERS3D | Premium 3D Creations",
-    description: "Shop premium 3D printed masterpieces. High-quality art, models, and decor.",
-    images: ["/images/logo.png"],
+    ...defaultTwitter,
+    title: HOME_TITLE,
+    description: HOME_DESCRIPTION,
   },
   robots: {
     index: true,
@@ -64,8 +50,9 @@ export const metadata: Metadata = {
     },
   },
   alternates: {
-    canonical: "https://makers3d.in",
+    canonical: SITE_URL,
   },
+  verification: process.env.GOOGLE_SITE_VERIFICATION ? { google: process.env.GOOGLE_SITE_VERIFICATION } : undefined,
   icons: {
     icon: [
       { url: "/favicon.ico" },
@@ -107,22 +94,16 @@ export default function RootLayout({
           type="application/ld+json"
           suppressHydrationWarning
           dangerouslySetInnerHTML={{
-            __html: JSON.stringify({
+            __html: jsonLd({
               "@context": "https://schema.org",
-              "@type": "Store",
+              "@type": "Organization",
+              "@id": "https://makers3d.in/#organization",
               "name": "MAKERS3D",
+              "alternateName": BRAND_ALIASES,
               "url": "https://makers3d.in",
               "logo": "https://makers3d.in/images/logo.png",
-              "description": "India's premier 3D printing studio specializing in premium architectural models and elite desktop masterpieces.",
-              "address": {
-                "@type": "PostalAddress",
-                "addressCountry": "IN"
-              },
-              "potentialAction": {
-                "@type": "SearchAction",
-                "target": "https://makers3d.in/search?q={search_term_string}",
-                "query-input": "required name=search_term_string"
-              }
+              "description": HOME_DESCRIPTION,
+              "email": "studio@makers3d.in"
             })
           }}
         />
@@ -150,7 +131,6 @@ export default function RootLayout({
         className={`${geistSans.variable} ${geistMono.variable} antialiased`}
         suppressHydrationWarning
       >
-        <LoadingScreen />
         <CustomCursor />
         <div suppressHydrationWarning>
           <SessionProvider>

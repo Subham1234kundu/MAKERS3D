@@ -1,0 +1,148 @@
+{
+  "mode": "desktop",
+  "checks": {
+    "initial": {
+      "phase": "auto",
+      "y": 0,
+      "width": 1440,
+      "height": 1000,
+      "title": {
+        "top": 233.109375,
+        "bottom": 407.890625,
+        "left": 64,
+        "right": 683,
+        "height": 174.78125,
+        "width": 619
+      },
+      "visual": {
+        "top": 136,
+        "bottom": 755,
+        "left": 747,
+        "right": 1366,
+        "height": 619,
+        "width": 619
+      },
+      "details": {
+        "top": 439.890625,
+        "bottom": 657.890625,
+        "left": 64,
+        "right": 683,
+        "height": 218,
+        "width": 619
+      },
+      "runway": {
+        "top": 136,
+        "bottom": 755,
+        "left": 747,
+        "right": 1366,
+        "height": 619,
+        "width": 619
+      },
+      "photoOpacity": 0,
+      "canvas": true,
+      "scrollActive": false,
+      "distance": 0,
+      "hold": 0,
+      "sticky": "relative",
+      "overflow": false,
+      "h1Count": 1,
+      "pins": 0
+    },
+    "scrolled": {
+      "phase": "auto",
+      "y": 230,
+      "width": 1440,
+      "height": 1000,
+      "title": {
+        "top": 3.109375,
+        "bottom": 177.890625,
+        "left": 64,
+        "right": 683,
+        "height": 174.78125,
+        "width": 619
+      },
+      "visual": {
+        "top": -94,
+        "bottom": 525,
+        "left": 747,
+        "right": 1366,
+        "height": 619,
+        "width": 619
+      },
+      "details": {
+        "top": 209.890625,
+        "bottom": 427.890625,
+        "left": 64,
+        "right": 683,
+        "height": 218,
+        "width": 619
+      },
+      "runway": {
+        "top": -94,
+        "bottom": 525,
+        "left": 747,
+        "right": 1366,
+        "height": 619,
+        "width": 619
+      },
+      "photoOpacity": 0,
+      "canvas": true,
+      "scrollActive": false,
+      "distance": 0,
+      "hold": 0,
+      "sticky": "relative",
+      "overflow": false,
+      "h1Count": 1,
+      "pins": 0
+    },
+    "completed": {
+      "phase": "complete",
+      "y": 230,
+      "width": 1440,
+      "height": 1000,
+      "title": {
+        "top": 3.109375,
+        "bottom": 177.890625,
+        "left": 64,
+        "right": 683,
+        "height": 174.78125,
+        "width": 619
+      },
+      "visual": {
+        "top": -94,
+        "bottom": 525,
+        "left": 747,
+        "right": 1366,
+        "height": 619,
+        "width": 619
+      },
+      "details": {
+        "top": 209.890625,
+        "bottom": 427.890625,
+        "left": 64,
+        "right": 683,
+        "height": 218,
+        "width": 619
+      },
+      "runway": {
+        "top": -94,
+        "bottom": 525,
+        "left": 747,
+        "right": 1366,
+        "height": 619,
+        "width": 619
+      },
+      "photoOpacity": 1,
+      "canvas": false,
+      "scrollActive": false,
+      "distance": 0,
+      "hold": 0,
+      "sticky": "relative",
+      "overflow": false,
+      "h1Count": 1,
+      "pins": 0
+    }
+  },
+  "errors": [],
+  "passed": true
+}

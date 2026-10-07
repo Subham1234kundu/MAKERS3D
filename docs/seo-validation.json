@@ -1,0 +1,140 @@
+{
+  "pages": [
+    {
+      "path": "/",
+      "status": 200,
+      "title": "MAKERS3D | 3D Printing Services & Products in India",
+      "description": "Explore MAKERS3D for custom 3D printing, scale models, CAD design and prototypes in India. Shop 3D printed decor, figurines, lamps and gifts.",
+      "canonical": "https://makers3d.in",
+      "schemaTypes": [
+        "Organization",
+        "WebSite",
+        "WebPage",
+        "ItemList",
+        "Service",
+        "Service",
+        "Service"
+      ]
+    },
+    {
+      "path": "/services",
+      "status": 200,
+      "title": "3D Printing & Prototyping Services in India | MAKERS3D",
+      "description": "Get custom 3D printing, scale models, CAD design, prototypes, 3D scanning and batch production in India. Share your project with MAKERS3D for a quote.",
+      "canonical": "https://makers3d.in/services",
+      "schemaTypes": [
+        "Organization",
+        "CollectionPage",
+        "BreadcrumbList",
+        "ItemList"
+      ]
+    },
+    {
+      "path": "/products",
+      "status": 200,
+      "title": "3D Printed Products, Decor & Gifts | MAKERS3D",
+      "description": "Shop MAKERS3D 3D printed products, including figurines, lamps, photo frames and gifts. Browse designs, product details and prices online.",
+      "canonical": "https://makers3d.in/products",
+      "schemaTypes": [
+        "Organization",
+        "CollectionPage",
+        "ItemList",
+        "BreadcrumbList"
+      ]
+    },
+    {
+      "path": "/collections",
+      "status": 200,
+      "title": "3D Printed Collections: Figurines, Lamps & Frames | MAKERS3D",
+      "description": "Explore MAKERS3D collections of 3D printed figurines, table lamps and photo frames. Filter by product type to find decor or a gift for your space.",
+      "canonical": "https://makers3d.in/collections",
+      "schemaTypes": [
+        "Organization",
+        "CollectionPage",
+        "ItemList",
+        "BreadcrumbList"
+      ]
+    }
+  ],
+  "products": [
+    {
+      "path": "/products/69c467086b6b49a96026fabc",
+      "title": "RAM JI 3D PHOTO FRAME - ARROW OF DESTINY | MAKERS3D",
+      "description": "Shop RAM JI 3D PHOTO FRAME - ARROW OF DESTINY by MAKERS3D. View photos, prices and details of this 3D printed product, then order online.",
+      "canonical": "https://makers3d.in/products/69c467086b6b49a96026fabc",
+      "price": 2497,
+      "currency": "INR",
+      "images": 5,
+      "serverRendered": true
+    },
+    {
+      "path": "/products/69c40e5e027bfc54c4976802",
+      "title": "RAM JI FIGURINE - ARROW OF DESTINY | MAKERS3D",
+      "description": "Shop RAM JI FIGURINE - ARROW OF DESTINY by MAKERS3D. View photos, prices and details of this 3D printed product, then order online.",
+      "canonical": "https://makers3d.in/products/69c40e5e027bfc54c4976802",
+      "price": 449,
+      "currency": "INR",
+      "images": 5,
+      "serverRendered": true
+    },
+    {
+      "path": "/products/69917ddf4fa208d11abde0d6",
+      "title": "Shiva Temple Lamp | MAKERS3D",
+      "description": "Shop Shiva Temple Lamp by MAKERS3D. View photos, prices and details of this 3D printed product, then order online.",
+      "canonical": "https://makers3d.in/products/69917ddf4fa208d11abde0d6",
+      "price": 1999,
+      "currency": "INR",
+      "images": 6,
+      "serverRendered": true
+    },
+    {
+      "path": "/products/698f239ee853bfa7e1958bef",
+      "title": "Lord Shiva Car Dashboard Decor - Marble Finish Design | MAKERS3D",
+      "description": "Shop Lord Shiva Car Dashboard Decor - Marble Finish Design by MAKERS3D. View photos, prices and details of this 3D printed product, then order online.",
+      "canonical": "https://makers3d.in/products/698f239ee853bfa7e1958bef",
+      "price": 499,
+      "currency": "INR",
+      "images": 4,
+      "serverRendered": true
+    }
+  ],
+  "crawler": {
+    "/products/not-a-product": {
+      "status": 404,
+      "noindex": true
+    },
+    "/products/000000000000000000000000": {
+      "status": 404,
+      "noindex": true
+    },
+    "/home": {
+      "status": 308,
+      "destination": "/"
+    },
+    "/products/divine": {
+      "status": 308,
+      "destination": "/products"
+    },
+    "sitemap": {
+      "status": 200,
+      "urlCount": 17,
+      "realProductDates": true,
+      "noInvalidCategories": true
+    },
+    "robots": {
+      "status": 200,
+      "productsCrawlable": true
+    }
+  },
+  "socialImage": {
+    "width": 1200,
+    "height": 630
+  },
+  "passed": true,
+  "build": {
+    "passed": true,
+    "nextVersion": "15.5.9",
+    "isolated": true,
+    "compiledInSeconds": 48
+  }
+}

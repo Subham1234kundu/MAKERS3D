@@ -1,0 +1,67 @@
+{
+  "checks": [
+    {
+      "viewport": 1440,
+      "font": 260.4,
+      "wordWidth": 1297.1875,
+      "available": 1302,
+      "overflow": false,
+      "cursorDisplay": "flex",
+      "word": {
+        "x": 66.40625,
+        "y": 675.5625,
+        "width": 1297.1875,
+        "height": 260.40625
+      },
+      "hoveredCursor": {
+        "width": 120,
+        "large": true
+      },
+      "cursorAfterLeaving": 15
+    },
+    {
+      "viewport": 390,
+      "font": 70,
+      "wordWidth": 348.703125,
+      "available": 350,
+      "overflow": false,
+      "cursorDisplay": "none",
+      "word": {
+        "x": 20.640625,
+        "y": 903.234375,
+        "width": 348.703125,
+        "height": 70
+      }
+    },
+    {
+      "viewport": 320,
+      "font": 56,
+      "wordWidth": 278.96875,
+      "available": 280,
+      "overflow": false,
+      "cursorDisplay": "none",
+      "word": {
+        "x": 20.515625,
+        "y": 972.4375,
+        "width": 278.96875,
+        "height": 56
+      }
+    },
+    {
+      "viewport": 1920,
+      "font": 262.4,
+      "wordWidth": 1307.140625,
+      "available": 1312,
+      "overflow": false,
+      "cursorDisplay": "flex",
+      "word": {
+        "x": 301.421875,
+        "y": 753.21875,
+        "width": 1307.140625,
+        "height": 262.40625
+      }
+    }
+  ],
+  "errors": [],
+  "passed": true
+}

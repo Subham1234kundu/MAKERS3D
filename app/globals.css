@@ -1,4 +1,8 @@
-@import "tailwindcss";
+@import "tailwindcss" source("../");
+
+/* Preview artifacts are not application sources and must not trigger rebuilds. */
+@source not "../tmp";
+@source not "../docs";
 
 :root {
   --background: #ffffff;
@@ -163,23 +167,23 @@ body {
 }
 
 ::-webkit-scrollbar-track {
-  background: #000000;
+  background: #ffffff;
 }
 
 ::-webkit-scrollbar-thumb {
-  background: #2a2a2a;
+  background: #d4d4d4;
   border-radius: 20px;
-  border: 1px solid #000000;
+  border: 1px solid #ffffff;
 }
 
 ::-webkit-scrollbar-thumb:hover {
-  background: #ffffff;
+  background: #000000;
 }
 
 /* Firefox */
 * {
   scrollbar-width: thin;
-  scrollbar-color: #2a2a2a #000000;
+  scrollbar-color: #d4d4d4 #ffffff;
 }
 
 /* Navbar Icon Styles */
@@ -516,4 +520,455 @@ img[src*="next"],
     scroll-behavior: smooth;
     overscroll-behavior-x: contain;
   }
+}
+/* ==========================================================================
+   MAKERS3D — ENTERPRISE DESIGN SYSTEM
+   Monochrome · zero-radius · glass · metamorphic
+   ========================================================================== */
+
+:root {
+  /* Surfaces — pure monochrome ramp */
+  --m3-void: #ffffff;
+  --m3-base: #fafafa;
+  --m3-raise: #f5f5f5;
+  --m3-panel: #f1f1f1;
+
+  /* Ink */
+  --m3-ink: #000000;
+  --m3-ink-70: rgba(0, 0, 0, 0.70);
+  --m3-ink-45: rgba(0, 0, 0, 0.45);
+  --m3-ink-28: rgba(0, 0, 0, 0.28);
+  --m3-ink-14: rgba(0, 0, 0, 0.14);
+
+  /* Hairlines — the structural grammar of the page */
+  --m3-line: rgba(0, 0, 0, 0.10);
+  --m3-line-soft: rgba(0, 0, 0, 0.055);
+  --m3-line-hard: rgba(0, 0, 0, 0.18);
+
+  /* Glass */
+  --m3-glass: rgba(0, 0, 0, 0.025);
+  --m3-glass-hi: rgba(0, 0, 0, 0.05);
+
+  /* Rhythm */
+  --m3-gutter: clamp(20px, 5vw, 64px);
+  --m3-shell: 1440px;
+
+  /* Motion — one curve, used everywhere */
+  --m3-ease: cubic-bezier(0.16, 1, 0.3, 1);
+}
+
+/* --- Shell ---------------------------------------------------------------- */
+
+.m3-shell {
+  width: 100%;
+  max-width: var(--m3-shell);
+  margin-inline: auto;
+  padding-inline: var(--m3-gutter);
+}
+
+/* Vertical hairlines that run the full page height, framing the shell.
+   This is the "enterprise grid" cue borrowed from the Figma layout. */
+.m3-rails {
+  position: absolute;
+  inset: 0;
+  pointer-events: none;
+  z-index: 0;
+}
+
+.m3-rails::before,
+.m3-rails::after {
+  content: '';
+  position: absolute;
+  top: 0;
+  bottom: 0;
+  width: 1px;
+  background: var(--m3-line-soft);
+}
+
+.m3-rails::before { left: var(--m3-gutter); }
+.m3-rails::after { right: var(--m3-gutter); }
+
+/* --- Type ----------------------------------------------------------------- */
+
+.m3-display {
+  font-weight: 300;
+  letter-spacing: -0.035em;
+  line-height: 0.96;
+  text-wrap: balance;
+}
+
+/* Landing redesign: opt-in styles leave the live collection unchanged. */
+.landing-skip {
+  position: fixed;
+  left: 20px;
+  top: 12px;
+  z-index: 100000;
+  padding: 12px 18px;
+  background: #111;
+  color: #fff;
+  transform: translateY(-200%);
+}
+
+.landing-skip:focus {
+  transform: translateY(0);
+}
+
+.m3-landing header nav a {
+  color: #555;
+}
+
+.m3-landing footer .m3-lede,
+.m3-landing footer ul a,
+.m3-landing footer a[href^="mailto:"],
+.m3-landing footer .m3-eyebrow {
+  color: #595959;
+}
+
+.m3-landing footer a:focus-visible {
+  outline: 2px solid #111;
+  outline-offset: 5px;
+}
+
+.landing-title {
+  font-weight: 400;
+  letter-spacing: -0.055em;
+  line-height: 1.15;
+}
+
+/* Give the hero's SplitText line masks room for ascenders and descenders. */
+.lp-hero-title > div {
+  overflow-clip-margin: 0.12em;
+}
+
+/* Native sticky keeps the mobile photo visible without changing scroll position. */
+@media (max-width: 1023px) {
+  body:has(.m3-landing) {
+    overflow-x: clip;
+  }
+
+  .landing-hero [data-hero-runway][data-scroll-active] {
+    height: calc(var(--hero-visual-height) + var(--hero-scroll-distance) + var(--hero-scroll-hold));
+  }
+
+  .landing-hero [data-scroll-active] [data-hero-visual] {
+    position: sticky;
+    top: 88px;
+  }
+}
+
+.landing-heading {
+  font-size: clamp(1.875rem, 4.2vw, 3.6rem);
+  font-weight: 400;
+  letter-spacing: -0.045em;
+  line-height: 1.1;
+}
+
+/* Reference-led spacing is opt-in so the product collection stays intact. */
+.landing-space {
+  padding-block: 48px;
+}
+
+.landing-intro {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  gap: 16px;
+  max-width: 772px;
+  margin-inline: auto;
+  text-align: center;
+}
+
+.landing-intro .lp-eyebrow {
+  justify-content: center;
+}
+
+@media (min-width: 640px) {
+  .landing-space { padding-block: 80px; }
+}
+
+@media (min-width: 1024px) {
+  .landing-space { padding-block: 112px; }
+}
+
+.landing-copy {
+  color: #595959;
+  font-weight: 400;
+  line-height: 1.75;
+  text-wrap: pretty;
+}
+
+.landing-section .m3-eyebrow {
+  color: #626262;
+  letter-spacing: 0.2em;
+}
+
+.landing-section,
+.landing-hero,
+.landing-faq {
+  scroll-margin-top: 96px;
+}
+
+.landing-faq summary::-webkit-details-marker {
+  display: none;
+}
+
+.landing-faq summary:focus-visible {
+  outline: 2px solid #111;
+  outline-offset: 5px;
+}
+
+.landing-faq details[open] .landing-faq-plus::after {
+  display: none;
+}
+
+.m3-eyebrow {
+  font-family: var(--font-geist-mono), ui-monospace, monospace;
+  font-size: 10px;
+  font-weight: 400;
+  letter-spacing: 0.34em;
+  text-transform: uppercase;
+  color: var(--m3-ink-28);
+}
+
+/* Wide tracking wraps short labels onto two lines on phones. */
+@media (max-width: 639px) {
+  .m3-eyebrow { letter-spacing: 0.2em; }
+}
+
+.m3-lede {
+  font-weight: 300;
+  line-height: 1.65;
+  color: var(--m3-ink-45);
+  text-wrap: pretty;
+}
+
+/* --- Surfaces: hard-edged glass, never rounded ---------------------------- */
+
+/* Translucent liquid glass: refracts whatever sits behind it. No border —
+   the surface is defined by the blur, the inner light and the drop shadow. */
+.m3-glass {
+  position: relative;
+  background: linear-gradient(150deg,
+      rgba(255, 255, 255, 0.55) 0%,
+      rgba(255, 255, 255, 0.26) 52%,
+      rgba(255, 255, 255, 0.38) 100%);
+  backdrop-filter: blur(28px) saturate(165%);
+  -webkit-backdrop-filter: blur(28px) saturate(165%);
+  border: 0;
+  border-radius: 0;
+  box-shadow:
+    inset 0 1px 0 rgba(255, 255, 255, 0.85),
+    inset 0 -1px 0 rgba(255, 255, 255, 0.35),
+    0 16px 44px rgba(0, 0, 0, 0.10);
+}
+
+/* Specular sheen across the top edge — polished glass, not a card border. */
+.m3-glass::before {
+  content: '';
+  position: absolute;
+  inset: 0 0 auto 0;
+  height: 1px;
+  background: linear-gradient(90deg, transparent, rgba(255, 255, 255, 0.9), transparent);
+  pointer-events: none;
+}
+
+/* --- Metamorphosis: the slow dissolve between states ---------------------- */
+
+.m3-morph {
+  transition:
+    background-color 0.9s var(--m3-ease),
+    border-color 0.9s var(--m3-ease),
+    transform 0.9s var(--m3-ease),
+    opacity 0.9s var(--m3-ease),
+    letter-spacing 0.9s var(--m3-ease);
+}
+
+/* A sheet of light that sweeps across on hover and re-forms the surface. */
+.m3-sheen {
+  position: relative;
+  overflow: hidden;
+}
+
+.m3-sheen::after {
+  content: '';
+  position: absolute;
+  inset: 0;
+  background: linear-gradient(115deg, transparent 38%, rgba(0, 0, 0, 0.05) 50%, transparent 62%);
+  transform: translateX(-120%);
+  transition: transform 1.1s var(--m3-ease);
+  pointer-events: none;
+}
+
+.m3-sheen:hover::after { transform: translateX(120%); }
+
+/* --- Reveal on scroll ----------------------------------------------------- */
+
+.m3-reveal {
+  opacity: 0;
+  transform: translateY(26px);
+  transition: opacity 1.1s var(--m3-ease), transform 1.1s var(--m3-ease);
+  will-change: opacity, transform;
+}
+
+.m3-reveal.is-in {
+  opacity: 1;
+  transform: none;
+}
+
+/* --- Marquee -------------------------------------------------------------- */
+
+@keyframes m3-drift {
+  from { transform: translateX(0); }
+  to   { transform: translateX(-100%); }
+}
+
+.m3-drift {
+  animation: m3-drift 46s linear infinite;
+}
+
+.m3-drift-slow {
+  animation: m3-drift 74s linear infinite;
+}
+
+/* --- Blueprint field: the faint technical grid behind the hero ------------ */
+
+.m3-blueprint {
+  background-image:
+    linear-gradient(var(--m3-line-soft) 1px, transparent 1px),
+    linear-gradient(90deg, var(--m3-line-soft) 1px, transparent 1px);
+  background-size: 72px 72px;
+  mask-image: radial-gradient(ellipse 78% 62% at 50% 38%, #000 0%, transparent 76%);
+  -webkit-mask-image: radial-gradient(ellipse 78% 62% at 50% 38%, #000 0%, transparent 76%);
+}
+
+/* --- Zero-radius enforcement for the enterprise surface ------------------- */
+
+.m3-page img,
+.m3-page figure,
+.m3-page video,
+.m3-page canvas {
+  border-radius: 0 !important;
+}
+
+@media (prefers-reduced-motion: reduce) {
+  .m3-drift,
+  .m3-drift-slow { animation: none; }
+
+  .m3-reveal {
+    opacity: 1;
+    transform: none;
+    transition: none;
+  }
+}
+
+/* Hero lattice rotation (kept global so it applies to SVG children). */
+@keyframes m3-spin {
+  from { transform: rotate(0deg); }
+  to   { transform: rotate(360deg); }
+}
+
+@media (prefers-reduced-motion: reduce) {
+  [style*="m3-spin"] { animation: none !important; }
+}
+
+/* --- GSAP intros (LandingMotion / PageMotion) ----------------------------- */
+
+/* The masthead stays hidden until GSAP has set its start state, so
+   server-rendered text never flashes before the intro. Scoped to
+   scripting-enabled so the content is still visible without JS. The nav is
+   deliberately left out: it is always static. */
+@media (scripting: enabled) {
+  .lp-motion .lp-intro {
+    visibility: hidden;
+  }
+}
+
+/* --- Chat button ----------------------------------------------------------- */
+
+/* Same corner on every screen, clear of the iPhone home indicator. */
+.chat-fab {
+  --chat-button-size: 44px;
+  --chat-button-gap: 12px;
+  bottom: calc(1.5rem + env(safe-area-inset-bottom));
+}
+
+.chat-social-options {
+  position: absolute;
+  right: 0;
+  bottom: calc(100% + var(--chat-button-gap));
+  left: 0;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  gap: var(--chat-button-gap);
+  pointer-events: none;
+}
+
+.chat-fab[data-chat-state="open"] .chat-social-options {
+  pointer-events: auto;
+}
+
+.chat-social-item {
+  visibility: hidden;
+  opacity: 0;
+  transform: translateY(calc(var(--chat-step) * (var(--chat-button-size) + var(--chat-button-gap)))) scale(0.6);
+  transition:
+    transform 280ms cubic-bezier(0.16, 1, 0.3, 1),
+    opacity 230ms ease,
+    visibility 0s linear 360ms;
+}
+
+.chat-social-whatsapp { --chat-step: 2; }
+.chat-social-instagram {
+  --chat-step: 1;
+  transition-delay: 50ms, 50ms, 360ms;
+}
+
+.chat-fab[data-chat-state="open"] .chat-social-item {
+  visibility: visible;
+  opacity: 1;
+  transform: translateY(0) scale(1);
+  transition-delay: 0s;
+}
+
+.chat-fab[data-chat-state="open"] .chat-social-whatsapp {
+  transition-delay: 70ms, 70ms, 0s;
+}
+
+.chat-toggle::before {
+  position: absolute;
+  z-index: -1;
+  inset: 0;
+  border: 1px solid rgb(0 0 0 / 50%);
+  border-radius: inherit;
+  content: '';
+  opacity: 0;
+  pointer-events: none;
+}
+
+.chat-fab[data-chat-state="closed"] .chat-toggle::before {
+  animation: chat-contact-ping 1s cubic-bezier(0, 0, 0.2, 1) infinite;
+}
+
+@keyframes chat-contact-ping {
+  0% { transform: scale(1); opacity: 0.2; }
+  75%, 100% { transform: scale(2); opacity: 0; }
+}
+
+@media (prefers-reduced-motion: reduce) {
+  .chat-social-item { transition: none; }
+  .chat-toggle::before { animation: none !important; }
+}
+
+@media (min-width: 640px) {
+  .chat-fab {
+    --chat-button-size: 56px;
+    bottom: calc(2rem + env(safe-area-inset-bottom));
+  }
+}
+
+/* Older storefront pages float a bottom icon bar on phones; lift the button
+   above it only while that bar is shown and wide enough to reach the corner. */
+@media (max-width: 639px) {
+  html[data-bottom-nav] .chat-fab { bottom: calc(8rem + env(safe-area-inset-bottom)); }
 }

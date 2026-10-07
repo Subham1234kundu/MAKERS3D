@@ -1,0 +1,1654 @@
+{
+  "desktop": {
+    "initial": {
+      "phase": "auto",
+      "photoOpacity": 0,
+      "canvas": true,
+      "y": 0,
+      "width": 1440,
+      "height": 1000,
+      "title": {
+        "top": 233.109375,
+        "bottom": 407.890625,
+        "height": 174.78125,
+        "width": 619
+      },
+      "visual": {
+        "top": 136,
+        "bottom": 755,
+        "height": 619,
+        "width": 619
+      },
+      "details": {
+        "top": 439.890625,
+        "bottom": 657.890625,
+        "height": 218,
+        "width": 619
+      },
+      "runway": {
+        "top": 136,
+        "bottom": 755,
+        "height": 619,
+        "width": 619
+      },
+      "scrollActive": false,
+      "distance": 0,
+      "sticky": "relative",
+      "overflow": false,
+      "navLinks": [
+        {
+          "text": "Makers3D",
+          "href": "/",
+          "current": null
+        },
+        {
+          "text": "Services",
+          "href": "/services",
+          "current": null
+        },
+        {
+          "text": "Industries",
+          "href": "/industries",
+          "current": null
+        },
+        {
+          "text": "Partners",
+          "href": "/partner",
+          "current": null
+        },
+        {
+          "text": "About Us",
+          "href": "/about",
+          "current": null
+        },
+        {
+          "text": "",
+          "href": "/login",
+          "current": null
+        },
+        {
+          "text": "",
+          "href": "/cart",
+          "current": null
+        },
+        {
+          "text": "Our Collection",
+          "href": "/collections",
+          "current": null
+        }
+      ],
+      "footerEmail": [
+        {
+          "text": "studio@makers3d.in",
+          "href": "mailto:studio@makers3d.in"
+        }
+      ],
+      "heroAction": [
+        {
+          "text": "Our Collection",
+          "href": "/collections"
+        },
+        {
+          "text": "Explore Services",
+          "href": "/services"
+        }
+      ],
+      "organizationEmail": "studio@makers3d.in"
+    },
+    "scrolled": {
+      "phase": "auto",
+      "photoOpacity": 0,
+      "canvas": true,
+      "y": 180,
+      "width": 1440,
+      "height": 1000,
+      "title": {
+        "top": 53.109375,
+        "bottom": 227.890625,
+        "height": 174.78125,
+        "width": 619
+      },
+      "visual": {
+        "top": -44,
+        "bottom": 575,
+        "height": 619,
+        "width": 619
+      },
+      "details": {
+        "top": 259.890625,
+        "bottom": 477.890625,
+        "height": 218,
+        "width": 619
+      },
+      "runway": {
+        "top": -44,
+        "bottom": 575,
+        "height": 619,
+        "width": 619
+      },
+      "scrollActive": false,
+      "distance": 0,
+      "sticky": "relative",
+      "overflow": false,
+      "navLinks": [
+        {
+          "text": "Makers3D",
+          "href": "/",
+          "current": null
+        },
+        {
+          "text": "Services",
+          "href": "/services",
+          "current": null
+        },
+        {
+          "text": "Industries",
+          "href": "/industries",
+          "current": null
+        },
+        {
+          "text": "Partners",
+          "href": "/partner",
+          "current": null
+        },
+        {
+          "text": "About Us",
+          "href": "/about",
+          "current": null
+        },
+        {
+          "text": "",
+          "href": "/login",
+          "current": null
+        },
+        {
+          "text": "",
+          "href": "/cart",
+          "current": null
+        },
+        {
+          "text": "Our Collection",
+          "href": "/collections",
+          "current": null
+        }
+      ],
+      "footerEmail": [
+        {
+          "text": "studio@makers3d.in",
+          "href": "mailto:studio@makers3d.in"
+        }
+      ],
+      "heroAction": [
+        {
+          "text": "Our Collection",
+          "href": "/collections"
+        },
+        {
+          "text": "Explore Services",
+          "href": "/services"
+        }
+      ],
+      "organizationEmail": "studio@makers3d.in"
+    },
+    "firstPhoto": {
+      "phase": "auto",
+      "photoOpacity": 1,
+      "canvas": true,
+      "y": 0,
+      "width": 1440,
+      "height": 1000,
+      "title": {
+        "top": 233.109375,
+        "bottom": 407.890625,
+        "height": 174.78125,
+        "width": 619
+      },
+      "visual": {
+        "top": 136,
+        "bottom": 755,
+        "height": 619,
+        "width": 619
+      },
+      "details": {
+        "top": 439.890625,
+        "bottom": 657.890625,
+        "height": 218,
+        "width": 619
+      },
+      "runway": {
+        "top": 136,
+        "bottom": 755,
+        "height": 619,
+        "width": 619
+      },
+      "scrollActive": false,
+      "distance": 0,
+      "sticky": "relative",
+      "overflow": false,
+      "navLinks": [
+        {
+          "text": "Makers3D",
+          "href": "/",
+          "current": null
+        },
+        {
+          "text": "Services",
+          "href": "/services",
+          "current": null
+        },
+        {
+          "text": "Industries",
+          "href": "/industries",
+          "current": null
+        },
+        {
+          "text": "Partners",
+          "href": "/partner",
+          "current": null
+        },
+        {
+          "text": "About Us",
+          "href": "/about",
+          "current": null
+        },
+        {
+          "text": "",
+          "href": "/login",
+          "current": null
+        },
+        {
+          "text": "",
+          "href": "/cart",
+          "current": null
+        },
+        {
+          "text": "Our Collection",
+          "href": "/collections",
+          "current": null
+        }
+      ],
+      "footerEmail": [
+        {
+          "text": "studio@makers3d.in",
+          "href": "mailto:studio@makers3d.in"
+        }
+      ],
+      "heroAction": [
+        {
+          "text": "Our Collection",
+          "href": "/collections"
+        },
+        {
+          "text": "Explore Services",
+          "href": "/services"
+        }
+      ],
+      "organizationEmail": "studio@makers3d.in"
+    },
+    "restarted": {
+      "phase": "auto",
+      "photoOpacity": 0,
+      "canvas": true,
+      "y": 0,
+      "width": 1440,
+      "height": 1000,
+      "title": {
+        "top": 233.109375,
+        "bottom": 407.890625,
+        "height": 174.78125,
+        "width": 619
+      },
+      "visual": {
+        "top": 136,
+        "bottom": 755,
+        "height": 619,
+        "width": 619
+      },
+      "details": {
+        "top": 439.890625,
+        "bottom": 657.890625,
+        "height": 218,
+        "width": 619
+      },
+      "runway": {
+        "top": 136,
+        "bottom": 755,
+        "height": 619,
+        "width": 619
+      },
+      "scrollActive": false,
+      "distance": 0,
+      "sticky": "relative",
+      "overflow": false,
+      "navLinks": [
+        {
+          "text": "Makers3D",
+          "href": "/",
+          "current": null
+        },
+        {
+          "text": "Services",
+          "href": "/services",
+          "current": null
+        },
+        {
+          "text": "Industries",
+          "href": "/industries",
+          "current": null
+        },
+        {
+          "text": "Partners",
+          "href": "/partner",
+          "current": null
+        },
+        {
+          "text": "About Us",
+          "href": "/about",
+          "current": null
+        },
+        {
+          "text": "",
+          "href": "/login",
+          "current": null
+        },
+        {
+          "text": "",
+          "href": "/cart",
+          "current": null
+        },
+        {
+          "text": "Our Collection",
+          "href": "/collections",
+          "current": null
+        }
+      ],
+      "footerEmail": [
+        {
+          "text": "studio@makers3d.in",
+          "href": "mailto:studio@makers3d.in"
+        }
+      ],
+      "heroAction": [
+        {
+          "text": "Our Collection",
+          "href": "/collections"
+        },
+        {
+          "text": "Explore Services",
+          "href": "/services"
+        }
+      ],
+      "organizationEmail": "studio@makers3d.in"
+    },
+    "secondPhoto": {
+      "phase": "auto",
+      "photoOpacity": 1,
+      "canvas": true,
+      "y": 0,
+      "width": 1440,
+      "height": 1000,
+      "title": {
+        "top": 233.109375,
+        "bottom": 407.890625,
+        "height": 174.78125,
+        "width": 619
+      },
+      "visual": {
+        "top": 136,
+        "bottom": 755,
+        "height": 619,
+        "width": 619
+      },
+      "details": {
+        "top": 439.890625,
+        "bottom": 657.890625,
+        "height": 218,
+        "width": 619
+      },
+      "runway": {
+        "top": 136,
+        "bottom": 755,
+        "height": 619,
+        "width": 619
+      },
+      "scrollActive": false,
+      "distance": 0,
+      "sticky": "relative",
+      "overflow": false,
+      "navLinks": [
+        {
+          "text": "Makers3D",
+          "href": "/",
+          "current": null
+        },
+        {
+          "text": "Services",
+          "href": "/services",
+          "current": null
+        },
+        {
+          "text": "Industries",
+          "href": "/industries",
+          "current": null
+        },
+        {
+          "text": "Partners",
+          "href": "/partner",
+          "current": null
+        },
+        {
+          "text": "About Us",
+          "href": "/about",
+          "current": null
+        },
+        {
+          "text": "",
+          "href": "/login",
+          "current": null
+        },
+        {
+          "text": "",
+          "href": "/cart",
+          "current": null
+        },
+        {
+          "text": "Our Collection",
+          "href": "/collections",
+          "current": null
+        }
+      ],
+      "footerEmail": [
+        {
+          "text": "studio@makers3d.in",
+          "href": "mailto:studio@makers3d.in"
+        }
+      ],
+      "heroAction": [
+        {
+          "text": "Our Collection",
+          "href": "/collections"
+        },
+        {
+          "text": "Explore Services",
+          "href": "/services"
+        }
+      ],
+      "organizationEmail": "studio@makers3d.in"
+    },
+    "resizedFromMobile": {
+      "phase": "auto",
+      "photoOpacity": 1,
+      "canvas": true,
+      "y": 0,
+      "width": 1440,
+      "height": 1000,
+      "title": {
+        "top": 233.109375,
+        "bottom": 407.890625,
+        "height": 174.78125,
+        "width": 619
+      },
+      "visual": {
+        "top": 136,
+        "bottom": 755,
+        "height": 619,
+        "width": 619
+      },
+      "details": {
+        "top": 439.890625,
+        "bottom": 657.890625,
+        "height": 218,
+        "width": 619
+      },
+      "runway": {
+        "top": 136,
+        "bottom": 755,
+        "height": 619,
+        "width": 619
+      },
+      "scrollActive": false,
+      "distance": 0,
+      "sticky": "relative",
+      "overflow": false,
+      "navLinks": [
+        {
+          "text": "Makers3D",
+          "href": "/",
+          "current": null
+        },
+        {
+          "text": "Services",
+          "href": "/services",
+          "current": null
+        },
+        {
+          "text": "Industries",
+          "href": "/industries",
+          "current": null
+        },
+        {
+          "text": "Partners",
+          "href": "/partner",
+          "current": null
+        },
+        {
+          "text": "About Us",
+          "href": "/about",
+          "current": null
+        },
+        {
+          "text": "",
+          "href": "/login",
+          "current": null
+        },
+        {
+          "text": "",
+          "href": "/cart",
+          "current": null
+        },
+        {
+          "text": "Our Collection",
+          "href": "/collections",
+          "current": null
+        }
+      ],
+      "footerEmail": [
+        {
+          "text": "studio@makers3d.in",
+          "href": "mailto:studio@makers3d.in"
+        }
+      ],
+      "heroAction": [
+        {
+          "text": "Our Collection",
+          "href": "/collections"
+        },
+        {
+          "text": "Explore Services",
+          "href": "/services"
+        }
+      ],
+      "organizationEmail": "studio@makers3d.in"
+    }
+  },
+  "mobile": {
+    "initial": {
+      "phase": "scroll",
+      "photoOpacity": 0,
+      "canvas": true,
+      "y": 0,
+      "width": 390,
+      "height": 844,
+      "title": {
+        "top": 88,
+        "bottom": 180,
+        "height": 92,
+        "width": 350
+      },
+      "visual": {
+        "top": 204,
+        "bottom": 544,
+        "height": 340,
+        "width": 340
+      },
+      "details": {
+        "top": 1212.59375,
+        "bottom": 1478.09375,
+        "height": 265.5,
+        "width": 350
+      },
+      "runway": {
+        "top": 204,
+        "bottom": 1188.59375,
+        "height": 984.59375,
+        "width": 350
+      },
+      "scrollActive": true,
+      "distance": 548.6,
+      "sticky": "sticky",
+      "overflow": false,
+      "navLinks": [
+        {
+          "text": "Makers3D",
+          "href": "/",
+          "current": null
+        },
+        {
+          "text": "Services",
+          "href": "/services",
+          "current": null
+        },
+        {
+          "text": "Industries",
+          "href": "/industries",
+          "current": null
+        },
+        {
+          "text": "Partners",
+          "href": "/partner",
+          "current": null
+        },
+        {
+          "text": "About Us",
+          "href": "/about",
+          "current": null
+        },
+        {
+          "text": "",
+          "href": "/login",
+          "current": null
+        },
+        {
+          "text": "",
+          "href": "/cart",
+          "current": null
+        },
+        {
+          "text": "Our Collection",
+          "href": "/collections",
+          "current": null
+        }
+      ],
+      "footerEmail": [
+        {
+          "text": "studio@makers3d.in",
+          "href": "mailto:studio@makers3d.in"
+        }
+      ],
+      "heroAction": [
+        {
+          "text": "Our Collection",
+          "href": "/collections"
+        },
+        {
+          "text": "Explore Services",
+          "href": "/services"
+        }
+      ],
+      "organizationEmail": "studio@makers3d.in"
+    },
+    "idle": {
+      "phase": "scroll",
+      "photoOpacity": 0,
+      "canvas": true,
+      "y": 0,
+      "width": 390,
+      "height": 844,
+      "title": {
+        "top": 88,
+        "bottom": 180,
+        "height": 92,
+        "width": 350
+      },
+      "visual": {
+        "top": 204,
+        "bottom": 544,
+        "height": 340,
+        "width": 340
+      },
+      "details": {
+        "top": 1212.59375,
+        "bottom": 1478.09375,
+        "height": 265.5,
+        "width": 350
+      },
+      "runway": {
+        "top": 204,
+        "bottom": 1188.59375,
+        "height": 984.59375,
+        "width": 350
+      },
+      "scrollActive": true,
+      "distance": 548.6,
+      "sticky": "sticky",
+      "overflow": false,
+      "navLinks": [
+        {
+          "text": "Makers3D",
+          "href": "/",
+          "current": null
+        },
+        {
+          "text": "Services",
+          "href": "/services",
+          "current": null
+        },
+        {
+          "text": "Industries",
+          "href": "/industries",
+          "current": null
+        },
+        {
+          "text": "Partners",
+          "href": "/partner",
+          "current": null
+        },
+        {
+          "text": "About Us",
+          "href": "/about",
+          "current": null
+        },
+        {
+          "text": "",
+          "href": "/login",
+          "current": null
+        },
+        {
+          "text": "",
+          "href": "/cart",
+          "current": null
+        },
+        {
+          "text": "Our Collection",
+          "href": "/collections",
+          "current": null
+        }
+      ],
+      "footerEmail": [
+        {
+          "text": "studio@makers3d.in",
+          "href": "mailto:studio@makers3d.in"
+        }
+      ],
+      "heroAction": [
+        {
+          "text": "Our Collection",
+          "href": "/collections"
+        },
+        {
+          "text": "Explore Services",
+          "href": "/services"
+        }
+      ],
+      "organizationEmail": "studio@makers3d.in"
+    },
+    "printing": {
+      "phase": "scroll",
+      "photoOpacity": 0,
+      "canvas": true,
+      "y": 445,
+      "width": 390,
+      "height": 844,
+      "title": {
+        "top": -357,
+        "bottom": -265,
+        "height": 92,
+        "width": 350
+      },
+      "visual": {
+        "top": 88,
+        "bottom": 428,
+        "height": 340,
+        "width": 340
+      },
+      "details": {
+        "top": 767.59375,
+        "bottom": 1033.09375,
+        "height": 265.5,
+        "width": 350
+      },
+      "runway": {
+        "top": -241,
+        "bottom": 743.59375,
+        "height": 984.59375,
+        "width": 350
+      },
+      "scrollActive": true,
+      "distance": 548.6,
+      "sticky": "sticky",
+      "overflow": false,
+      "navLinks": [
+        {
+          "text": "Makers3D",
+          "href": "/",
+          "current": null
+        },
+        {
+          "text": "Services",
+          "href": "/services",
+          "current": null
+        },
+        {
+          "text": "Industries",
+          "href": "/industries",
+          "current": null
+        },
+        {
+          "text": "Partners",
+          "href": "/partner",
+          "current": null
+        },
+        {
+          "text": "About Us",
+          "href": "/about",
+          "current": null
+        },
+        {
+          "text": "",
+          "href": "/login",
+          "current": null
+        },
+        {
+          "text": "",
+          "href": "/cart",
+          "current": null
+        },
+        {
+          "text": "Our Collection",
+          "href": "/collections",
+          "current": null
+        }
+      ],
+      "footerEmail": [
+        {
+          "text": "studio@makers3d.in",
+          "href": "mailto:studio@makers3d.in"
+        }
+      ],
+      "heroAction": [
+        {
+          "text": "Our Collection",
+          "href": "/collections"
+        },
+        {
+          "text": "Explore Services",
+          "href": "/services"
+        }
+      ],
+      "organizationEmail": "studio@makers3d.in"
+    },
+    "completed": {
+      "phase": "complete",
+      "photoOpacity": 1,
+      "canvas": false,
+      "y": 665,
+      "width": 390,
+      "height": 844,
+      "title": {
+        "top": -577,
+        "bottom": -485,
+        "height": 92,
+        "width": 350
+      },
+      "visual": {
+        "top": 88,
+        "bottom": 428,
+        "height": 340,
+        "width": 340
+      },
+      "details": {
+        "top": 547.59375,
+        "bottom": 813.09375,
+        "height": 265.5,
+        "width": 350
+      },
+      "runway": {
+        "top": -461,
+        "bottom": 523.59375,
+        "height": 984.59375,
+        "width": 350
+      },
+      "scrollActive": true,
+      "distance": 548.6,
+      "sticky": "sticky",
+      "overflow": false,
+      "navLinks": [
+        {
+          "text": "Makers3D",
+          "href": "/",
+          "current": null
+        },
+        {
+          "text": "Services",
+          "href": "/services",
+          "current": null
+        },
+        {
+          "text": "Industries",
+          "href": "/industries",
+          "current": null
+        },
+        {
+          "text": "Partners",
+          "href": "/partner",
+          "current": null
+        },
+        {
+          "text": "About Us",
+          "href": "/about",
+          "current": null
+        },
+        {
+          "text": "",
+          "href": "/login",
+          "current": null
+        },
+        {
+          "text": "",
+          "href": "/cart",
+          "current": null
+        },
+        {
+          "text": "Our Collection",
+          "href": "/collections",
+          "current": null
+        }
+      ],
+      "footerEmail": [
+        {
+          "text": "studio@makers3d.in",
+          "href": "mailto:studio@makers3d.in"
+        }
+      ],
+      "heroAction": [
+        {
+          "text": "Our Collection",
+          "href": "/collections"
+        },
+        {
+          "text": "Explore Services",
+          "href": "/services"
+        }
+      ],
+      "organizationEmail": "studio@makers3d.in"
+    },
+    "below": {
+      "phase": "complete",
+      "photoOpacity": 1,
+      "canvas": false,
+      "y": 865,
+      "width": 390,
+      "height": 844,
+      "title": {
+        "top": -777,
+        "bottom": -685,
+        "height": 92,
+        "width": 350
+      },
+      "visual": {
+        "top": -16.40625,
+        "bottom": 323.59375,
+        "height": 340,
+        "width": 340
+      },
+      "details": {
+        "top": 347.59375,
+        "bottom": 613.09375,
+        "height": 265.5,
+        "width": 350
+      },
+      "runway": {
+        "top": -661,
+        "bottom": 323.59375,
+        "height": 984.59375,
+        "width": 350
+      },
+      "scrollActive": true,
+      "distance": 548.6,
+      "sticky": "sticky",
+      "overflow": false,
+      "navLinks": [
+        {
+          "text": "Makers3D",
+          "href": "/",
+          "current": null
+        },
+        {
+          "text": "Services",
+          "href": "/services",
+          "current": null
+        },
+        {
+          "text": "Industries",
+          "href": "/industries",
+          "current": null
+        },
+        {
+          "text": "Partners",
+          "href": "/partner",
+          "current": null
+        },
+        {
+          "text": "About Us",
+          "href": "/about",
+          "current": null
+        },
+        {
+          "text": "",
+          "href": "/login",
+          "current": null
+        },
+        {
+          "text": "",
+          "href": "/cart",
+          "current": null
+        },
+        {
+          "text": "Our Collection",
+          "href": "/collections",
+          "current": null
+        }
+      ],
+      "footerEmail": [
+        {
+          "text": "studio@makers3d.in",
+          "href": "mailto:studio@makers3d.in"
+        }
+      ],
+      "heroAction": [
+        {
+          "text": "Our Collection",
+          "href": "/collections"
+        },
+        {
+          "text": "Explore Services",
+          "href": "/services"
+        }
+      ],
+      "organizationEmail": "studio@makers3d.in"
+    },
+    "back": {
+      "phase": "complete",
+      "photoOpacity": 1,
+      "canvas": false,
+      "y": 0,
+      "width": 390,
+      "height": 844,
+      "title": {
+        "top": 88,
+        "bottom": 180,
+        "height": 92,
+        "width": 350
+      },
+      "visual": {
+        "top": 204,
+        "bottom": 544,
+        "height": 340,
+        "width": 340
+      },
+      "details": {
+        "top": 1212.59375,
+        "bottom": 1478.09375,
+        "height": 265.5,
+        "width": 350
+      },
+      "runway": {
+        "top": 204,
+        "bottom": 1188.59375,
+        "height": 984.59375,
+        "width": 350
+      },
+      "scrollActive": true,
+      "distance": 548.6,
+      "sticky": "sticky",
+      "overflow": false,
+      "navLinks": [
+        {
+          "text": "Makers3D",
+          "href": "/",
+          "current": null
+        },
+        {
+          "text": "Services",
+          "href": "/services",
+          "current": null
+        },
+        {
+          "text": "Industries",
+          "href": "/industries",
+          "current": null
+        },
+        {
+          "text": "Partners",
+          "href": "/partner",
+          "current": null
+        },
+        {
+          "text": "About Us",
+          "href": "/about",
+          "current": null
+        },
+        {
+          "text": "",
+          "href": "/login",
+          "current": null
+        },
+        {
+          "text": "",
+          "href": "/cart",
+          "current": null
+        },
+        {
+          "text": "Our Collection",
+          "href": "/collections",
+          "current": null
+        }
+      ],
+      "footerEmail": [
+        {
+          "text": "studio@makers3d.in",
+          "href": "mailto:studio@makers3d.in"
+        }
+      ],
+      "heroAction": [
+        {
+          "text": "Our Collection",
+          "href": "/collections"
+        },
+        {
+          "text": "Explore Services",
+          "href": "/services"
+        }
+      ],
+      "organizationEmail": "studio@makers3d.in"
+    },
+    "newVisit": {
+      "phase": "scroll",
+      "photoOpacity": 0,
+      "canvas": true,
+      "y": 0,
+      "width": 390,
+      "height": 844,
+      "title": {
+        "top": 88,
+        "bottom": 180,
+        "height": 92,
+        "width": 350
+      },
+      "visual": {
+        "top": 204,
+        "bottom": 544,
+        "height": 340,
+        "width": 340
+      },
+      "details": {
+        "top": 1212.59375,
+        "bottom": 1478.09375,
+        "height": 265.5,
+        "width": 350
+      },
+      "runway": {
+        "top": 204,
+        "bottom": 1188.59375,
+        "height": 984.59375,
+        "width": 350
+      },
+      "scrollActive": true,
+      "distance": 548.6,
+      "sticky": "sticky",
+      "overflow": false,
+      "navLinks": [
+        {
+          "text": "Makers3D",
+          "href": "/",
+          "current": null
+        },
+        {
+          "text": "Services",
+          "href": "/services",
+          "current": null
+        },
+        {
+          "text": "Industries",
+          "href": "/industries",
+          "current": null
+        },
+        {
+          "text": "Partners",
+          "href": "/partner",
+          "current": null
+        },
+        {
+          "text": "About Us",
+          "href": "/about",
+          "current": null
+        },
+        {
+          "text": "",
+          "href": "/login",
+          "current": null
+        },
+        {
+          "text": "",
+          "href": "/cart",
+          "current": null
+        },
+        {
+          "text": "Our Collection",
+          "href": "/collections",
+          "current": null
+        }
+      ],
+      "footerEmail": [
+        {
+          "text": "studio@makers3d.in",
+          "href": "mailto:studio@makers3d.in"
+        }
+      ],
+      "heroAction": [
+        {
+          "text": "Our Collection",
+          "href": "/collections"
+        },
+        {
+          "text": "Explore Services",
+          "href": "/services"
+        }
+      ],
+      "organizationEmail": "studio@makers3d.in"
+    },
+    "menu": [
+      {
+        "text": "01Services",
+        "href": "/services"
+      },
+      {
+        "text": "02Industries",
+        "href": "/industries"
+      },
+      {
+        "text": "03Partners",
+        "href": "/partner"
+      },
+      {
+        "text": "04About Us",
+        "href": "/about"
+      },
+      {
+        "text": "Our Collection",
+        "href": "/collections"
+      }
+    ],
+    "collectionNavigation": {
+      "path": "/collections",
+      "title": "Our Collection",
+      "menuClosed": true,
+      "overflow": false
+    }
+  },
+  "variants": [
+    {
+      "phase": "scroll",
+      "photoOpacity": 0,
+      "canvas": true,
+      "y": 0,
+      "width": 320,
+      "height": 740,
+      "title": {
+        "top": 88,
+        "bottom": 180,
+        "height": 92,
+        "width": 280
+      },
+      "visual": {
+        "top": 204,
+        "bottom": 484,
+        "height": 280,
+        "width": 280
+      },
+      "details": {
+        "top": 1085,
+        "bottom": 1402.5,
+        "height": 317.5,
+        "width": 280
+      },
+      "runway": {
+        "top": 204,
+        "bottom": 1061,
+        "height": 857,
+        "width": 280
+      },
+      "scrollActive": true,
+      "distance": 481,
+      "sticky": "sticky",
+      "overflow": false,
+      "navLinks": [
+        {
+          "text": "Makers3D",
+          "href": "/",
+          "current": null
+        },
+        {
+          "text": "Services",
+          "href": "/services",
+          "current": null
+        },
+        {
+          "text": "Industries",
+          "href": "/industries",
+          "current": null
+        },
+        {
+          "text": "Partners",
+          "href": "/partner",
+          "current": null
+        },
+        {
+          "text": "About Us",
+          "href": "/about",
+          "current": null
+        },
+        {
+          "text": "",
+          "href": "/login",
+          "current": null
+        },
+        {
+          "text": "",
+          "href": "/cart",
+          "current": null
+        },
+        {
+          "text": "Our Collection",
+          "href": "/collections",
+          "current": null
+        }
+      ],
+      "footerEmail": [
+        {
+          "text": "studio@makers3d.in",
+          "href": "mailto:studio@makers3d.in"
+        }
+      ],
+      "heroAction": [
+        {
+          "text": "Our Collection",
+          "href": "/collections"
+        },
+        {
+          "text": "Explore Services",
+          "href": "/services"
+        }
+      ],
+      "organizationEmail": "studio@makers3d.in"
+    },
+    {
+      "phase": "scroll",
+      "photoOpacity": 0,
+      "canvas": true,
+      "y": 0,
+      "width": 768,
+      "height": 1024,
+      "title": {
+        "top": 104,
+        "bottom": 201.125,
+        "height": 97.125,
+        "width": 691.21875
+      },
+      "visual": {
+        "top": 233.125,
+        "bottom": 653.125,
+        "height": 420,
+        "width": 420
+      },
+      "details": {
+        "top": 1446.71875,
+        "bottom": 1664.71875,
+        "height": 218,
+        "width": 691.21875
+      },
+      "runway": {
+        "top": 233.125,
+        "bottom": 1414.71875,
+        "height": 1181.59375,
+        "width": 691.21875
+      },
+      "scrollActive": true,
+      "distance": 665.6,
+      "sticky": "sticky",
+      "overflow": false,
+      "navLinks": [
+        {
+          "text": "Makers3D",
+          "href": "/",
+          "current": null
+        },
+        {
+          "text": "Services",
+          "href": "/services",
+          "current": null
+        },
+        {
+          "text": "Industries",
+          "href": "/industries",
+          "current": null
+        },
+        {
+          "text": "Partners",
+          "href": "/partner",
+          "current": null
+        },
+        {
+          "text": "About Us",
+          "href": "/about",
+          "current": null
+        },
+        {
+          "text": "",
+          "href": "/login",
+          "current": null
+        },
+        {
+          "text": "",
+          "href": "/cart",
+          "current": null
+        },
+        {
+          "text": "Our Collection",
+          "href": "/collections",
+          "current": null
+        }
+      ],
+      "footerEmail": [
+        {
+          "text": "studio@makers3d.in",
+          "href": "mailto:studio@makers3d.in"
+        }
+      ],
+      "heroAction": [
+        {
+          "text": "Our Collection",
+          "href": "/collections"
+        },
+        {
+          "text": "Explore Services",
+          "href": "/services"
+        }
+      ],
+      "organizationEmail": "studio@makers3d.in"
+    },
+    {
+      "phase": "auto",
+      "photoOpacity": 0,
+      "canvas": true,
+      "y": 0,
+      "width": 1024,
+      "height": 800,
+      "title": {
+        "top": 162,
+        "bottom": 291.5,
+        "height": 129.5,
+        "width": 423.8125
+      },
+      "visual": {
+        "top": 185.09375,
+        "bottom": 608.90625,
+        "height": 423.8125,
+        "width": 423.8125
+      },
+      "details": {
+        "top": 323.5,
+        "bottom": 632,
+        "height": 308.5,
+        "width": 423.8125
+      },
+      "runway": {
+        "top": 185.09375,
+        "bottom": 608.90625,
+        "height": 423.8125,
+        "width": 423.8125
+      },
+      "scrollActive": false,
+      "distance": 0,
+      "sticky": "relative",
+      "overflow": false,
+      "navLinks": [
+        {
+          "text": "Makers3D",
+          "href": "/",
+          "current": null
+        },
+        {
+          "text": "Services",
+          "href": "/services",
+          "current": null
+        },
+        {
+          "text": "Industries",
+          "href": "/industries",
+          "current": null
+        },
+        {
+          "text": "Partners",
+          "href": "/partner",
+          "current": null
+        },
+        {
+          "text": "About Us",
+          "href": "/about",
+          "current": null
+        },
+        {
+          "text": "",
+          "href": "/login",
+          "current": null
+        },
+        {
+          "text": "",
+          "href": "/cart",
+          "current": null
+        },
+        {
+          "text": "Our Collection",
+          "href": "/collections",
+          "current": null
+        }
+      ],
+      "footerEmail": [
+        {
+          "text": "studio@makers3d.in",
+          "href": "mailto:studio@makers3d.in"
+        }
+      ],
+      "heroAction": [
+        {
+          "text": "Our Collection",
+          "href": "/collections"
+        },
+        {
+          "text": "Explore Services",
+          "href": "/services"
+        }
+      ],
+      "organizationEmail": "studio@makers3d.in"
+    },
+    {
+      "phase": "static",
+      "photoOpacity": 1,
+      "canvas": false,
+      "y": 0,
+      "width": 1440,
+      "height": 1000,
+      "title": {
+        "top": 233.109375,
+        "bottom": 407.890625,
+        "height": 174.78125,
+        "width": 619
+      },
+      "visual": {
+        "top": 136,
+        "bottom": 755,
+        "height": 619,
+        "width": 619
+      },
+      "details": {
+        "top": 439.890625,
+        "bottom": 657.890625,
+        "height": 218,
+        "width": 619
+      },
+      "runway": {
+        "top": 136,
+        "bottom": 755,
+        "height": 619,
+        "width": 619
+      },
+      "scrollActive": false,
+      "distance": 0,
+      "sticky": "relative",
+      "overflow": false,
+      "navLinks": [
+        {
+          "text": "Makers3D",
+          "href": "/",
+          "current": null
+        },
+        {
+          "text": "Services",
+          "href": "/services",
+          "current": null
+        },
+        {
+          "text": "Industries",
+          "href": "/industries",
+          "current": null
+        },
+        {
+          "text": "Partners",
+          "href": "/partner",
+          "current": null
+        },
+        {
+          "text": "About Us",
+          "href": "/about",
+          "current": null
+        },
+        {
+          "text": "",
+          "href": "/login",
+          "current": null
+        },
+        {
+          "text": "",
+          "href": "/cart",
+          "current": null
+        },
+        {
+          "text": "Our Collection",
+          "href": "/collections",
+          "current": null
+        }
+      ],
+      "footerEmail": [
+        {
+          "text": "studio@makers3d.in",
+          "href": "mailto:studio@makers3d.in"
+        }
+      ],
+      "heroAction": [
+        {
+          "text": "Our Collection",
+          "href": "/collections"
+        },
+        {
+          "text": "Explore Services",
+          "href": "/services"
+        }
+      ],
+      "organizationEmail": "studio@makers3d.in",
+      "reducedMotion": true
+    }
+  ],
+  "errors": [],
+  "passed": true
+}

@@ -1,0 +1,246 @@
+{
+  "responsive": [
+    {
+      "width": 320,
+      "documentWidth": 310,
+      "heroText": {
+        "top": 390,
+        "left": 20,
+        "right": 290,
+        "bottom": 823.5,
+        "width": 270,
+        "height": 433.5
+      },
+      "heroArt": {
+        "top": 88,
+        "left": 20,
+        "right": 290,
+        "bottom": 358,
+        "width": 270,
+        "height": 270
+      },
+      "h1Count": 1,
+      "collectionBeforeWhy": true,
+      "sectionPadding": "48px",
+      "introAlignment": "center",
+      "serviceGap": "16px",
+      "navOverlap": false,
+      "ctaHeights": [
+        44,
+        44
+      ]
+    },
+    {
+      "width": 390,
+      "documentWidth": 380,
+      "heroText": {
+        "top": 460,
+        "left": 20,
+        "right": 360,
+        "bottom": 841.5,
+        "width": 340,
+        "height": 381.5
+      },
+      "heroArt": {
+        "top": 88,
+        "left": 20,
+        "right": 360,
+        "bottom": 428,
+        "width": 340,
+        "height": 340
+      },
+      "h1Count": 1,
+      "collectionBeforeWhy": true,
+      "sectionPadding": "48px",
+      "introAlignment": "center",
+      "serviceGap": "16px",
+      "navOverlap": false,
+      "ctaHeights": [
+        44,
+        44
+      ]
+    },
+    {
+      "width": 430,
+      "documentWidth": 420,
+      "heroText": {
+        "top": 460,
+        "left": 21.5,
+        "right": 398.5,
+        "bottom": 841.5,
+        "width": 377,
+        "height": 381.5
+      },
+      "heroArt": {
+        "top": 88,
+        "left": 40,
+        "right": 380,
+        "bottom": 428,
+        "width": 340,
+        "height": 340
+      },
+      "h1Count": 1,
+      "collectionBeforeWhy": true,
+      "sectionPadding": "48px",
+      "introAlignment": "center",
+      "serviceGap": "16px",
+      "navOverlap": false,
+      "ctaHeights": [
+        44,
+        44
+      ]
+    },
+    {
+      "width": 768,
+      "documentWidth": 758,
+      "heroText": {
+        "top": 564,
+        "left": 69,
+        "right": 689,
+        "bottom": 911.125,
+        "width": 620,
+        "height": 347.125
+      },
+      "heroArt": {
+        "top": 104,
+        "left": 169,
+        "right": 589,
+        "bottom": 524,
+        "width": 420,
+        "height": 420
+      },
+      "h1Count": 1,
+      "collectionBeforeWhy": true,
+      "sectionPadding": "80px",
+      "introAlignment": "center",
+      "serviceGap": "16px",
+      "navOverlap": false,
+      "ctaHeights": [
+        50.5,
+        50.5
+      ]
+    },
+    {
+      "width": 1024,
+      "documentWidth": 1014,
+      "heroText": {
+        "top": 162,
+        "left": 51.1875,
+        "right": 475,
+        "bottom": 632,
+        "width": 423.8125,
+        "height": 470
+      },
+      "heroArt": {
+        "top": 185.09375,
+        "left": 539,
+        "right": 962.8125,
+        "bottom": 608.90625,
+        "width": 423.8125,
+        "height": 423.8125
+      },
+      "h1Count": 1,
+      "collectionBeforeWhy": true,
+      "sectionPadding": "112px",
+      "introAlignment": "center",
+      "serviceGap": "26px",
+      "navOverlap": false,
+      "ctaHeights": [
+        50.5,
+        50.5
+      ]
+    },
+    {
+      "width": 1440,
+      "documentWidth": 1430,
+      "heroText": {
+        "top": 233.109375,
+        "left": 64,
+        "right": 683,
+        "bottom": 657.890625,
+        "width": 619,
+        "height": 424.78125
+      },
+      "heroArt": {
+        "top": 136,
+        "left": 747,
+        "right": 1366,
+        "bottom": 755,
+        "width": 619,
+        "height": 619
+      },
+      "h1Count": 1,
+      "collectionBeforeWhy": true,
+      "sectionPadding": "112px",
+      "introAlignment": "center",
+      "serviceGap": "26px",
+      "navOverlap": false,
+      "ctaHeights": [
+        50.5,
+        50.5
+      ]
+    }
+  ],
+  "normalMotion": [
+    {
+      "width": 390,
+      "masks": [
+        {
+          "text": "Big ideas.",
+          "top": 461,
+          "bottom": 505,
+          "maskTop": 460,
+          "maskBottom": 506,
+          "margin": 4.79688,
+          "fits": true
+        },
+        {
+          "text": "Built in 3D.",
+          "top": 507,
+          "bottom": 551,
+          "maskTop": 506,
+          "maskBottom": 552,
+          "margin": 4.79688,
+          "fits": true
+        }
+      ],
+      "canvas": true
+    },
+    {
+      "width": 1440,
+      "masks": [
+        {
+          "text": "Big ideas.",
+          "top": 234.109375,
+          "bottom": 319.109375,
+          "maskTop": 233.109375,
+          "maskBottom": 320.5,
+          "margin": 9.10938,
+          "fits": true
+        },
+        {
+          "text": "Built in 3D.",
+          "top": 321.5,
+          "bottom": 406.5,
+          "maskTop": 320.5,
+          "maskBottom": 407.890625,
+          "margin": 9.10938,
+          "fits": true
+        }
+      ],
+      "canvas": true
+    }
+  ],
+  "checks": {
+    "generatedImages": 10,
+    "mobileMenu": "passed",
+    "faq": "passed",
+    "typescript": "passed",
+    "componentLint": "passed",
+    "collectionAndAnimationHashes": "unchanged"
+  },
+  "localPreviewNotes": [
+    "SyntaxError: Invalid or unexpected token",
+    "[next-auth][error][CLIENT_FETCH_ERROR] \nhttps://next-auth.js.org/errors#client_fetch_error Unexpected token '<', \"<!DOCTYPE \"... is not valid JSON Object"
+  ]
+}

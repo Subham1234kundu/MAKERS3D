@@ -1,0 +1,406 @@
+{
+  "checks": [
+    {
+      "initial": {
+        "width": 1440,
+        "reduced": false,
+        "revealed": "false",
+        "opacity": 0,
+        "faceTransform": "matrix3d(0.242248, -0.209676, 0, -0.0001824, -0.0790414, 0.265995, 0, -0.0002711, 0, 0, 1, 0, 91.9219, 245.125, 0, 1)",
+        "text": "MAKERS3D",
+        "textCorners": [
+          {
+            "x": 0.16275157680943247,
+            "y": 0.3709988766253197
+          },
+          {
+            "x": 0.5211087714754247,
+            "y": 0.15108422614572298
+          },
+          {
+            "x": 0.5284719849370508,
+            "y": 0.2530056859894805
+          },
+          {
+            "x": 0.14888525006949316,
+            "y": 0.46909965223684535
+          }
+        ],
+        "allTextInsideWhiteFace": false,
+        "overflow": false,
+        "frameLoaded": true
+      },
+      "billboard": {
+        "width": 1440,
+        "reduced": false,
+        "revealed": "true",
+        "opacity": 1,
+        "faceTransform": "matrix3d(0.242248, -0.209676, 0, -0.0001824, -0.0790414, 0.265995, 0, -0.0002711, 0, 0, 1, 0, 91.9219, 245.125, 0, 1)",
+        "text": "MAKERS3D",
+        "textCorners": [
+          {
+            "x": 0.19530188210351365,
+            "y": 0.4451986290004096
+          },
+          {
+            "x": 0.6253304935347441,
+            "y": 0.18130106202880406
+          },
+          {
+            "x": 0.6341663492332075,
+            "y": 0.303606807536456
+          },
+          {
+            "x": 0.17866229087335683,
+            "y": 0.5629195536657308
+          }
+        ],
+        "allTextInsideWhiteFace": true,
+        "overflow": false,
+        "frameLoaded": true
+      },
+      "team": {
+        "source": "/_next/image?url=%2Fimages%2Fwe.png&w=3840&q=75",
+        "loaded": true,
+        "filters": [
+          "none",
+          "none",
+          "none",
+          "none",
+          "none",
+          "none",
+          "none",
+          "none",
+          "none",
+          "none"
+        ],
+        "fit": "contain",
+        "aspect": 1.7777777777777777,
+        "overlay": false,
+        "overflow": false
+      }
+    },
+    {
+      "initial": {
+        "width": 390,
+        "reduced": false,
+        "revealed": "false",
+        "opacity": 0,
+        "faceTransform": "matrix3d(0.139947, -0.12113, 0, -0.0001824, -0.0456624, 0.153666, 0, -0.0002711, 0, 0, 1, 0, 53.1035, 141.609, 0, 1)",
+        "text": "MAKERS3D",
+        "textCorners": [
+          {
+            "x": 0.16275139915975667,
+            "y": 0.37099797612690416
+          },
+          {
+            "x": 0.5211077619198273,
+            "y": 0.15108412168056096
+          },
+          {
+            "x": 0.5284709294373465,
+            "y": 0.25300554619586874
+          },
+          {
+            "x": 0.1488850803257661,
+            "y": 0.46909867743326283
+          }
+        ],
+        "allTextInsideWhiteFace": false,
+        "overflow": false,
+        "frameLoaded": true
+      },
+      "billboard": {
+        "width": 390,
+        "reduced": false,
+        "revealed": "true",
+        "opacity": 1,
+        "faceTransform": "matrix3d(0.139947, -0.12113, 0, -0.0001824, -0.0456624, 0.153666, 0, -0.0002711, 0, 0, 1, 0, 53.1035, 141.609, 0, 1)",
+        "text": "MAKERS3D",
+        "textCorners": [
+          {
+            "x": 0.1953016906099034,
+            "y": 0.4451975978364013
+          },
+          {
+            "x": 0.6253293515036684,
+            "y": 0.18130095680198657
+          },
+          {
+            "x": 0.6341651530503196,
+            "y": 0.30360667349613374
+          },
+          {
+            "x": 0.17866210701925167,
+            "y": 0.5629184464070628
+          }
+        ],
+        "allTextInsideWhiteFace": true,
+        "overflow": false,
+        "frameLoaded": true
+      },
+      "team": {
+        "source": "/_next/image?url=%2Fimages%2Fwe.png&w=3840&q=75",
+        "loaded": true,
+        "filters": [
+          "none",
+          "none",
+          "none",
+          "none",
+          "none",
+          "none",
+          "none",
+          "none",
+          "none",
+          "none"
+        ],
+        "fit": "contain",
+        "aspect": 1.7777777777777777,
+        "overlay": false,
+        "overflow": false
+      }
+    },
+    {
+      "initial": {
+        "width": 320,
+        "reduced": false,
+        "revealed": "false",
+        "opacity": 0,
+        "faceTransform": "matrix3d(0.111303, -0.0963374, 0, -0.0001824, -0.0363163, 0.122214, 0, -0.0002711, 0, 0, 1, 0, 42.2344, 112.625, 0, 1)",
+        "text": "MAKERS3D",
+        "textCorners": [
+          {
+            "x": 0.16275155868952632,
+            "y": 0.37099893578006315
+          },
+          {
+            "x": 0.5211083082640494,
+            "y": 0.15108498818389796
+          },
+          {
+            "x": 0.5284715085848757,
+            "y": 0.25300654806015754
+          },
+          {
+            "x": 0.14888524580902793,
+            "y": 0.46909975623604167
+          }
+        ],
+        "allTextInsideWhiteFace": false,
+        "overflow": false,
+        "frameLoaded": true
+      },
+      "billboard": {
+        "width": 320,
+        "reduced": false,
+        "revealed": "true",
+        "opacity": 1,
+        "faceTransform": "matrix3d(0.111303, -0.0963374, 0, -0.0001824, -0.0363163, 0.122214, 0, -0.0002711, 0, 0, 1, 0, 42.2344, 112.625, 0, 1)",
+        "text": "MAKERS3D",
+        "textCorners": [
+          {
+            "x": 0.19530188503561807,
+            "y": 0.4451987562360435
+          },
+          {
+            "x": 0.6253300166902814,
+            "y": 0.18130199938170088
+          },
+          {
+            "x": 0.634165857736176,
+            "y": 0.3036078803814452
+          },
+          {
+            "x": 0.17866230833441327,
+            "y": 0.5629197495885102
+          }
+        ],
+        "allTextInsideWhiteFace": true,
+        "overflow": false,
+        "frameLoaded": true
+      },
+      "team": {
+        "source": "/_next/image?url=%2Fimages%2Fwe.png&w=3840&q=75",
+        "loaded": true,
+        "filters": [
+          "none",
+          "none",
+          "none",
+          "none",
+          "none",
+          "none",
+          "none",
+          "none",
+          "none",
+          "none"
+        ],
+        "fit": "contain",
+        "aspect": 1.7777777777777777,
+        "overlay": false,
+        "overflow": false
+      }
+    },
+    {
+      "initial": {
+        "width": 768,
+        "reduced": false,
+        "revealed": "false",
+        "opacity": 0,
+        "faceTransform": "matrix3d(0.274985, -0.23801, 0, -0.0001824, -0.0897227, 0.301941, 0, -0.0002711, 0, 0, 1, 0, 104.344, 278.25, 0, 1)",
+        "text": "MAKERS3D",
+        "textCorners": [
+          {
+            "x": 0.16275196009174644,
+            "y": 0.370999032871646
+          },
+          {
+            "x": 0.5211101349903666,
+            "y": 0.15108514610753992
+          },
+          {
+            "x": 0.5284734323384588,
+            "y": 0.25300688166349544
+          },
+          {
+            "x": 0.1488856490775736,
+            "y": 0.4690999977925533
+          }
+        ],
+        "allTextInsideWhiteFace": false,
+        "overflow": false,
+        "frameLoaded": true
+      },
+      "billboard": {
+        "width": 768,
+        "reduced": false,
+        "revealed": "true",
+        "opacity": 1,
+        "faceTransform": "matrix3d(0.274985, -0.23801, 0, -0.0001824, -0.0897227, 0.301941, 0, -0.0002711, 0, 0, 1, 0, 104.344, 278.25, 0, 1)",
+        "text": "MAKERS3D",
+        "textCorners": [
+          {
+            "x": 0.1953023580229477,
+            "y": 0.44519885292453704
+          },
+          {
+            "x": 0.6253321809206057,
+            "y": 0.18130218081803928
+          },
+          {
+            "x": 0.6341681380058282,
+            "y": 0.3036082671880484
+          },
+          {
+            "x": 0.17866278430217097,
+            "y": 0.562920014393678
+          }
+        ],
+        "allTextInsideWhiteFace": true,
+        "overflow": false,
+        "frameLoaded": true
+      },
+      "team": {
+        "source": "/_next/image?url=%2Fimages%2Fwe.png&w=3840&q=75",
+        "loaded": true,
+        "filters": [
+          "none",
+          "none",
+          "none",
+          "none",
+          "none",
+          "none",
+          "none",
+          "none",
+          "none",
+          "none"
+        ],
+        "fit": "contain",
+        "aspect": 1.7777777777777777,
+        "overlay": false,
+        "overflow": false
+      }
+    },
+    {
+      "initial": {
+        "width": 1440,
+        "reduced": true,
+        "revealed": "true",
+        "opacity": 1,
+        "faceTransform": "matrix3d(0.242248, -0.209676, 0, -0.0001824, -0.0790414, 0.265995, 0, -0.0002711, 0, 0, 1, 0, 91.9219, 245.125, 0, 1)",
+        "text": "MAKERS3D",
+        "textCorners": [
+          {
+            "x": 0.19530188210351365,
+            "y": 0.4451986290004096
+          },
+          {
+            "x": 0.6253304935347441,
+            "y": 0.18130106202880406
+          },
+          {
+            "x": 0.6341663492332075,
+            "y": 0.303606807536456
+          },
+          {
+            "x": 0.17866229087335683,
+            "y": 0.5629195536657308
+          }
+        ],
+        "allTextInsideWhiteFace": true,
+        "overflow": false,
+        "frameLoaded": true
+      },
+      "billboard": {
+        "width": 1440,
+        "reduced": true,
+        "revealed": "true",
+        "opacity": 1,
+        "faceTransform": "matrix3d(0.242248, -0.209676, 0, -0.0001824, -0.0790414, 0.265995, 0, -0.0002711, 0, 0, 1, 0, 91.9219, 245.125, 0, 1)",
+        "text": "MAKERS3D",
+        "textCorners": [
+          {
+            "x": 0.19530188210351365,
+            "y": 0.4451986290004096
+          },
+          {
+            "x": 0.6253304935347441,
+            "y": 0.18130106202880406
+          },
+          {
+            "x": 0.6341663492332075,
+            "y": 0.303606807536456
+          },
+          {
+            "x": 0.17866229087335683,
+            "y": 0.5629195536657308
+          }
+        ],
+        "allTextInsideWhiteFace": true,
+        "overflow": false,
+        "frameLoaded": true
+      },
+      "team": {
+        "source": "/_next/image?url=%2Fimages%2Fwe.png&w=3840&q=75",
+        "loaded": true,
+        "filters": [
+          "none",
+          "none",
+          "none",
+          "none",
+          "none",
+          "none",
+          "none",
+          "none",
+          "none",
+          "none"
+        ],
+        "fit": "contain",
+        "aspect": 1.7777777777777777,
+        "overlay": false,
+        "overflow": false
+      }
+    }
+  ],
+  "errors": [],
+  "passed": true
+}

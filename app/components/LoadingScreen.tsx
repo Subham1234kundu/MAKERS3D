@@ -93,7 +93,7 @@ export default function LoadingScreen() {
     return (
         <div
             ref={screenRef}
-            className="fixed inset-0 z-[99999] bg-black flex flex-col items-center justify-center"
+            className="fixed inset-0 z-[99999] bg-white flex flex-col items-center justify-center"
             suppressHydrationWarning
         >
             {mounted && (
@@ -102,15 +102,15 @@ export default function LoadingScreen() {
                         <ParticleCubeLogo />
                     </div>
 
-                    <div className="w-24 h-[1px] bg-white/10 relative overflow-hidden" suppressHydrationWarning>
+                    <div className="w-24 h-[1px] bg-black/10 relative overflow-hidden" suppressHydrationWarning>
                         <div
                             ref={progressRef}
-                            className="absolute inset-0 bg-white origin-left"
+                            className="absolute inset-0 bg-black origin-left"
                             suppressHydrationWarning
                         />
                     </div>
 
-                    <p className="mt-6 text-[10px] uppercase tracking-[0.6em] text-white/30 animate-pulse" suppressHydrationWarning>
+                    <p className="mt-6 text-[10px] uppercase tracking-[0.6em] text-black/30 animate-pulse" suppressHydrationWarning>
                         Initializing Studio
                     </p>
                 </div>

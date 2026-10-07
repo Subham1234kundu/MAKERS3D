@@ -1,29 +1,11 @@
 import type { Metadata } from "next";
-import { SITE_URL, defaultOpenGraph, defaultTwitter } from "../lib/seo";
+import { pageMetadata } from "../lib/seo";
 
-export const metadata: Metadata = {
-  title: "Collections",
-  description:
-    "Explore MAKERS3D collections: Divine, Love, Custom, Ash & Stone, Aura, Motion, and more. Curated premium 3D printed art and decor.",
-  keywords: [
-    "3D print collections",
-    "divine 3D prints",
-    "3D printed gifts collection",
-    "MAKERS3D collections",
-  ],
-  alternates: { canonical: `${SITE_URL}/collections` },
-  openGraph: {
-    ...defaultOpenGraph,
-    url: `${SITE_URL}/collections`,
-    title: "Collections | MAKERS3D",
-    description: "Explore curated collections of premium 3D printed art and decor.",
-  },
-  twitter: {
-    ...defaultTwitter,
-    title: "Collections | MAKERS3D",
-    description: "Explore curated collections of premium 3D printed art and decor.",
-  },
-};
+export const metadata: Metadata = pageMetadata({
+  title: '3D Printed Collections: Figurines, Lamps & Frames | MAKERS3D',
+  description: 'Explore MAKERS3D collections of 3D printed figurines, table lamps and photo frames. Filter by product type to find decor or a gift for your space.',
+  path: '/collections',
+});
 
 export default function CollectionsLayout({
   children,

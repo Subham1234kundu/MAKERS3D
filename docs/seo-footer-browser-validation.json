@@ -1,0 +1,77 @@
+{
+  "mode": "footer",
+  "checks": [
+    {
+      "viewport": 1440,
+      "pageWidth": 1430,
+      "font": 278.85,
+      "lineHeight": 223.08,
+      "frameWidth": 1430,
+      "sidePadding": 0,
+      "sideMargin": 0,
+      "bottomPadding": 8,
+      "overflow": false,
+      "box": {
+        "x": 0,
+        "y": 768.5625,
+        "width": 1430,
+        "height": 223.0625
+      },
+      "hoverCursor": 120,
+      "normalCursor": 15.0156
+    },
+    {
+      "viewport": 390,
+      "pageWidth": 390,
+      "font": 76.05,
+      "lineHeight": 60.84,
+      "frameWidth": 390,
+      "sidePadding": 0,
+      "sideMargin": 0,
+      "bottomPadding": 8,
+      "overflow": false,
+      "box": {
+        "x": 0,
+        "y": 775.234375,
+        "width": 390,
+        "height": 60.828125
+      }
+    },
+    {
+      "viewport": 320,
+      "pageWidth": 320,
+      "font": 62.4,
+      "lineHeight": 49.92,
+      "frameWidth": 320,
+      "sidePadding": 0,
+      "sideMargin": 0,
+      "bottomPadding": 8,
+      "overflow": false,
+      "box": {
+        "x": 0,
+        "y": 510.4375,
+        "width": 320,
+        "height": 49.921875
+      }
+    },
+    {
+      "viewport": 1920,
+      "pageWidth": 1910,
+      "font": 372.45,
+      "lineHeight": 297.96,
+      "frameWidth": 1910,
+      "sidePadding": 0,
+      "sideMargin": 0,
+      "bottomPadding": 8,
+      "overflow": false,
+      "box": {
+        "x": 0,
+        "y": 774.21875,
+        "width": 1910,
+        "height": 297.953125
+      }
+    }
+  ],
+  "errors": [],
+  "passed": true
+}

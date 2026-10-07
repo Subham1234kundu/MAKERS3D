@@ -1,217 +1,449 @@
-'use client';
+import type { Metadata } from 'next';
+import Image from 'next/image';
 
-import React, { useState } from 'react';
-import Navbar from '../components/Navbar';
-import Footer from '../components/Footer';
-import { gsap } from 'gsap';
+import EnterpriseNav from '../components/enterprise/EnterpriseNav';
+import EnterpriseFooter from '../components/enterprise/EnterpriseFooter';
+import PartnerForm from '../components/enterprise/PartnerForm';
+import PartnerSlideshow from '../components/enterprise/PartnerSlideshow';
+import GrowthGraphic from '../components/enterprise/GrowthGraphic';
+import Field from '../components/enterprise/Field';
+import PageMotion from '../components/enterprise/PageMotion';
+import { Section, Reveal, Eyebrow, Cta } from '../components/enterprise/primitives';
 
-export default function PartnerWithUs() {
-    const [formData, setFormData] = useState({
-        name: '',
-        email: '',
-        company: '',
-        partnershipType: 'Collaboration',
-        message: ''
-    });
-    const [status, setStatus] = useState<'idle' | 'submitting' | 'success' | 'error'>('idle');
+const TITLE = 'Partner With Us | White-Label 3D Printing & Scale Models';
 
-    const handleSubmit = async (e: React.FormEvent) => {
-        e.preventDefault();
-        setStatus('submitting');
+const DESCRIPTION =
+  'Partner with MAKERS3D as a reseller, design studio, architecture practice or OEM. White-label 3D printing, scale models and production capacity — we build, you deliver.';
 
-        try {
-            const response = await fetch('/api/partner', {
-                method: 'POST',
-                headers: { 'Content-Type': 'application/json' },
-                body: JSON.stringify(formData),
-            });
+export const metadata: Metadata = {
+  title: TITLE,
+  description: DESCRIPTION,
+  keywords: [
+    '3D printing partner India',
+    'white label 3D printing',
+    'scale model manufacturing partner',
+    'reseller 3D printing services',
+    'OEM model manufacturing',
+  ],
+  alternates: { canonical: 'https://makers3d.in/partner' },
+  openGraph: {
+    type: 'website',
+    url: 'https://makers3d.in/partner',
+    siteName: 'MAKERS3D',
+    title: TITLE,
+    description: DESCRIPTION,
+    locale: 'en_IN',
+  },
+};
 
-            if (response.ok) {
-                setStatus('success');
-                setFormData({ name: '', email: '', company: '', partnershipType: 'Collaboration', message: '' });
-            } else {
-                setStatus('error');
-            }
-        } catch (error) {
-            console.error('Submission error:', error);
-            setStatus('error');
-        }
-    };
+/** Hero triptych with the website logo in the centre panel. */
+const HERO_BAND = [
+  { src: '/images/partner/hero-1.jpg', alt: 'Partner team agreeing a project with MAKERS3D' },
+  { src: '/images/logo.png', alt: 'MAKERS3D logo' },
+  { src: '/images/partner/hero-3.jpg', alt: 'Design studio reviewing a model build with MAKERS3D' },
+];
 
-    const handleChange = (e: React.ChangeEvent<HTMLInputElement | HTMLTextAreaElement | HTMLSelectElement>) => {
-        setFormData(prev => ({ ...prev, [e.target.name]: e.target.value }));
-    };
+/** Sector ticker running under the hero, as in the Figma layout. */
+const TICKER = [
+  'Heavy Machinery',
+  'Automotive',
+  'Architecture',
+  'Jewellery',
+  'Product Design',
+  'Exhibition',
+  'Corporate Gifting',
+  'Education',
+  'Defence',
+  'Real Estate',
+];
 
-    const openWhatsApp = () => {
-        const phoneNumber = '7863983914';
-        const message = encodeURIComponent('Hello MAKERS3D, I am interested in exploring a partnership.');
-        window.open(`https://wa.me/91${phoneNumber}?text=${message}`, '_blank');
-    };
+/** Three cards, first one inverted — matching the Figma feature card. */
+const WHY = [
+  {
+    title: 'You stay in the client seat',
+    kicker: 'We handle the build. You focus on the relationship.',
+    featured: true,
+  },
+  {
+    title: 'Your promises get delivered',
+    kicker: 'Clients see finished models, not production excuses.',
+    featured: false,
+  },
+  {
+    title: 'We understand your business',
+    kicker: 'We start by learning your clients and your deadlines.',
+    featured: false,
+  },
+];
 
-    return (
-        <div className="min-h-screen bg-black text-white selection:bg-white selection:text-black">
-            <Navbar />
+/** Alternating image / text rows — the Figma "How We Partner" zigzag. */
+const HOW = [
+  {
+    lead: 'You brief,',
+    emphasis: 'we estimate',
+    body: 'Send the requirement, a drawing or a photo. We come back with a technical estimate, a scale, a material and a firm timeline you can quote against.',
+    image: '/images/partner/brief-estimate-art.png',
+    alt: 'Artistic silver scale model developing from technical drawings and material samples',
+  },
+  {
+    lead: 'You retain the',
+    emphasis: 'client relationship',
+    body: 'We are a contractor in your engagement. Your client sees you as the lead. We build to your direction and stay out of the room unless you want us in it.',
+    image: '/images/partner/partner-2.jpg',
+    alt: 'Partner presenting finished work to their own client',
+  },
+  {
+    lead: 'We scale with',
+    emphasis: 'your throughput',
+    body: 'One model a quarter or fifty a month. Partner work sits ahead of the general queue, so your deadline never becomes a manufacturing problem.',
+    image: '/images/partner/partner-3.jpg',
+    alt: 'Production floor scaling a batch run',
+  },
+];
 
-            {/* Background Ambience */}
-            <div className="fixed inset-0 pointer-events-none overflow-hidden">
-                <div className="absolute top-[-10%] left-[-10%] w-[50%] h-[50%] bg-white/5 blur-[120px] rounded-full animate-glow" />
-                <div className="absolute bottom-[-5%] right-[-5%] w-[40%] h-[40%] bg-white/[0.03] blur-[150px] rounded-full animate-glow-delayed" />
+export default function PartnerPage() {
+  return (
+    <main className="m3-page min-h-screen bg-white text-black antialiased">
+      <PageMotion>
+        <EnterpriseNav />
+
+        {/* ---------------- Hero: split headline over a full-bleed triptych ------- */}
+        <section className="lp-masthead lp-intro relative overflow-hidden pt-[72px]">
+          <div className="m3-blueprint absolute inset-0" aria-hidden="true" />
+          <div className="m3-rails" aria-hidden="true" />
+          <Field name="beam-a" className="lp-masthead-field inset-y-0 right-[-20%] w-[75%]" opacity={0.3} priority />
+
+          <div className="m3-shell relative z-[1] grid gap-8 pb-12 pt-16 sm:pb-16 sm:pt-20 lg:max-w-[1440px] lg:grid-cols-[minmax(0,716fr)_minmax(0,512fr)] lg:items-end lg:gap-8 lg:!px-[6.25%] lg:pb-[94px] lg:pt-[118px]">
+            <div className="relative">
+              <h1 className="lp-masthead-title m3-display max-w-[716px] text-[clamp(2.25rem,3.93vw,3.5375rem)] !leading-[1.2014] text-black lg:h-[199px] lg:!tracking-[-2px]">
+                Your clients dream it.
+                <br />
+                <span className="text-black/35">We print it, layer by&nbsp;layer,</span>
+                <br />
+                behind your name.
+              </h1>
             </div>
 
-            <main className="relative z-10">
-                {/* Hero Section */}
-                <section className="pt-40 pb-20 px-6 sm:px-8">
-                    <div className="max-w-6xl mx-auto flex flex-col md:flex-row items-center gap-16 md:gap-24">
-                        <div className="flex-1 space-y-8 animate-fadeInUp">
-                            <div className="flex items-center gap-4">
-                                <span className="w-12 h-[1px] bg-white/20"></span>
-                                <span className="text-white/40 text-[10px] sm:text-xs font-mono tracking-[0.6em] uppercase">
-                                    Network Synthesis
-                                </span>
-                            </div>
-                            <h1 className="text-6xl sm:text-8xl font-thin tracking-tighter uppercase leading-[0.9]">
-                                Partner<br />
-                                <span className="text-white/20 italic font-light">With Us</span>
-                            </h1>
-                            <p className="text-white/40 font-thin text-sm sm:text-base tracking-[0.2em] uppercase max-w-md leading-relaxed">
-                                Expand your creative horizons. Align with MAKERS3D to pioneer industrial-grade 3D craftsmanship.
-                            </p>
+            <p className="lp-masthead-lede m3-lede max-w-[512px] text-[15.1px] !leading-6 lg:mb-[4px] lg:min-h-[113px] lg:justify-self-end">
+              MAKERS3D is the execution partner for studios, resellers and dealers. You win
+              the work and keep the client. We design, print and finish the models your
+              clients asked you for.
+            </p>
+          </div>
 
-                            <div className="flex flex-col sm:flex-row gap-6 pt-4">
-                                <button
-                                    onClick={openWhatsApp}
-                                    className="flex items-center justify-center gap-3 px-8 py-4 bg-emerald-500/10 border border-emerald-500/20 text-emerald-400 text-[10px] font-bold tracking-[0.3em] uppercase rounded-full hover:bg-emerald-500 hover:text-white transition-all duration-500 group"
-                                >
-                                    <svg className="w-5 h-5 fill-current" viewBox="0 0 24 24">
-                                        <path d="M17.472 14.382c-.297-.149-1.758-.867-2.03-.967-.273-.099-.471-.148-.67.15-.197.297-.767.966-.94 1.164-.173.199-.347.223-.644.075-.297-.15-1.255-.463-2.39-1.475-.883-.788-1.48-1.761-1.653-2.059-.173-.297-.018-.458.13-.606.134-.133.298-.347.446-.52.149-.174.198-.298.298-.497.099-.198.05-.371-.025-.52-.075-.149-.669-1.612-.916-2.207-.242-.579-.487-.5-.669-.51-.173-.008-.371-.01-.57-.01-.198 0-.52.074-.792.372-.272.297-1.04 1.016-1.04 2.479 0 1.462 1.065 2.875 1.213 3.074.149.198 2.096 3.2 5.077 4.487.709.306 1.262.489 1.694.625.712.227 1.36.195 1.871.118.571-.085 1.758-.719 2.006-1.413.248-.694.248-1.289.173-1.413-.074-.124-.272-.198-.57-.347m-5.421 7.403h-.004a9.87 9.87 0 01-5.031-1.378l-.361-.214-3.741.982.998-3.648-.235-.374a9.86 9.86 0 01-1.51-5.26c.001-5.45 4.436-9.884 9.888-9.884 2.64 0 5.122 1.03 6.988 2.898a9.825 9.825 0 012.893 6.994c-.003 5.45-4.437 9.884-9.885 9.884m8.413-18.297A11.815 11.815 0 0012.05 0C5.495 0 .16 5.335.157 11.892c0 2.096.547 4.142 1.588 5.945L.057 24l6.305-1.654a11.882 11.882 0 005.683 1.448h.005c6.554 0 11.89-5.335 11.893-11.893a11.821 11.821 0 00-3.48-8.413Z" />
-                                    </svg>
-                                    Sync via WhatsApp
-                                </button>
-                            </div>
-                        </div>
+          {/* Triptych — 480x550 frames in Figma, edge to edge */}
+          <div className="lp-masthead-band relative z-[1] grid border-t border-black/[0.08] sm:grid-cols-3">
+            {HERO_BAND.map((img, i) => (
+              <div
+                key={img.src}
+                className={`group relative overflow-hidden ${i === 1 ? 'bg-black' : 'bg-black/[0.02]'} ${
+                  i === 1 ? 'aspect-[4/3] sm:aspect-[480/550]' : 'hidden aspect-[480/550] sm:block'
+                } ${
+                  i < 2 ? 'border-black/[0.08] sm:border-r' : ''
+                }`}
+              >
+                <div className={i === 1
+                  ? 'absolute left-1/2 top-[58%] aspect-square w-[65%] -translate-x-1/2 -translate-y-1/2 sm:w-[84%]'
+                  : 'lp-card-art absolute inset-0'}>
+                  <Image
+                    src={img.src}
+                    alt={img.alt}
+                    fill
+                    sizes={i === 1 ? '(max-width: 640px) 65vw, 28vw' : '(max-width: 640px) 100vw, 33vw'}
+                    priority={i === 0}
+                    className={i === 1 ? 'object-contain' : 'object-cover transition-transform duration-[1600ms] ease-[cubic-bezier(0.16,1,0.3,1)]'}
+                  />
+                </div>
 
-                        {/* Form Section */}
-                        <div className="flex-1 w-full max-w-md animate-fadeInUp" style={{ animationDelay: '200ms' }}>
-                            <div className="relative group">
-                                <div className="absolute -inset-4 bg-white/[0.02] border border-white/10 rounded-[40px] -z-10 blur-xl group-hover:bg-white/[0.04] transition-all duration-700" />
-                                <form
-                                    onSubmit={handleSubmit}
-                                    className="bg-black/40 backdrop-blur-3xl border border-white/10 p-8 sm:p-10 rounded-[40px] space-y-6"
-                                >
-                                    <div className="space-y-1">
-                                        <label className="text-[10px] text-white/30 tracking-[0.2em] uppercase font-mono ml-1">Identity</label>
-                                        <input
-                                            required
-                                            type="text"
-                                            name="name"
-                                            value={formData.name}
-                                            onChange={handleChange}
-                                            placeholder="Your Name"
-                                            className="w-full bg-white/5 border border-white/10 rounded-2xl px-6 py-4 text-sm focus:outline-none focus:border-white/30 transition-all font-light tracking-wide placeholder:text-white/10"
-                                        />
-                                    </div>
+                {i === 1 && (
+                  <div className="absolute right-[25px] top-[25px] flex items-center gap-[11px] text-white">
+                    <span className="text-[15px] font-medium uppercase tracking-[0.3em]">
+                      Makers3D
+                    </span>
+                    <span className="text-[15px] font-light">&times;</span>
+                    <span className="text-[15px] font-medium uppercase tracking-[0.3em]">
+                      You
+                    </span>
+                  </div>
+                )}
+              </div>
+            ))}
+          </div>
+        </section>
 
-                                    <div className="grid grid-cols-2 gap-4">
-                                        <div className="space-y-1">
-                                            <label className="text-[10px] text-white/30 tracking-[0.2em] uppercase font-mono ml-1">Contact</label>
-                                            <input
-                                                required
-                                                type="email"
-                                                name="email"
-                                                value={formData.email}
-                                                onChange={handleChange}
-                                                placeholder="Email"
-                                                className="w-full bg-white/5 border border-white/10 rounded-2xl px-6 py-4 text-sm focus:outline-none focus:border-white/30 transition-all font-light tracking-wide placeholder:text-white/10"
-                                            />
-                                        </div>
-                                        <div className="space-y-1">
-                                            <label className="text-[10px] text-white/30 tracking-[0.2em] uppercase font-mono ml-1">Organization</label>
-                                            <input
-                                                type="text"
-                                                name="company"
-                                                value={formData.company}
-                                                onChange={handleChange}
-                                                placeholder="Company"
-                                                className="w-full bg-white/5 border border-white/10 rounded-2xl px-6 py-4 text-sm focus:outline-none focus:border-white/30 transition-all font-light tracking-wide placeholder:text-white/10"
-                                            />
-                                        </div>
-                                    </div>
+        {/* ---------------- Sector ticker ---------------------------------------- */}
+        <section className="relative overflow-hidden border-y border-black/[0.08] py-6">
+          <div className="lp-fade relative flex select-none">
+            <div
+              aria-hidden="true"
+              className="pointer-events-none absolute inset-0 z-[2]"
+              style={{
+                background:
+                  'linear-gradient(90deg, #fff 0%, transparent 10%, transparent 90%, #fff 100%)',
+              }}
+            />
+            {[0, 1].map((copy) => (
+              <div
+                key={copy}
+                aria-hidden={copy === 1}
+                className="m3-drift-slow flex shrink-0 items-center"
+              >
+                {[...TICKER, ...TICKER].map((t, i) => (
+                  <span key={`${copy}-${t}-${i}`} className="flex items-center">
+                    <span className="whitespace-nowrap px-8 text-[11px] font-light uppercase tracking-[0.3em] text-black/30">
+                      {t}
+                    </span>
+                    <span className="h-1 w-1 shrink-0 bg-black/20" />
+                  </span>
+                ))}
+              </div>
+            ))}
+          </div>
+        </section>
 
-                                    <div className="space-y-1">
-                                        <label className="text-[10px] text-white/30 tracking-[0.2em] uppercase font-mono ml-1">Synthesis Type</label>
-                                        <div className="relative">
-                                            <select
-                                                name="partnershipType"
-                                                value={formData.partnershipType}
-                                                onChange={handleChange}
-                                                className="w-full bg-white/5 border border-white/10 rounded-2xl px-6 py-4 text-sm focus:outline-none focus:border-white/30 transition-all font-light tracking-wide appearance-none"
-                                            >
-                                                <option value="Collaboration" className="bg-zinc-900">Collaboration</option>
-                                                <option value="Reseller" className="bg-zinc-900">Reseller</option>
-                                                <option value="Bulk Order" className="bg-zinc-900">Bulk Order</option>
-                                                <option value="Creative Studio" className="bg-zinc-900">Creative Studio</option>
-                                            </select>
-                                            <div className="absolute right-6 top-1/2 -translate-y-1/2 pointer-events-none opacity-20">
-                                                <svg width="12" height="12" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2">
-                                                    <polyline points="6 9 12 15 18 9"></polyline>
-                                                </svg>
-                                            </div>
-                                        </div>
-                                    </div>
+        {/* ---------------- Why Partner With MAKERS3D ---------------------------- */}
+        <Section className="relative overflow-hidden py-16 sm:py-24 lg:py-32">
+          <div className="relative z-[1]">
+            <Reveal>
+              <h2 className="lp-lines m3-display text-[clamp(2rem,4.6vw,3.5rem)] text-black">
+                Your name up front.
+                <br />
+                <span className="text-black/35">Our layers underneath.</span>
+              </h2>
+            </Reveal>
 
-                                    <div className="space-y-1">
-                                        <label className="text-[10px] text-white/30 tracking-[0.2em] uppercase font-mono ml-1">Brief</label>
-                                        <textarea
-                                            required
-                                            name="message"
-                                            value={formData.message}
-                                            onChange={handleChange}
-                                            rows={4}
-                                            placeholder="Tell us about your vision..."
-                                            className="w-full bg-white/5 border border-white/10 rounded-2xl px-6 py-4 text-sm focus:outline-none focus:border-white/30 transition-all font-light tracking-wide placeholder:text-white/10 resize-none"
-                                        />
-                                    </div>
+            <div className="mt-10 grid border-l border-t border-black/[0.08] sm:mt-14 md:grid-cols-3">
+              {WHY.map((w, i) => (
+                <Reveal key={w.title} delay={i * 90} className="lp-card">
+                  <article
+                    className={`group m3-morph m3-sheen flex h-full min-h-[200px] flex-col justify-end border-b border-r border-black/[0.08] p-7 sm:min-h-[300px] sm:p-9 lg:p-11 ${
+                      w.featured ? 'bg-black text-white' : 'hover:bg-black/[0.02]'
+                    }`}
+                  >
+                    {/* Figma places a line-art glyph at the top of each card */}
+                    <CardGlyph index={i} featured={w.featured} />
 
-                                    <button
-                                        disabled={status === 'submitting'}
-                                        className={`w-full py-5 rounded-2xl text-[10px] font-bold tracking-[0.4em] uppercase transition-all duration-500 overflow-hidden relative group
-                      ${status === 'success' ? 'bg-emerald-500 text-white' :
-                                                status === 'error' ? 'bg-red-500 text-white' :
-                                                    'bg-white text-black hover:scale-[1.02] active:scale-95'}`}
-                                    >
-                                        <span className="relative z-10">
-                                            {status === 'idle' && 'Initialize Sync'}
-                                            {status === 'submitting' && 'Processing...'}
-                                            {status === 'success' && 'Inquiry Dispatched'}
-                                            {status === 'error' && 'Retry Sync'}
-                                        </span>
-                                        <div className="absolute inset-0 bg-white/20 scale-x-0 group-hover:scale-x-100 transition-transform origin-left duration-500" />
-                                    </button>
-                                </form>
-                            </div>
-                        </div>
+                    <p
+                      className={`mt-auto text-[12px] font-light leading-relaxed ${
+                        w.featured ? 'text-white/55' : 'text-black/35'
+                      }`}
+                    >
+                      {w.kicker}
+                    </p>
+
+                    <h3
+                      className={`mt-4 text-[19px] font-light leading-snug tracking-tight lg:text-[22px] ${
+                        w.featured ? 'text-white' : 'text-black'
+                      }`}
+                    >
+                      {w.title}
+                    </h3>
+                  </article>
+                </Reveal>
+              ))}
+            </div>
+          </div>
+        </Section>
+
+        {/* ---------------- What We Build ---------------------------------------- */}
+        <Section className="py-16 sm:py-24 lg:py-32">
+          <Reveal>
+            <h2 className="lp-lines m3-display text-[clamp(2rem,4.6vw,3.5rem)] text-black">
+              Models that
+              <br />
+              <span className="text-black/35">close the deal.</span>
+            </h2>
+          </Reveal>
+
+          <Reveal delay={80}>
+            <div className="mt-8 grid gap-6 sm:mt-12 sm:gap-10 lg:grid-cols-[1.1fr_0.9fr] lg:items-start">
+              <h3 className="lp-lines text-[clamp(1.25rem,2.6vw,1.875rem)] font-light leading-snug tracking-tight text-black">
+                Physical models that turn your recommendation
+                <br className="hidden lg:block" /> into something the client can hold.
+              </h3>
+              <p className="lp-words m3-lede max-w-[420px] text-[14px] lg:justify-self-end lg:text-right">
+                Scale miniatures, functional prototypes and production runs — built to your
+                specification and delivered unbranded, ready to present as your own.
+              </p>
+            </div>
+          </Reveal>
+
+          <Reveal delay={140}>
+            <PartnerSlideshow />
+          </Reveal>
+        </Section>
+
+        {/* ---------------- How We Partner (alternating rows) -------------------- */}
+        <Section className="py-16 sm:py-24 lg:py-32">
+          <Reveal>
+            <h2 className="lp-lines m3-display text-[clamp(2rem,4.6vw,3.5rem)] text-black">
+              How the layers
+              <br />
+              <span className="text-black/35">come together.</span>
+            </h2>
+          </Reveal>
+
+          <div className="mt-10 space-y-14 sm:mt-16 sm:space-y-20 lg:space-y-28">
+            {HOW.map((row, i) => (
+              <Reveal key={row.emphasis} delay={60}>
+                <div className="grid items-center gap-6 md:grid-cols-2 md:gap-10 lg:gap-16">
+                  <div
+                    className={`lp-media group relative aspect-[635/331] w-full overflow-hidden border border-black/[0.08] bg-black/[0.02] ${
+                      i % 2 === 1 ? 'md:order-2' : ''
+                    }`}
+                  >
+                    {i === 2 ? (
+                      <div className="lp-card-art absolute inset-0">
+                        <GrowthGraphic />
+                      </div>
+                    ) : (
+                      <div className="lp-card-art absolute inset-0">
+                        <Image
+                          src={row.image}
+                          alt={row.alt}
+                          fill
+                          sizes="(max-width: 1024px) 100vw, 50vw"
+                          className="scale-[1.02] object-cover transition-transform duration-[1600ms] ease-[cubic-bezier(0.16,1,0.3,1)] group-hover:scale-100"
+                        />
+                      </div>
+                    )}
+                  </div>
+
+                  <div className={i % 2 === 1 ? 'md:order-1' : ''}>
+                    <h3 className="lp-lines text-[clamp(1.25rem,2.4vw,1.75rem)] font-light tracking-tight">
+                      <span className="text-black/35">{row.lead} </span>
+                      <span className="font-normal text-black">{row.emphasis}</span>
+                    </h3>
+                    <p className="lp-words m3-lede mt-5 max-w-[440px] text-[14px]">{row.body}</p>
+                  </div>
+                </div>
+              </Reveal>
+            ))}
+          </div>
+        </Section>
+
+        {/* ---------------- Partner With MAKERS3D (closing) ---------------------- */}
+        <section id="apply" className="relative overflow-hidden border-t border-black/[0.08]">
+          <div className="m3-blueprint absolute inset-0 opacity-70" aria-hidden="true" />
+          <div className="m3-rails" aria-hidden="true" />
+          <Field name="lattice" className="inset-x-[-5%] top-[-15%] h-[130%] w-[110%]" opacity={0.3} />
+
+          <div className="m3-shell relative z-[1] py-16 sm:py-24 lg:py-32">
+            <Reveal>
+              <div className="mx-auto max-w-[720px] text-center">
+                <h2 className="lp-lines m3-display text-[clamp(2rem,5vw,3.75rem)] text-black">
+                  Let&rsquo;s build it
+                  <br />
+                  <span className="text-black/35">layer by layer, together.</span>
+                </h2>
+                <p className="lp-words m3-lede mx-auto mt-7 max-w-[520px] text-[15px]">
+                  No canned proposals. We start by understanding your clients, your volume
+                  and the deadlines you work to — then structure the arrangement around it.
+                </p>
+              </div>
+            </Reveal>
+
+            <div className="mt-10 grid gap-12 sm:mt-16 sm:gap-14 lg:grid-cols-[1.3fr_0.7fr] lg:gap-20">
+              <Reveal delay={80} className="lp-panel">
+                <PartnerForm />
+              </Reveal>
+
+              <Reveal delay={140}>
+                <div>
+                  <Eyebrow>Prefer to start with one job?</Eyebrow>
+                  <h3 className="lp-lines m3-display mt-6 text-[clamp(1.5rem,3vw,2.25rem)] text-black">
+                    Send a live project
+                    <br />
+                    and see the work.
+                  </h3>
+                  <p className="lp-words m3-lede mt-6 text-[14px]">
+                    Most partnerships start with a single build. Send a real requirement,
+                    see how we handle it, then decide whether to make it ongoing.
+                  </p>
+
+                  <div className="lp-fade mt-9">
+                    <Cta href="/contact" tone="solid">
+                      Get a Free Quote
+                    </Cta>
+                  </div>
+
+                  <div className="mt-12">
+                    <Eyebrow>Connect with us</Eyebrow>
+                    <div className="mt-6 space-y-3.5">
+                      <a
+                        href="mailto:studio@makers3d.in"
+                        className="block text-[14px] font-light text-black/60 underline-offset-8 transition-colors duration-500 hover:text-black hover:underline"
+                      >
+                        studio@makers3d.in
+                      </a>
+                      <a
+                        href="https://www.instagram.com/makers3d.in"
+                        target="_blank"
+                        rel="noopener noreferrer"
+                        className="block text-[14px] font-light text-black/60 underline-offset-8 transition-colors duration-500 hover:text-black hover:underline"
+                      >
+                        Instagram
+                      </a>
                     </div>
-                </section>
+                  </div>
+                </div>
+              </Reveal>
+            </div>
+          </div>
+        </section>
 
-                {/* Feature Cards */}
-                <section className="pb-32 px-6 sm:px-8">
-                    <div className="max-w-6xl mx-auto grid grid-cols-1 md:grid-cols-3 gap-8">
-                        {[
-                            { title: 'Global Precision', desc: 'Ships our industrial-grade masterpieces to your location with tracked transparency.', icon: '01' },
-                            { title: 'Bespoke Scale', desc: 'Custom synthesis for large-scale architectural projects or corporate gifting suites.', icon: '02' },
-                            { title: 'Studio Access', desc: 'Direct logic bridge with our design core for exclusive prototype iterations.', icon: '03' }
-                        ].map((feat, i) => (
-                            <div key={i} className="group p-8 border border-white/5 rounded-3xl hover:border-white/20 transition-all duration-700 hover:bg-white/[0.01]">
-                                <span className="text-white/10 font-mono text-[10px] mb-6 block tracking-widest">[{feat.icon}]</span>
-                                <h3 className="text-white text-xl font-thin tracking-widest uppercase mb-4 group-hover:text-white transition-colors">{feat.title}</h3>
-                                <p className="text-white/30 font-thin text-xs leading-relaxed uppercase tracking-widest">{feat.desc}</p>
-                            </div>
-                        ))}
-                    </div>
-                </section>
-            </main>
+        <EnterpriseFooter />
+      </PageMotion>
+    </main>
+  );
+}
 
-            <Footer />
-        </div>
-    );
+/**
+ * Line-art glyphs echoing the Figma card illustrations (burst, gem, node),
+ * drawn as SVG so they stay crisp and cost nothing.
+ */
+function CardGlyph({ index, featured }: { index: number; featured: boolean }) {
+  const stroke = featured ? 'rgba(255,255,255,0.30)' : 'rgba(0,0,0,0.30)';
+
+  return (
+    <svg
+      width="76"
+      height="76"
+      viewBox="0 0 76 76"
+      fill="none"
+      aria-hidden="true"
+      className="mb-8 transition-transform duration-[1200ms] ease-[cubic-bezier(0.16,1,0.3,1)] group-hover:rotate-45"
+    >
+      {index === 0 &&
+        Array.from({ length: 16 }).map((_, i) => {
+          const a = (i / 16) * Math.PI * 2;
+          return (
+            <line
+              key={i}
+              x1={38 + Math.cos(a) * 10}
+              y1={38 + Math.sin(a) * 10}
+              x2={38 + Math.cos(a) * 34}
+              y2={38 + Math.sin(a) * 34}
+              stroke={stroke}
+              strokeWidth="1"
+            />
+          );
+        })}
+
+      {index === 1 && (
+        <>
+          <path d="M38 8 L68 30 L38 68 L8 30 Z" stroke={stroke} strokeWidth="1" />
+          <path d="M8 30 H68 M38 8 V68 M22 19 L30 68 M54 19 L46 68" stroke={stroke} strokeWidth="1" />
+        </>
+      )}
+
+      {index === 2 && (
+        <>
+          <circle cx="38" cy="38" r="30" stroke={stroke} strokeWidth="1" strokeDasharray="3 4" />
+          <rect x="22" y="22" width="32" height="32" stroke={stroke} strokeWidth="1" />
+          <circle cx="38" cy="38" r="8" stroke={stroke} strokeWidth="1" />
+        </>
+      )}
+    </svg>
+  );
 }

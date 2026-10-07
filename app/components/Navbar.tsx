@@ -159,6 +159,16 @@ export default function Navbar() {
   const [lastScrollY, setLastScrollY] = useState(0);
   const [isSearchExpanded, setIsSearchExpanded] = useState(false);
   const [isMobile, setIsMobile] = useState(false);
+
+  // Let fixed UI (the chat button) know the floating bottom bar is on screen.
+  useEffect(() => {
+    if (!isMobile) return;
+    const html = document.documentElement;
+    html.dataset.bottomNav = 'true';
+    return () => {
+      delete html.dataset.bottomNav;
+    };
+  }, [isMobile]);
   const [mounted, setMounted] = useState(false);
 
   const { data: session } = useSession();

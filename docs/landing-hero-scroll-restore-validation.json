@@ -1,0 +1,26 @@
+{
+  "restoredVisit": {
+    "width": 390,
+    "docWidth": 380,
+    "y": 0,
+    "phase": "scroll",
+    "opacity": 0,
+    "canvas": true,
+    "pin": true,
+    "span": 765.001,
+    "top": 88,
+    "order": true
+  },
+  "webglLoss": {
+    "width": 390,
+    "docWidth": 380,
+    "y": 0,
+    "phase": "complete",
+    "opacity": 1,
+    "canvas": false,
+    "pin": false,
+    "span": 0,
+    "order": true
+  },
+  "runtimeExceptions": []
+}

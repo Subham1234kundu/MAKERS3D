@@ -1,0 +1,972 @@
+{
+  "mode": "after",
+  "checks": [
+    {
+      "width": 320,
+      "height": 568,
+      "reduced": false,
+      "hero": {
+        "left": 0,
+        "right": 320,
+        "top": 0,
+        "bottom": 436.75,
+        "width": 320,
+        "height": 436.75
+      },
+      "title": {
+        "left": 20,
+        "right": 300,
+        "top": 148,
+        "bottom": 232,
+        "width": 280,
+        "height": 84
+      },
+      "lede": {
+        "left": 20,
+        "right": 300,
+        "top": 256,
+        "bottom": 356.75,
+        "width": 280,
+        "height": 100.75
+      },
+      "eyebrow": {
+        "left": 20,
+        "right": 300,
+        "top": 112,
+        "bottom": 124,
+        "width": 280,
+        "height": 12
+      },
+      "cue": {
+        "left": 133.0078125,
+        "right": 186.9921875,
+        "top": 374.25,
+        "bottom": 416.75,
+        "width": 53.984375,
+        "height": 42.5
+      },
+      "titleFont": {
+        "size": "40px",
+        "lineHeight": "42px",
+        "letterSpacing": "-2px",
+        "weight": "900",
+        "transform": "uppercase",
+        "paddingBottom": "0px",
+        "marginBottom": "24px"
+      },
+      "ledeFont": {
+        "size": "14px",
+        "lineHeight": "25.2px",
+        "letterSpacing": "0.35px",
+        "weight": "400",
+        "transform": "none",
+        "paddingBottom": "0px",
+        "marginBottom": "0px"
+      },
+      "heroPaddingTop": 112,
+      "heroPaddingBottom": 80,
+      "visionPaddingTop": 48,
+      "contactPaddingBottom": 48,
+      "textBoxes": [
+        {
+          "text": "Established MMXXIV",
+          "left": 22.578125,
+          "right": 142.578125,
+          "top": 112,
+          "bottom": 124,
+          "width": 120,
+          "height": 12
+        },
+        {
+          "text": "Makers 3D Studio",
+          "left": 190.578125,
+          "right": 297.421875,
+          "top": 112,
+          "bottom": 124,
+          "width": 106.84375,
+          "height": 12
+        },
+        {
+          "text": "DREAM IN",
+          "left": 56.890625,
+          "right": 263.109375,
+          "top": 148,
+          "bottom": 190,
+          "width": 206.21875,
+          "height": 42
+        },
+        {
+          "text": "GEOMETRY",
+          "left": 42.21875,
+          "right": 277.78125,
+          "top": 190,
+          "bottom": 232,
+          "width": 235.5625,
+          "height": 42
+        },
+        {
+          "text": "Scroll",
+          "left": 133.0078125,
+          "right": 186.9921875,
+          "top": 406.25,
+          "bottom": 416.75,
+          "width": 53.984375,
+          "height": 10.5
+        }
+      ],
+      "allTextFits": true,
+      "overflow": false,
+      "maskClipMargins": [
+        "4.79688px",
+        "4.79688px"
+      ]
+    },
+    {
+      "width": 390,
+      "height": 844,
+      "reduced": false,
+      "hero": {
+        "left": 0,
+        "right": 390,
+        "top": 0,
+        "bottom": 425.8125,
+        "width": 390,
+        "height": 425.8125
+      },
+      "title": {
+        "left": 20,
+        "right": 370,
+        "top": 148,
+        "bottom": 246.25,
+        "width": 350,
+        "height": 98.25
+      },
+      "lede": {
+        "left": 20,
+        "right": 370,
+        "top": 270.25,
+        "bottom": 345.8125,
+        "width": 350,
+        "height": 75.5625
+      },
+      "eyebrow": {
+        "left": 20,
+        "right": 370,
+        "top": 112,
+        "bottom": 124,
+        "width": 350,
+        "height": 12
+      },
+      "cue": {
+        "left": 168.0078125,
+        "right": 221.9921875,
+        "top": 363.3125,
+        "bottom": 405.8125,
+        "width": 53.984375,
+        "height": 42.5
+      },
+      "titleFont": {
+        "size": "46.8px",
+        "lineHeight": "49.14px",
+        "letterSpacing": "-2.34px",
+        "weight": "900",
+        "transform": "uppercase",
+        "paddingBottom": "0px",
+        "marginBottom": "24px"
+      },
+      "ledeFont": {
+        "size": "14px",
+        "lineHeight": "25.2px",
+        "letterSpacing": "0.35px",
+        "weight": "400",
+        "transform": "none",
+        "paddingBottom": "0px",
+        "marginBottom": "0px"
+      },
+      "heroPaddingTop": 112,
+      "heroPaddingBottom": 80,
+      "visionPaddingTop": 48,
+      "contactPaddingBottom": 48,
+      "textBoxes": [
+        {
+          "text": "Established MMXXIV",
+          "left": 57.578125,
+          "right": 177.578125,
+          "top": 112,
+          "bottom": 124,
+          "width": 120,
+          "height": 12
+        },
+        {
+          "text": "Makers 3D Studio",
+          "left": 225.578125,
+          "right": 332.421875,
+          "top": 112,
+          "bottom": 124,
+          "width": 106.84375,
+          "height": 12
+        },
+        {
+          "text": "DREAM IN",
+          "left": 74.359375,
+          "right": 315.625,
+          "top": 148,
+          "bottom": 197.125,
+          "width": 241.265625,
+          "height": 49.125
+        },
+        {
+          "text": "GEOMETRY",
+          "left": 57.1875,
+          "right": 332.796875,
+          "top": 197.125,
+          "bottom": 246.25,
+          "width": 275.609375,
+          "height": 49.125
+        },
+        {
+          "text": "Scroll",
+          "left": 168.0078125,
+          "right": 221.9921875,
+          "top": 395.3125,
+          "bottom": 405.8125,
+          "width": 53.984375,
+          "height": 10.5
+        }
+      ],
+      "allTextFits": true,
+      "overflow": false,
+      "maskClipMargins": [
+        "5.60938px",
+        "5.60938px"
+      ]
+    },
+    {
+      "width": 430,
+      "height": 932,
+      "reduced": false,
+      "hero": {
+        "left": 0,
+        "right": 430,
+        "top": 0,
+        "bottom": 435.90625,
+        "width": 430,
+        "height": 435.90625
+      },
+      "title": {
+        "left": 20,
+        "right": 410,
+        "top": 148,
+        "bottom": 256.34375,
+        "width": 390,
+        "height": 108.34375
+      },
+      "lede": {
+        "left": 39,
+        "right": 391,
+        "top": 280.34375,
+        "bottom": 355.90625,
+        "width": 352,
+        "height": 75.5625
+      },
+      "eyebrow": {
+        "left": 20,
+        "right": 410,
+        "top": 112,
+        "bottom": 124,
+        "width": 390,
+        "height": 12
+      },
+      "cue": {
+        "left": 188.0078125,
+        "right": 241.9921875,
+        "top": 373.40625,
+        "bottom": 415.90625,
+        "width": 53.984375,
+        "height": 42.5
+      },
+      "titleFont": {
+        "size": "51.6px",
+        "lineHeight": "54.18px",
+        "letterSpacing": "-2.58px",
+        "weight": "900",
+        "transform": "uppercase",
+        "paddingBottom": "0px",
+        "marginBottom": "24px"
+      },
+      "ledeFont": {
+        "size": "14px",
+        "lineHeight": "25.2px",
+        "letterSpacing": "0.35px",
+        "weight": "400",
+        "transform": "none",
+        "paddingBottom": "0px",
+        "marginBottom": "0px"
+      },
+      "heroPaddingTop": 112,
+      "heroPaddingBottom": 80,
+      "visionPaddingTop": 48,
+      "contactPaddingBottom": 48,
+      "textBoxes": [
+        {
+          "text": "Established MMXXIV",
+          "left": 77.578125,
+          "right": 197.578125,
+          "top": 112,
+          "bottom": 124,
+          "width": 120,
+          "height": 12
+        },
+        {
+          "text": "Makers 3D Studio",
+          "left": 245.578125,
+          "right": 352.421875,
+          "top": 112,
+          "bottom": 124,
+          "width": 106.84375,
+          "height": 12
+        },
+        {
+          "text": "DREAM IN",
+          "left": 81.984375,
+          "right": 348,
+          "top": 148,
+          "bottom": 202.171875,
+          "width": 266.015625,
+          "height": 54.171875
+        },
+        {
+          "text": "GEOMETRY",
+          "left": 63.046875,
+          "right": 366.9375,
+          "top": 202.171875,
+          "bottom": 256.34375,
+          "width": 303.890625,
+          "height": 54.171875
+        },
+        {
+          "text": "Scroll",
+          "left": 188.0078125,
+          "right": 241.9921875,
+          "top": 405.40625,
+          "bottom": 415.90625,
+          "width": 53.984375,
+          "height": 10.5
+        }
+      ],
+      "allTextFits": true,
+      "overflow": false,
+      "maskClipMargins": [
+        "6.1875px",
+        "6.1875px"
+      ]
+    },
+    {
+      "width": 768,
+      "height": 1024,
+      "reduced": false,
+      "hero": {
+        "left": 0,
+        "right": 768,
+        "top": 0,
+        "bottom": 461.9375,
+        "width": 768,
+        "height": 461.9375
+      },
+      "title": {
+        "left": 20,
+        "right": 748,
+        "top": 148,
+        "bottom": 282.375,
+        "width": 728,
+        "height": 134.375
+      },
+      "lede": {
+        "left": 208,
+        "right": 560,
+        "top": 306.375,
+        "bottom": 381.9375,
+        "width": 352,
+        "height": 75.5625
+      },
+      "eyebrow": {
+        "left": 20,
+        "right": 748,
+        "top": 112,
+        "bottom": 124,
+        "width": 728,
+        "height": 12
+      },
+      "cue": {
+        "left": 357.0078125,
+        "right": 410.9921875,
+        "top": 399.4375,
+        "bottom": 441.9375,
+        "width": 53.984375,
+        "height": 42.5
+      },
+      "titleFont": {
+        "size": "64px",
+        "lineHeight": "67.2px",
+        "letterSpacing": "-3.2px",
+        "weight": "900",
+        "transform": "uppercase",
+        "paddingBottom": "0px",
+        "marginBottom": "24px"
+      },
+      "ledeFont": {
+        "size": "14px",
+        "lineHeight": "25.2px",
+        "letterSpacing": "0.35px",
+        "weight": "400",
+        "transform": "none",
+        "paddingBottom": "0px",
+        "marginBottom": "0px"
+      },
+      "heroPaddingTop": 112,
+      "heroPaddingBottom": 80,
+      "visionPaddingTop": 48,
+      "contactPaddingBottom": 48,
+      "textBoxes": [
+        {
+          "text": "Established MMXXIV",
+          "left": 246.578125,
+          "right": 366.578125,
+          "top": 112,
+          "bottom": 124,
+          "width": 120,
+          "height": 12
+        },
+        {
+          "text": "Makers 3D Studio",
+          "left": 414.578125,
+          "right": 521.421875,
+          "top": 112,
+          "bottom": 124,
+          "width": 106.84375,
+          "height": 12
+        },
+        {
+          "text": "DREAM IN",
+          "left": 219.03125,
+          "right": 548.96875,
+          "top": 148,
+          "bottom": 215.1875,
+          "width": 329.9375,
+          "height": 67.1875
+        },
+        {
+          "text": "GEOMETRY",
+          "left": 195.546875,
+          "right": 572.453125,
+          "top": 215.1875,
+          "bottom": 282.375,
+          "width": 376.90625,
+          "height": 67.1875
+        },
+        {
+          "text": "Scroll",
+          "left": 357.0078125,
+          "right": 410.9921875,
+          "top": 431.4375,
+          "bottom": 441.9375,
+          "width": 53.984375,
+          "height": 10.5
+        }
+      ],
+      "allTextFits": true,
+      "overflow": false,
+      "maskClipMargins": [
+        "7.67188px",
+        "7.67188px"
+      ]
+    },
+    {
+      "width": 844,
+      "height": 390,
+      "reduced": false,
+      "hero": {
+        "left": 0,
+        "right": 844,
+        "top": 0,
+        "bottom": 461.9375,
+        "width": 844,
+        "height": 461.9375
+      },
+      "title": {
+        "left": 20,
+        "right": 824,
+        "top": 148,
+        "bottom": 282.375,
+        "width": 804,
+        "height": 134.375
+      },
+      "lede": {
+        "left": 246,
+        "right": 598,
+        "top": 306.375,
+        "bottom": 381.9375,
+        "width": 352,
+        "height": 75.5625
+      },
+      "eyebrow": {
+        "left": 20,
+        "right": 824,
+        "top": 112,
+        "bottom": 124,
+        "width": 804,
+        "height": 12
+      },
+      "cue": {
+        "left": 395.0078125,
+        "right": 448.9921875,
+        "top": 399.4375,
+        "bottom": 441.9375,
+        "width": 53.984375,
+        "height": 42.5
+      },
+      "titleFont": {
+        "size": "64px",
+        "lineHeight": "67.2px",
+        "letterSpacing": "-3.2px",
+        "weight": "900",
+        "transform": "uppercase",
+        "paddingBottom": "0px",
+        "marginBottom": "24px"
+      },
+      "ledeFont": {
+        "size": "14px",
+        "lineHeight": "25.2px",
+        "letterSpacing": "0.35px",
+        "weight": "400",
+        "transform": "none",
+        "paddingBottom": "0px",
+        "marginBottom": "0px"
+      },
+      "heroPaddingTop": 112,
+      "heroPaddingBottom": 80,
+      "visionPaddingTop": 48,
+      "contactPaddingBottom": 48,
+      "textBoxes": [
+        {
+          "text": "Established MMXXIV",
+          "left": 284.578125,
+          "right": 404.578125,
+          "top": 112,
+          "bottom": 124,
+          "width": 120,
+          "height": 12
+        },
+        {
+          "text": "Makers 3D Studio",
+          "left": 452.578125,
+          "right": 559.421875,
+          "top": 112,
+          "bottom": 124,
+          "width": 106.84375,
+          "height": 12
+        },
+        {
+          "text": "DREAM IN",
+          "left": 257.03125,
+          "right": 586.96875,
+          "top": 148,
+          "bottom": 215.1875,
+          "width": 329.9375,
+          "height": 67.1875
+        },
+        {
+          "text": "GEOMETRY",
+          "left": 233.546875,
+          "right": 610.453125,
+          "top": 215.1875,
+          "bottom": 282.375,
+          "width": 376.90625,
+          "height": 67.1875
+        },
+        {
+          "text": "Scroll",
+          "left": 395.0078125,
+          "right": 448.9921875,
+          "top": 431.4375,
+          "bottom": 441.9375,
+          "width": 53.984375,
+          "height": 10.5
+        }
+      ],
+      "allTextFits": true,
+      "overflow": false,
+      "maskClipMargins": [
+        "7.67188px",
+        "7.67188px"
+      ]
+    },
+    {
+      "width": 1024,
+      "height": 800,
+      "reduced": true,
+      "hero": {
+        "left": 0,
+        "right": 1014,
+        "top": 0,
+        "bottom": 880,
+        "width": 1014,
+        "height": 880
+      },
+      "title": {
+        "left": 130.09375,
+        "right": 883.90625,
+        "top": 271.109375,
+        "bottom": 475.890625,
+        "width": 753.8125,
+        "height": 204.78125
+      },
+      "lede": {
+        "left": 171,
+        "right": 843,
+        "top": 523.890625,
+        "bottom": 687.890625,
+        "width": 672,
+        "height": 164
+      },
+      "eyebrow": {
+        "left": 130.09375,
+        "right": 883.90625,
+        "top": 224.109375,
+        "bottom": 239.109375,
+        "width": 753.8125,
+        "height": 15
+      },
+      "cue": {
+        "left": 480.0078125,
+        "right": 533.9921875,
+        "top": 761.5,
+        "bottom": 840,
+        "width": 53.984375,
+        "height": 78.5
+      },
+      "titleFont": {
+        "size": "128px",
+        "lineHeight": "102.4px",
+        "letterSpacing": "-6.4px",
+        "weight": "900",
+        "transform": "uppercase",
+        "paddingBottom": "0px",
+        "marginBottom": "48px"
+      },
+      "ledeFont": {
+        "size": "14px",
+        "lineHeight": "28px",
+        "letterSpacing": "4.2px",
+        "weight": "300",
+        "transform": "uppercase",
+        "paddingBottom": "80px",
+        "marginBottom": "0px"
+      },
+      "heroPaddingTop": 128,
+      "heroPaddingBottom": 96,
+      "visionPaddingTop": 192,
+      "contactPaddingBottom": 192,
+      "textBoxes": [
+        {
+          "text": "Established MMXXIV",
+          "left": 277.609375,
+          "right": 478.015625,
+          "top": 224.109375,
+          "bottom": 239.109375,
+          "width": 200.40625,
+          "height": 15
+        },
+        {
+          "text": "Makers 3D Studio",
+          "left": 558.015625,
+          "right": 736.375,
+          "top": 224.109375,
+          "bottom": 239.109375,
+          "width": 178.359375,
+          "height": 15
+        },
+        {
+          "text": "DREAM IN",
+          "left": 177.0625,
+          "right": 836.9375,
+          "top": 271.109375,
+          "bottom": 373.5,
+          "width": 659.875,
+          "height": 102.390625
+        },
+        {
+          "text": "GEOMETRY",
+          "left": 130.09375,
+          "right": 883.90625,
+          "top": 373.5,
+          "bottom": 475.890625,
+          "width": 753.8125,
+          "height": 102.390625
+        },
+        {
+          "text": "Scroll",
+          "left": 480.0078125,
+          "right": 533.9921875,
+          "top": 829.5,
+          "bottom": 840,
+          "width": 53.984375,
+          "height": 10.5
+        }
+      ],
+      "allTextFits": true,
+      "overflow": false,
+      "maskClipMargins": [
+        "0px",
+        "0px"
+      ]
+    },
+    {
+      "width": 1440,
+      "height": 1000,
+      "reduced": true,
+      "hero": {
+        "left": 0,
+        "right": 1430,
+        "top": 0,
+        "bottom": 1100,
+        "width": 1430,
+        "height": 1100
+      },
+      "title": {
+        "left": 338.09375,
+        "right": 1091.90625,
+        "top": 381.109375,
+        "bottom": 585.890625,
+        "width": 753.8125,
+        "height": 204.78125
+      },
+      "lede": {
+        "left": 379,
+        "right": 1051,
+        "top": 633.890625,
+        "bottom": 797.890625,
+        "width": 672,
+        "height": 164
+      },
+      "eyebrow": {
+        "left": 338.09375,
+        "right": 1091.90625,
+        "top": 334.109375,
+        "bottom": 349.109375,
+        "width": 753.8125,
+        "height": 15
+      },
+      "cue": {
+        "left": 688.0078125,
+        "right": 741.9921875,
+        "top": 981.5,
+        "bottom": 1060,
+        "width": 53.984375,
+        "height": 78.5
+      },
+      "titleFont": {
+        "size": "128px",
+        "lineHeight": "102.4px",
+        "letterSpacing": "-6.4px",
+        "weight": "900",
+        "transform": "uppercase",
+        "paddingBottom": "0px",
+        "marginBottom": "48px"
+      },
+      "ledeFont": {
+        "size": "14px",
+        "lineHeight": "28px",
+        "letterSpacing": "4.2px",
+        "weight": "300",
+        "transform": "uppercase",
+        "paddingBottom": "80px",
+        "marginBottom": "0px"
+      },
+      "heroPaddingTop": 128,
+      "heroPaddingBottom": 96,
+      "visionPaddingTop": 192,
+      "contactPaddingBottom": 192,
+      "textBoxes": [
+        {
+          "text": "Established MMXXIV",
+          "left": 485.609375,
+          "right": 686.015625,
+          "top": 334.109375,
+          "bottom": 349.109375,
+          "width": 200.40625,
+          "height": 15
+        },
+        {
+          "text": "Makers 3D Studio",
+          "left": 766.015625,
+          "right": 944.375,
+          "top": 334.109375,
+          "bottom": 349.109375,
+          "width": 178.359375,
+          "height": 15
+        },
+        {
+          "text": "DREAM IN",
+          "left": 385.0625,
+          "right": 1044.9375,
+          "top": 381.109375,
+          "bottom": 483.5,
+          "width": 659.875,
+          "height": 102.390625
+        },
+        {
+          "text": "GEOMETRY",
+          "left": 338.09375,
+          "right": 1091.90625,
+          "top": 483.5,
+          "bottom": 585.890625,
+          "width": 753.8125,
+          "height": 102.390625
+        },
+        {
+          "text": "Scroll",
+          "left": 688.0078125,
+          "right": 741.9921875,
+          "top": 1049.5,
+          "bottom": 1060,
+          "width": 53.984375,
+          "height": 10.5
+        }
+      ],
+      "allTextFits": true,
+      "overflow": false,
+      "maskClipMargins": [
+        "0px",
+        "0px"
+      ]
+    },
+    {
+      "width": 390,
+      "height": 844,
+      "reduced": true,
+      "hero": {
+        "left": 0,
+        "right": 390,
+        "top": 0,
+        "bottom": 425.8125,
+        "width": 390,
+        "height": 425.8125
+      },
+      "title": {
+        "left": 20,
+        "right": 370,
+        "top": 148,
+        "bottom": 246.25,
+        "width": 350,
+        "height": 98.25
+      },
+      "lede": {
+        "left": 20,
+        "right": 370,
+        "top": 270.25,
+        "bottom": 345.8125,
+        "width": 350,
+        "height": 75.5625
+      },
+      "eyebrow": {
+        "left": 20,
+        "right": 370,
+        "top": 112,
+        "bottom": 124,
+        "width": 350,
+        "height": 12
+      },
+      "cue": {
+        "left": 168.0078125,
+        "right": 221.9921875,
+        "top": 363.3125,
+        "bottom": 405.8125,
+        "width": 53.984375,
+        "height": 42.5
+      },
+      "titleFont": {
+        "size": "46.8px",
+        "lineHeight": "49.14px",
+        "letterSpacing": "-2.34px",
+        "weight": "900",
+        "transform": "uppercase",
+        "paddingBottom": "0px",
+        "marginBottom": "24px"
+      },
+      "ledeFont": {
+        "size": "14px",
+        "lineHeight": "25.2px",
+        "letterSpacing": "0.35px",
+        "weight": "400",
+        "transform": "none",
+        "paddingBottom": "0px",
+        "marginBottom": "0px"
+      },
+      "heroPaddingTop": 112,
+      "heroPaddingBottom": 80,
+      "visionPaddingTop": 48,
+      "contactPaddingBottom": 48,
+      "textBoxes": [
+        {
+          "text": "Established MMXXIV",
+          "left": 57.578125,
+          "right": 177.578125,
+          "top": 112,
+          "bottom": 124,
+          "width": 120,
+          "height": 12
+        },
+        {
+          "text": "Makers 3D Studio",
+          "left": 225.578125,
+          "right": 332.421875,
+          "top": 112,
+          "bottom": 124,
+          "width": 106.84375,
+          "height": 12
+        },
+        {
+          "text": "DREAM IN",
+          "left": 74.359375,
+          "right": 315.625,
+          "top": 148,
+          "bottom": 197.125,
+          "width": 241.265625,
+          "height": 49.125
+        },
+        {
+          "text": "GEOMETRY",
+          "left": 57.1875,
+          "right": 332.796875,
+          "top": 197.125,
+          "bottom": 246.25,
+          "width": 275.609375,
+          "height": 49.125
+        },
+        {
+          "text": "Scroll",
+          "left": 168.0078125,
+          "right": 221.9921875,
+          "top": 395.3125,
+          "bottom": 405.8125,
+          "width": 53.984375,
+          "height": 10.5
+        }
+      ],
+      "allTextFits": true,
+      "overflow": false,
+      "maskClipMargins": [
+        "0px",
+        "0px"
+      ]
+    }
+  ],
+  "errors": [],
+  "passed": true,
+  "mobileFooterSpacing": {
+    "gap": 48,
+    "contactPaddingBottom": "48px",
+    "overflow": false
+  }
+}

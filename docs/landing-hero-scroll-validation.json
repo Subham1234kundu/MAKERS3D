@@ -1,0 +1,199 @@
+{
+  "results": [
+    {
+      "width": 1440,
+      "initial": {
+        "width": 1440,
+        "docWidth": 1430,
+        "y": 0,
+        "phase": "scroll",
+        "opacity": 0,
+        "canvas": true,
+        "pin": true,
+        "span": 850.001,
+        "top": 72,
+        "order": true
+      },
+      "idle": {
+        "width": 1440,
+        "docWidth": 1430,
+        "y": 0,
+        "phase": "scroll",
+        "opacity": 0,
+        "canvas": true,
+        "pin": true,
+        "span": 850.001,
+        "top": 72,
+        "order": true
+      },
+      "middle": {
+        "width": 1440,
+        "docWidth": 1430,
+        "y": 425,
+        "phase": "scroll",
+        "opacity": 0,
+        "canvas": true,
+        "pin": true,
+        "span": 850.001,
+        "top": 72,
+        "order": true
+      },
+      "reveal": {
+        "width": 1440,
+        "docWidth": 1430,
+        "y": 808,
+        "phase": "scroll",
+        "opacity": 0.648848,
+        "canvas": true,
+        "pin": true,
+        "span": 850.001,
+        "top": 72,
+        "order": true
+      },
+      "done": {
+        "width": 1440,
+        "docWidth": 1430,
+        "y": 2,
+        "phase": "complete",
+        "opacity": 1,
+        "canvas": false,
+        "pin": false,
+        "span": 0,
+        "order": true
+      },
+      "back": {
+        "width": 1440,
+        "docWidth": 1430,
+        "y": 0,
+        "phase": "complete",
+        "opacity": 1,
+        "canvas": false,
+        "pin": false,
+        "span": 0,
+        "order": true
+      },
+      "reentry": {
+        "width": 1440,
+        "docWidth": 1430,
+        "y": 0,
+        "phase": "scroll",
+        "opacity": 0,
+        "canvas": true,
+        "pin": true,
+        "span": 850.001,
+        "top": 72,
+        "order": true
+      },
+      "reload": {
+        "width": 1440,
+        "docWidth": 1430,
+        "y": 0,
+        "phase": "scroll",
+        "opacity": 0,
+        "canvas": true,
+        "pin": true,
+        "span": 850.001,
+        "top": 72,
+        "order": true
+      }
+    },
+    {
+      "width": 390,
+      "initial": {
+        "width": 390,
+        "docWidth": 380,
+        "y": 0,
+        "phase": "scroll",
+        "opacity": 0,
+        "canvas": true,
+        "pin": true,
+        "span": 765.001,
+        "top": 88,
+        "order": true
+      },
+      "idle": {
+        "width": 390,
+        "docWidth": 380,
+        "y": 0,
+        "phase": "scroll",
+        "opacity": 0,
+        "canvas": true,
+        "pin": true,
+        "span": 765.001,
+        "top": 88,
+        "order": true
+      },
+      "middle": {
+        "width": 390,
+        "docWidth": 380,
+        "y": 383,
+        "phase": "scroll",
+        "opacity": 0,
+        "canvas": true,
+        "pin": true,
+        "span": 765.001,
+        "top": 88,
+        "order": true
+      },
+      "reveal": {
+        "width": 390,
+        "docWidth": 380,
+        "y": 727,
+        "phase": "scroll",
+        "opacity": 0.645803,
+        "canvas": true,
+        "pin": true,
+        "span": 765.001,
+        "top": 88,
+        "order": true
+      },
+      "done": {
+        "width": 390,
+        "docWidth": 380,
+        "y": 2,
+        "phase": "complete",
+        "opacity": 1,
+        "canvas": false,
+        "pin": false,
+        "span": 0,
+        "order": true
+      },
+      "back": {
+        "width": 390,
+        "docWidth": 380,
+        "y": 0,
+        "phase": "complete",
+        "opacity": 1,
+        "canvas": false,
+        "pin": false,
+        "span": 0,
+        "order": true
+      },
+      "reentry": null,
+      "reload": {
+        "width": 390,
+        "docWidth": 380,
+        "y": 0,
+        "phase": "scroll",
+        "opacity": 0,
+        "canvas": true,
+        "pin": true,
+        "span": 765.001,
+        "top": 88,
+        "order": true
+      }
+    }
+  ],
+  "reducedMotion": {
+    "width": 390,
+    "docWidth": 380,
+    "y": 0,
+    "phase": "static",
+    "opacity": 1,
+    "canvas": false,
+    "pin": false,
+    "span": 0,
+    "order": true
+  },
+  "runtimeExceptions": []
+}

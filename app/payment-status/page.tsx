@@ -3,8 +3,8 @@
 import { useSearchParams } from 'next/navigation';
 import { useEffect, useState, Suspense } from 'react';
 import Link from 'next/link';
-import Navbar from '../components/Navbar';
-import Footer from '../components/Footer';
+import EnterpriseNav from '../components/enterprise/EnterpriseNav';
+import EnterpriseFooter from '../components/enterprise/EnterpriseFooter';
 
 function PaymentStatusContent() {
     const searchParams = useSearchParams();
@@ -37,11 +37,11 @@ function PaymentStatusContent() {
     const isFailed = status === 'failed' || status === 'error';
 
     return (
-        <div className="bg-black min-h-screen text-white font-['Helvetica_Neue',Arial,sans-serif]">
-            <Navbar />
+        <div className="bg-white min-h-screen text-black font-['Helvetica_Neue',Arial,sans-serif]">
+            <EnterpriseNav />
 
             <main className="max-w-2xl mx-auto px-4 sm:px-8 pt-32 pb-20">
-                <div className="bg-neutral-900/50 border border-white/10 p-8 md:p-12">
+                <div className="bg-neutral-100/50 border border-black/10 p-8 md:p-12">
                     {/* Status Icon */}
                     <div className="mb-8 text-center">
                         {isSuccess && (
@@ -73,7 +73,7 @@ function PaymentStatusContent() {
                             {isFailed && 'Payment Failed'}
                         </h1>
 
-                        <p className="text-white/60 font-light">
+                        <p className="text-black/60 font-light">
                             {isSuccess && 'Thank you for your purchase. Your order has been confirmed.'}
                             {isPending && 'Your payment is being processed. Please wait...'}
                             {isFailed && (error ? decodeURIComponent(error) : 'Something went wrong with your payment.')}
@@ -82,28 +82,28 @@ function PaymentStatusContent() {
 
                     {/* Order Details */}
                     {orderId && (
-                        <div className="border-t border-b border-white/10 py-6 mb-8 space-y-4">
+                        <div className="border-t border-b border-black/10 py-6 mb-8 space-y-4">
                             <div className="flex justify-between items-center">
-                                <span className="text-[10px] uppercase tracking-[0.2em] text-white/40">Order ID</span>
-                                <span className="font-mono text-white/80">{orderId}</span>
+                                <span className="text-[10px] uppercase tracking-[0.2em] text-black/40">Order ID</span>
+                                <span className="font-mono text-black/80">{orderId}</span>
                             </div>
 
                             {loading ? (
                                 <div className="flex items-center justify-center py-4">
-                                    <div className="w-5 h-5 border border-white/20 border-t-white rounded-full animate-spin"></div>
-                                    <span className="ml-3 text-white/40 text-sm">Loading details...</span>
+                                    <div className="w-5 h-5 border border-black/20 border-t-black rounded-full animate-spin"></div>
+                                    <span className="ml-3 text-black/40 text-sm">Loading details...</span>
                                 </div>
                             ) : orderDetails?.data && (
                                 <>
                                     {orderDetails.data.amount && (
                                         <div className="flex justify-between items-center">
-                                            <span className="text-[10px] uppercase tracking-[0.2em] text-white/40">Amount</span>
+                                            <span className="text-[10px] uppercase tracking-[0.2em] text-black/40">Amount</span>
                                             <span className="text-xl font-light">₹{(orderDetails.data.amount / 100).toLocaleString('en-IN')}</span>
                                         </div>
                                     )}
                                     {orderDetails.paymentState && (
                                         <div className="flex justify-between items-center">
-                                            <span className="text-[10px] uppercase tracking-[0.2em] text-white/40">Payment Status</span>
+                                            <span className="text-[10px] uppercase tracking-[0.2em] text-black/40">Payment Status</span>
                                             <span className={`px-3 py-1 text-[9px] uppercase tracking-widest border ${
                                                 orderDetails.paymentState === 'COMPLETED'
                                                     ? 'bg-green-500/10 text-green-400 border-green-500/30'
@@ -125,7 +125,7 @@ function PaymentStatusContent() {
                         {isSuccess && (
                             <Link
                                 href="/orders"
-                                className="block w-full bg-white text-black py-4 text-center text-[10px] font-bold uppercase tracking-[0.2em] hover:bg-gray-200 transition-colors"
+                                className="block w-full bg-black text-white py-4 text-center text-[10px] font-bold uppercase tracking-[0.2em] hover:bg-gray-800 transition-colors"
                             >
                                 View My Orders
                             </Link>
@@ -133,7 +133,7 @@ function PaymentStatusContent() {
                         {isPending && (
                             <button
                                 onClick={() => window.location.reload()}
-                                className="block w-full bg-yellow-500 text-black py-4 text-center text-[10px] font-bold uppercase tracking-[0.2em] hover:bg-yellow-400 transition-colors"
+                                className="block w-full bg-yellow-500 text-white py-4 text-center text-[10px] font-bold uppercase tracking-[0.2em] hover:bg-yellow-400 transition-colors"
                             >
                                 Check Status Again
                             </button>
@@ -141,14 +141,14 @@ function PaymentStatusContent() {
                         {isFailed && (
                             <Link
                                 href="/checkout"
-                                className="block w-full bg-white text-black py-4 text-center text-[10px] font-bold uppercase tracking-[0.2em] hover:bg-gray-200 transition-colors"
+                                className="block w-full bg-black text-white py-4 text-center text-[10px] font-bold uppercase tracking-[0.2em] hover:bg-gray-800 transition-colors"
                             >
                                 Try Again
                             </Link>
                         )}
                         <Link
-                            href="/products"
-                            className="block w-full bg-white/5 border border-white/10 text-white py-4 text-center text-[10px] font-bold uppercase tracking-[0.2em] hover:bg-white/10 hover:border-white/20 transition-colors"
+                            href="/collections"
+                            className="block w-full bg-black/5 border border-black/10 text-black py-4 text-center text-[10px] font-bold uppercase tracking-[0.2em] hover:bg-black/10 hover:border-black/20 transition-colors"
                         >
                             Continue Shopping
                         </Link>
@@ -156,9 +156,9 @@ function PaymentStatusContent() {
 
                     {/* Help Text */}
                     {(isPending || isFailed) && (
-                        <p className="text-center text-white/40 text-xs mt-8">
+                        <p className="text-center text-black/40 text-xs mt-8">
                             Need help? Contact us at{' '}
-                            <a href="mailto:support@makers3d.in" className="text-white/60 hover:text-white underline">
+                            <a href="mailto:support@makers3d.in" className="text-black/60 hover:text-black underline">
                                 support@makers3d.in
                             </a>
                         </p>
@@ -166,7 +166,7 @@ function PaymentStatusContent() {
                 </div>
             </main>
 
-            <Footer />
+            <EnterpriseFooter />
         </div>
     );
 }
@@ -174,10 +174,10 @@ function PaymentStatusContent() {
 export default function PaymentStatusPage() {
     return (
         <Suspense fallback={
-            <div className="bg-black min-h-screen flex items-center justify-center">
+            <div className="bg-white min-h-screen flex items-center justify-center">
                 <div className="text-center">
-                    <div className="w-8 h-8 border-2 border-white/20 border-t-white rounded-full animate-spin mx-auto"></div>
-                    <p className="mt-4 text-white/40 text-sm">Loading...</p>
+                    <div className="w-8 h-8 border-2 border-black/20 border-t-black rounded-full animate-spin mx-auto"></div>
+                    <p className="mt-4 text-black/40 text-sm">Loading...</p>
                 </div>
             </div>
         }>

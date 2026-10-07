@@ -1,0 +1,95 @@
+{
+  "mode": "shopping",
+  "checks": [
+    {
+      "route": "/products",
+      "title": "3D Printed Products, Decor & Gifts | MAKERS3D",
+      "h1": "3D PRINTED PRODUCTS",
+      "h1Count": 1,
+      "width": 1440,
+      "overflow": false,
+      "productLinks": [
+        "/products/69c467086b6b49a96026fabc",
+        "/products/69c467086b6b49a96026fabc",
+        "/products/69c40e5e027bfc54c4976802",
+        "/products/69c40e5e027bfc54c4976802",
+        "/products/69917ddf4fa208d11abde0d6",
+        "/products/69917ddf4fa208d11abde0d6",
+        "/products/698f239ee853bfa7e1958bef",
+        "/products/698f239ee853bfa7e1958bef"
+      ]
+    },
+    {
+      "route": "/products/69917ddf4fa208d11abde0d6",
+      "title": "Shiva Temple Lamp | MAKERS3D",
+      "h1": "Shiva Temple Lamp",
+      "h1Count": 1,
+      "width": 1440,
+      "overflow": false,
+      "productLinks": [],
+      "colorSelectionWorks": true
+    },
+    {
+      "route": "/collections",
+      "title": "3D Printed Collections: Figurines, Lamps & Frames | MAKERS3D",
+      "h1": "Our Collection",
+      "h1Count": 1,
+      "width": 1440,
+      "overflow": false,
+      "productLinks": [
+        "/products/69c467086b6b49a96026fabc",
+        "/products/69c467086b6b49a96026fabc"
+      ],
+      "filterWorks": true
+    },
+    {
+      "route": "/products",
+      "title": "3D Printed Products, Decor & Gifts | MAKERS3D",
+      "h1": "3D PRINTED PRODUCTS",
+      "h1Count": 1,
+      "width": 390,
+      "overflow": false,
+      "productLinks": [
+        "/products/69c467086b6b49a96026fabc",
+        "/products/69c467086b6b49a96026fabc",
+        "/products/69c40e5e027bfc54c4976802",
+        "/products/69c40e5e027bfc54c4976802",
+        "/products/69917ddf4fa208d11abde0d6",
+        "/products/69917ddf4fa208d11abde0d6",
+        "/products/698f239ee853bfa7e1958bef",
+        "/products/698f239ee853bfa7e1958bef"
+      ]
+    },
+    {
+      "route": "/products/69917ddf4fa208d11abde0d6",
+      "title": "Shiva Temple Lamp | MAKERS3D",
+      "h1": "Shiva Temple Lamp",
+      "h1Count": 1,
+      "width": 390,
+      "overflow": false,
+      "productLinks": [],
+      "cart": [
+        {
+          "id": "69917ddf4fa208d11abde0d6",
+          "selectedColor": "white rock",
+          "quantity": 1
+        }
+      ]
+    },
+    {
+      "route": "/collections",
+      "title": "3D Printed Collections: Figurines, Lamps & Frames | MAKERS3D",
+      "h1": "Our Collection",
+      "h1Count": 1,
+      "width": 390,
+      "overflow": false,
+      "productLinks": [
+        "/products/69c467086b6b49a96026fabc",
+        "/products/69c467086b6b49a96026fabc"
+      ],
+      "filterWorks": true
+    }
+  ],
+  "errors": [],
+  "passed": true
+}

@@ -4,15 +4,13 @@ import { useState, useEffect, useRef } from 'react';
 import Image from 'next/image';
 import Link from 'next/link';
 import { gsap } from 'gsap';
-import Navbar from '../components/Navbar';
-import Footer from '../components/Footer';
+import EnterpriseNav from '../components/enterprise/EnterpriseNav';
+import EnterpriseFooter from '../components/enterprise/EnterpriseFooter';
 
 // Use same product images for consistency
-import { useSession } from 'next-auth/react';
 import { useCart } from '../providers/CartProvider';
 
 export default function CartPage() {
-  const { data: session, status } = useSession();
   const { cartItems: items, updateQuantity, removeFromCart, cartSubtotal: subtotal, cartTotal: total, discount, applyCoupon, activeCoupon } = useCart();
   const summaryRef = useRef<HTMLDivElement>(null);
   const checkoutBtnRef = useRef<HTMLButtonElement>(null);
@@ -89,11 +87,11 @@ export default function CartPage() {
   };
 
   return (
-    <div className="bg-black min-h-screen text-white font-['Helvetica_Neue',Arial,sans-serif]" ref={containerRef}>
-      <Navbar />
+    <div className="bg-white min-h-screen text-black font-['Helvetica_Neue',Arial,sans-serif]" ref={containerRef}>
+      <EnterpriseNav />
 
       <main className="max-w-7xl mx-auto px-4 sm:px-6 pt-24 md:pt-32 pb-12 md:pb-20">
-        <h1 className="cart-title text-3xl sm:text-4xl md:text-6xl font-thin mb-8 md:mb-16 tracking-tighter bg-clip-text text-transparent bg-gradient-to-b from-white to-white/60">
+        <h1 className="cart-title text-3xl sm:text-4xl md:text-6xl font-thin mb-8 md:mb-16 tracking-tighter bg-clip-text text-transparent bg-gradient-to-b from-black to-black/60">
           Your Collection
         </h1>
 
@@ -104,9 +102,9 @@ export default function CartPage() {
               {items.map((item) => (
                 <div
                   key={item.id}
-                  className={`cart-item item-${item.id} flex flex-col sm:flex-row gap-6 sm:gap-8 pb-6 sm:pb-8 border-b border-white/10 group`}
+                  className={`cart-item item-${item.id} flex flex-col sm:flex-row gap-6 sm:gap-8 pb-6 sm:pb-8 border-b border-black/10 group`}
                 >
-                  <Link href={`/products/${item.id}`} className="relative w-full sm:w-40 aspect-[4/5] sm:aspect-[3/4] bg-neutral-900 overflow-hidden block">
+                  <Link href={`/products/${item.id}`} className="relative w-full sm:w-40 aspect-[4/5] sm:aspect-[3/4] bg-neutral-100 overflow-hidden block">
                     <Image
                       src={typeof item.images?.[0] === 'string' ? item.images[0] : (item.images?.[0]?.url || item.image || '/images/placeholder.jpg')}
                       alt={typeof item.images?.[0] === 'object' ? item.images[0].alt : (item.name || item.title || 'Product')}
@@ -115,21 +113,21 @@ export default function CartPage() {
                       unoptimized={true}
                       referrerPolicy="no-referrer"
                     />
-                    <div className="absolute inset-0 border border-white/5" />
+                    <div className="absolute inset-0 border border-black/5" />
                   </Link>
 
                   <div className="flex-1 flex flex-col justify-between py-1">
                     <div className="flex justify-between items-start">
                       <div>
-                        <span className="text-[9px] sm:text-[10px] uppercase tracking-[0.3em] text-white/40 mb-2 block">{item.category}</span>
-                        <h2 className="text-lg sm:text-xl font-thin tracking-wide mb-1 hover:text-white/80 transition-colors">
+                        <span className="text-[9px] sm:text-[10px] uppercase tracking-[0.3em] text-black/40 mb-2 block">{item.category}</span>
+                        <h2 className="text-lg sm:text-xl font-thin tracking-wide mb-1 hover:text-black/80 transition-colors">
                           <Link href={`/products/${item.id}`}>{item.name || item.title}</Link>
                         </h2>
-                        <p className="text-white/60 font-light text-sm">₹{item.price.toLocaleString('en-IN')}</p>
+                        <p className="text-black/60 font-light text-sm">₹{item.price.toLocaleString('en-IN')}</p>
                       </div>
                       <button
                         onClick={() => handleRemove(item.id)}
-                        className="text-white/20 hover:text-white transition-colors p-2"
+                        className="text-black/20 hover:text-black transition-colors p-2"
                       >
                         <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="1.5">
                           <path d="M6 18L18 6M6 6l12 12" strokeLinecap="round" />
@@ -138,7 +136,7 @@ export default function CartPage() {
                     </div>
 
                     <div className="flex items-center gap-6 mt-4 sm:mt-6">
-                      <div className="flex items-center border border-white/10 bg-white/5">
+                      <div className="flex items-center border border-black/10 bg-black/5">
                         <button
                           onClick={() => {
                             if (item.quantity <= 1) {
@@ -147,19 +145,19 @@ export default function CartPage() {
                               updateQuantity(item.id, -1);
                             }
                           }}
-                          className="w-10 h-10 flex items-center justify-center hover:bg-white/10 transition-colors text-white/60"
+                          className="w-10 h-10 flex items-center justify-center hover:bg-black/10 transition-colors text-black/60"
                         >
                           -
                         </button>
                         <span className="w-8 text-center text-[11px] font-bold tracking-widest">{item.quantity}</span>
                         <button
                           onClick={() => updateQuantity(item.id, 1)}
-                          className="w-10 h-10 flex items-center justify-center hover:bg-white/10 transition-colors text-white/60"
+                          className="w-10 h-10 flex items-center justify-center hover:bg-black/10 transition-colors text-black/60"
                         >
                           +
                         </button>
                       </div>
-                      <span className="text-white font-light text-sm sm:text-base">
+                      <span className="text-black font-light text-sm sm:text-base">
                         ₹{(item.price * item.quantity).toLocaleString('en-IN')}
                       </span>
                     </div>
@@ -170,16 +168,16 @@ export default function CartPage() {
 
             {/* Order Summary */}
             <div className="lg:col-span-4" ref={summaryRef}>
-              <div className="bg-neutral-900/40 p-6 sm:p-10 border border-white/5 sticky top-24 md:top-32">
-                <h3 className="text-[10px] uppercase tracking-[0.4em] text-white/40 mb-6 sm:mb-8 pb-4 border-b border-white/5">Summary</h3>
+              <div className="bg-neutral-100/40 p-6 sm:p-10 border border-black/5 sticky top-24 md:top-32">
+                <h3 className="text-[10px] uppercase tracking-[0.4em] text-black/40 mb-6 sm:mb-8 pb-4 border-b border-black/5">Summary</h3>
 
                 <div className="space-y-4 sm:space-y-6 mb-8 sm:mb-10">
                   <div className="flex justify-between text-sm">
-                    <span className="text-white/60 font-thin">Subtotal</span>
+                    <span className="text-black/60 font-thin">Subtotal</span>
                     <span className="font-light">₹{subtotal.toLocaleString('en-IN')}</span>
                   </div>
                   <div className="flex justify-between text-[13px]">
-                    <span className="text-white/60 font-thin">Shipping</span>
+                    <span className="text-black/60 font-thin">Shipping</span>
                     <span className="text-green-400 font-light text-sm">Free</span>
                   </div>
 
@@ -191,12 +189,12 @@ export default function CartPage() {
                         placeholder="COUPON CODE"
                         value={couponCode}
                         onChange={(e) => setCouponCode(e.target.value)}
-                        className="w-full bg-white/5 border border-white/10 px-4 py-3 text-[11px] text-white tracking-widest placeholder:text-white/20 focus:outline-none focus:border-white/30 transition-colors uppercase"
+                        className="w-full bg-black/5 border border-black/10 px-4 py-3 text-[11px] text-black tracking-widest placeholder:text-black/20 focus:outline-none focus:border-black/30 transition-colors uppercase"
                       />
                       <button
                         type="button"
                         onClick={handleApplyCoupon}
-                        className="bg-white/10 border border-white/10 px-4 py-3 text-[10px] text-white tracking-widest hover:bg-white hover:text-black transition-all uppercase disabled:opacity-50 disabled:cursor-not-allowed min-w-[80px] cursor-pointer relative z-10"
+                        className="bg-black/10 border border-black/10 px-4 py-3 text-[10px] text-black tracking-widest hover:bg-black hover:text-white transition-all uppercase disabled:opacity-50 disabled:cursor-not-allowed min-w-[80px] cursor-pointer relative z-10"
                         disabled={!couponCode.trim() || isApplying}
                       >
                         {isApplying ? '...' : 'Apply'}
@@ -215,7 +213,7 @@ export default function CartPage() {
                       <span className="font-light">-₹{discount.toLocaleString('en-IN')}</span>
                     </div>
                   )}
-                  <div className="h-[1px] bg-white/5 w-full my-4" />
+                  <div className="h-[1px] bg-black/5 w-full my-4" />
                   <div className="flex justify-between items-end">
                     <span className="text-[10px] sm:text-xs uppercase tracking-[0.3em] font-normal">Estimated Total</span>
                     <span className="text-xl sm:text-2xl font-light">₹{total.toLocaleString('en-IN')}</span>
@@ -224,12 +222,12 @@ export default function CartPage() {
 
                 <div className="space-y-4">
                   <Link
-                    href={status === 'unauthenticated' ? '/login?callbackUrl=/checkout' : '/checkout'}
-                    className="w-full border border-white/20 text-white py-4 sm:py-5 text-[11px] sm:text-xs font-bold uppercase tracking-[0.3em] relative overflow-hidden transition-all duration-300 hover:bg-white hover:text-black hover:border-white hover:shadow-[0_0_20px_rgba(255,255,255,0.3)] flex items-center justify-center"
+                    href="/checkout"
+                    className="w-full border border-black/20 text-black py-4 sm:py-5 text-[11px] sm:text-xs font-bold uppercase tracking-[0.3em] relative overflow-hidden transition-all duration-300 hover:bg-black hover:text-white hover:border-black hover:shadow-[0_0_20px_rgba(255,255,255,0.3)] flex items-center justify-center"
                   >
                     Secure Checkout
                   </Link>
-                  <p className="text-[9px] sm:text-[10px] text-center text-white/30 tracking-widest leading-relaxed">
+                  <p className="text-[9px] sm:text-[10px] text-center text-black/30 tracking-widest leading-relaxed">
                     SECURE PAYMENT POWERED BY UPIGATEWAY
                   </p>
                 </div>
@@ -239,8 +237,8 @@ export default function CartPage() {
 
         ) : (
           <div className="py-40 text-center animate-fadeIn">
-            <h2 className="text-2xl font-thin text-white/40 mb-8 tracking-[0.2em] uppercase">Your cart is currentyly empty</h2>
-            <Link href="/" className="inline-block border border-white/20 px-12 py-5 text-[10px] uppercase font-bold tracking-[0.3em] hover:bg-white hover:text-black transition-all">
+            <h2 className="text-2xl font-thin text-black/40 mb-8 tracking-[0.2em] uppercase">Your cart is currentyly empty</h2>
+            <Link href="/" className="inline-block border border-black/20 px-12 py-5 text-[10px] uppercase font-bold tracking-[0.3em] hover:bg-black hover:text-white transition-all">
               Start Exploring
             </Link>
           </div>
@@ -250,7 +248,7 @@ export default function CartPage() {
 
 
 
-      <Footer />
+      <EnterpriseFooter />
 
       <style jsx>{`
 
